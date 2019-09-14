@@ -1,0 +1,10 @@
+lightweight tag fa6b313ff345509d7a3f7a9a98389bd54d440a6d 1.2.13-classic
+Author:	Wuild <wuildz@gmail.com>
+Date:	Sun Sep 8 17:09:54 2019 +0200
+
+commit fa6b313ff345509d7a3f7a9a98389bd54d440a6d
+Author: Wuild <wuildz@gmail.com>
+Date:   Sun Sep 8 17:09:54 2019 +0200
+
+    Update methods.lua
+

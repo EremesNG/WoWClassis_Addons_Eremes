@@ -1,0 +1,9 @@
+Ver 1.13.2
+	-Minor update.
+	-Added Cheap Shot as option for Stealth.
+
+Ver 1.13.1
+	-Removed Stealth suggestion for now.
+
+Ver 1.13.0
+	-Initial release for Classic WoW.

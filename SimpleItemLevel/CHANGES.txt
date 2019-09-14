@@ -1,0 +1,24 @@
+tag 22127c5b97bda9f1abc195fb5d9f6106d231363a v6
+Author:	David Lynch <kemayo@gmail.com>
+Date:	Sun Jul 21 16:33:37 2019 -0500
+
+Tagging v6
+
+commit c4d3e8fa2c6af0dda561023fd130a9967054b36c
+Author: David Lynch <kemayo@gmail.com>
+Date:   Sun Jul 21 16:33:23 2019 -0500
+
+    Add a setting for whether to color the ilvl
+
+commit fde6ff668d0ef995f10b255fc0aafeeb960a6688
+Author: David Lynch <kemayo@gmail.com>
+Date:   Sun Jul 21 16:33:05 2019 -0500
+
+    Bump TOC and update addon description
+
+commit df1135675e3b6a385c5c9d8c7417fa56774f2ef1
+Author: David Lynch <kemayo@gmail.com>
+Date:   Tue Aug 21 17:07:54 2018 -0500
+
+    Change frame structure so everything overlays azerite
+

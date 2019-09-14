@@ -1,0 +1,9 @@
+## Interface: 11302
+## Version: 8.2.0.1
+## Title: CT_ExpenseHistory |cFF333333(Classic)
+## Notes: Detailed log of character expenses.
+## DefaultState: Enabled
+## SavedVariables: CT_EH_History
+## Dependencies: CT_Library
+
+CT_ExpenseHistory.xml

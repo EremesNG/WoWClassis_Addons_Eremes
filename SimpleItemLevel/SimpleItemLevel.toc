@@ -1,0 +1,13 @@
+## Interface: 80200
+## Title: Simple Item Level
+## Author: Kemayo
+## Notes: Show item levels in useful places
+## OptionalDeps: LibItemLevel-1.0
+## SavedVariables: SimpleItemLevelDB
+## Version: 1
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+addon.lua
