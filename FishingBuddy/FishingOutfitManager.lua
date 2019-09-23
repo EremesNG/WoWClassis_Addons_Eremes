@@ -236,6 +236,7 @@ local OutfitOptions = {
 
 local OMEvents = {};
 OMEvents["VARIABLES_LOADED"] = function()
+	print("FishingBuddy.OptionsFrame.HandleOptions")
 	FishingBuddy.OptionsFrame.HandleOptions(GENERAL, nil, OutfitOptions);
 end
 

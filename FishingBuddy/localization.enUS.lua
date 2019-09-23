@@ -40,9 +40,6 @@ FishingTranslations["enUS"] = {
     NOCREATEMACROPER = "Could not create per character macro: ", -- Could name create macro: "name of macro"
     NOCREATEMACROGLOB = "Could not create global macro: ", -- Could name create macro: "name of macro"
 
-    -- For Classic, we need the name of the skill, sigh.
-    FISHING_SKILL = "Fishing",
-
     -- we can (should?) translate everything below here
     DESCRIPTION1 = "Keep track of the fish you've caught",
     DESCRIPTION2 = "and manage your fishing gear.",

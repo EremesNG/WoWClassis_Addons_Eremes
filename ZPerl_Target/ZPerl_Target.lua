@@ -51,7 +51,6 @@ local InCombatLockdown = InCombatLockdown
 local NotifyInspect = NotifyInspect
 local PlaySound = PlaySound
 local RegisterUnitWatch = RegisterUnitWatch
-local UnitAura = UnitAura
 local UnitBattlePetType = UnitBattlePetType
 local UnitBuff = UnitBuff
 local UnitCanAssist = UnitCanAssist
@@ -65,8 +64,6 @@ local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
 local UnitGUID = UnitGUID
 local UnitHasVehicleUI = UnitHasVehicleUI
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
 local UnitInVehicle = UnitInVehicle
@@ -121,15 +118,15 @@ function XPerl_Target_OnLoad(self, partyid)
 		"GROUP_ROSTER_UPDATE",
 		"PARTY_LEADER_CHANGED",
 		"PARTY_LOOT_METHOD_CHANGED",
-		--"UNIT_THREAT_LIST_UPDATE",
+		"UNIT_THREAT_LIST_UPDATE",
 		"UNIT_FACTION",
 		"UNIT_FLAGS",
 		"UNIT_CLASSIFICATION_CHANGED",
 		"UNIT_PORTRAIT_UPDATE",
 		"UNIT_AURA",
 		"UNIT_HEALTH_FREQUENT",
-		--"PET_BATTLE_HEALTH_CHANGED",
-		--"UPDATE_SUMMONPETS_ACTION",
+		"PET_BATTLE_HEALTH_CHANGED",
+		"UPDATE_SUMMONPETS_ACTION",
 		"UNIT_POWER_FREQUENT",
 		"UNIT_MAXPOWER",
 		"UNIT_MAXHEALTH",
@@ -142,9 +139,13 @@ function XPerl_Target_OnLoad(self, partyid)
 
 	for i, event in pairs(events) do
 		if string.find(event, "^UNIT_") then
-			self:RegisterUnitEvent(event, partyid)
+			if pcall(self.RegisterUnitEvent, self, event, partyid) then
+				self:RegisterUnitEvent(event, partyid)
+			end
 		else
-			self:RegisterEvent(event)
+			if pcall(self.RegisterEvent, self, event) then
+				self:RegisterEvent(event)
+			end
 		end
 	end
 
@@ -158,7 +159,9 @@ function XPerl_Target_OnLoad(self, partyid)
 		self.statsFrame.focusTarget:SetVertexColor(0.7, 1, 1, 0.5)
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
-		--self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+			self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		end
 
 		if (XPerl_Target_Events.INSPECT_READY) then
 			self:RegisterEvent("INSPECT_READY")
@@ -167,7 +170,9 @@ function XPerl_Target_OnLoad(self, partyid)
 	else
 		XPerl_BlizzFrameDisable(FocusFrame)
 
-		--self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+			self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		end
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		--self:SetScript("OnShow", XPerl_Target_UpdateDisplay)
 		self.combatMask = 0x00020000
@@ -272,8 +277,8 @@ end
 -- Buff Functions --
 --------------------
 
--- XPerl_Targets_BuffPositions
-local function XPerl_Targets_BuffPositions(self)
+-- XPerl_Target_BuffPositions
+local function XPerl_Target_BuffPositions(self)
 	if (self.partyid and UnitCanAttack("player", self.partyid)) then
 		XPerl_Unit_BuffPositions(self, self.buffFrame.debuff, self.buffFrame.buff, self.conf.debuffs.size, self.conf.buffs.size)
 	else
@@ -283,14 +288,12 @@ end
 
 -- XPerl_Targets_BuffUpdate
 function XPerl_Targets_BuffUpdate(self)
-	if (UnitExists(self.partyid)) then
-		if (not self.conf.buffs.enable and not self.conf.debuffs.enable) then
-			self.buffFrame:Hide()
-			self.debuffFrame:Hide()
-		else
-			XPerl_Unit_UpdateBuffs(self, nil, nil, self.conf.buffs.castable, self.conf.debuffs.curable)
-			XPerl_Targets_BuffPositions(self)
-		end
+	if (not self.conf.buffs.enable and not self.conf.debuffs.enable) then
+		self.buffFrame:Hide()
+		self.debuffFrame:Hide()
+	else
+		XPerl_Unit_UpdateBuffs(self, nil, nil, self.conf.buffs.castable, self.conf.debuffs.curable)
+		XPerl_Target_BuffPositions(self)
 	end
 end
 
@@ -325,12 +328,12 @@ end
 function XPerl_Target_UpdateCombo(self)
 	-- Anticipation
 	--[[local name = GetSpellInfo(114015)
-	local _, _, _, count = UnitAura("player", name)
+	local _, _, count = UnitAura("player", name)
 	if not count then
 		count = 0
 	end]]
-	local combopoints = UnitPower("player", Enum.PowerType.ComboPoints)
-	--local combopoints = GetComboPoints("player", self.partyid) + count
+	local combopoints = UnitPower((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player", Enum.PowerType.ComboPoints)
+	--local combopoints = GetComboPoints((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player", self.partyid) + count
 	local r, g, b = GetComboColour(combopoints)
 	if (tconf.combo.enable) then
 		--self.cpFrame:Hide()
@@ -362,10 +365,10 @@ function XPerl_Target_UpdateCombo(self)
 end
 
 -- XPerl_UnitDebuffInformation
-local function TargetDebuffInformation(debuff)
-	local name, tex, count = UnitDebuff("target", debuff)
+--[[local function TargetDebuffInformation(debuff)
+	local name, _, count = UnitDebuff("target", debuff)
 	return name and count or 0
-end
+end--]]
 
 ---------------------
 --Debuffs          --
@@ -377,7 +380,7 @@ local XPERL_SPELL_WINTERCH	= GetSpellInfo(12579)		-- Winter's Chill]]
 
 local function XPerl_Target_DebuffUpdate(self)
 	local partyid = self.partyid
-	if (GetComboPoints(--[[UnitHasVehicleUI("player") and "vehicle" or]] "player", partyid) == 0) then
+	if (GetComboPoints((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player", partyid) == 0) then
 		local numDebuffs = 0
 		--[[if (playerClass == "WARRIOR") then
 			numDebuffs = TargetDebuffInformation(XPERL_SPELL_SUNDER)
@@ -429,15 +432,15 @@ local function XPerl_Target_UpdatePVP(self)
 		pvpIcon:Show()
 	elseif self.conf.pvpIcon and factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(partyid) then
 		pvpIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup)
---[[
-		if UnitIsMercenary(partyid) then
+
+		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitIsMercenary(partyid) then
 			if factionGroup == "Horde" then
 				pvpIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance")
 			elseif factionGroup == "Alliance" then
 				pvpIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde")
 			end
 		end
-]]
+
 		pvpIcon:Show()
 	else
 		pvpIcon:Hide()
@@ -476,9 +479,7 @@ end
 
 -- XPerl_Target_UpdateName
 local function XPerl_Target_UpdateName(self)
-	local ZFakeName=UnitName(self.partyid)
-	if GetFakeName~=nil then ZFakeName=GetFakeName(ZFakeName,"ZPerlParty:UpdateName") end -- DaMaGepy
-	self.nameFrame.text:SetText(ZFakeName)
+	self.nameFrame.text:SetText(UnitName(self.partyid))
 	XPerl_Target_UpdatePVP(self)
 end
 
@@ -643,7 +644,7 @@ do
 		self.creatureTypeFrame:Show()
 
 		AdjustCreatureTypeFrame(self)
-		XPerl_Targets_BuffPositions(self)
+		XPerl_Target_BuffPositions(self)
 	end
 
 	local LGT = LibStub and LibStub("LibGroupTalents-1.0", true)
@@ -674,7 +675,7 @@ do
 		LTQ:RegisterCallback("TalentQuery_Ready", TalentQuery_Ready)
 	else
 		hooksecurefunc("NotifyInspect", function(unit)
-			if (UnitIsUnit("player", unit) --[[or UnitInVehicle(unit)]] or not (UnitExists(unit) and CanInspect(unit) and UnitIsVisible(unit) and UnitIsConnected(unit) and CheckInteractDistance(unit, 4))) then
+			if (UnitIsUnit("player", unit) or (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitInVehicle(unit)) or not (UnitExists(unit) and CanInspect(unit) and UnitIsVisible(unit) and UnitIsConnected(unit) and CheckInteractDistance(unit, 4))) then
 				return
 			end
 			lastInspectUnit = unit
@@ -771,9 +772,11 @@ local function XPerl_Target_UpdateType(self)
 	self.typeFramePlayer:Hide()
 
 
-
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and (UnitIsWildBattlePet(partyid) or UnitIsBattlePetCompanion(partyid)) then
+		self.creatureTypeFrame.text:SetText(PET_TYPE_SUFFIX[UnitBattlePetType(partyid)])
+	else
 		self.creatureTypeFrame.text:SetText(targettype)
-
+	end
 
 	--if (UnitIsPlayer(partyid)) then
 		if (self.conf.classIcon and (UnitIsPlayer(partyid) or UnitClassification(partyid) == "normal")) then
@@ -897,8 +900,10 @@ function XPerl_Target_UpdateHealth(self)
 		XPerl_SetHealthBar(self, hp, hpMax)
 	end
 
-	XPerl_Target_UpdateAbsorbPrediction(self)
-	XPerl_Target_UpdateHealPrediction(self)
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		XPerl_Target_UpdateAbsorbPrediction(self)
+		XPerl_Target_UpdateHealPrediction(self)
+	end
 
 	if (percent) then
 		if UnitIsDeadOrGhost(partyid) or hpMax == 0 then -- 4.3+ fix so if for some dumb reason max HP is 0, prevent any division by 0.
@@ -1195,7 +1200,7 @@ function XPerl_Target_UpdateDisplay(self)
 		if (self.buffOptionString ~= buffOptionString) then
 			self.buffOptionString = buffOptionString
 			-- Work out where all our buffs can fit, we only do this for a fresh target
-			XPerl_Targets_BuffPositions(self)
+			XPerl_Target_BuffPositions(self)
 		end
 
 		XPerl_Targets_BuffUpdate(self)
@@ -1550,11 +1555,19 @@ end]]
 
 -- UNIT_AURA
 function XPerl_Target_Events:UNIT_AURA()
+	if not UnitExists(self.partyid) then
+		return
+	end
+
 	if (self.conf.highlightDebuffs.enable) then
 		XPerl_Target_CheckDebuffs(self)
 	end
 
-	XPerl_Targets_BuffUpdate(self)
+	--XPerl_Targets_BuffUpdate(self)
+	if self.conf.buffs.enable or self.conf.debuffs.enable then
+		XPerl_Unit_UpdateBuffs(self, nil, nil, self.conf.buffs.castable, self.conf.debuffs.curable)
+		XPerl_Target_BuffPositions(self)
+	end
 	--XPerl_Target_DebuffUpdate(self)
 
 	--[[if conf.showFD then
@@ -1572,7 +1585,7 @@ end
 -- UNIT_FACTION
 function XPerl_Target_Events:UNIT_FACTION()
 	XPerl_Target_UpdatePVP(self)
-	XPerl_Targets_BuffPositions(self)
+	XPerl_Target_BuffPositions(self)
 end
 
 -- HONOR_PRESTIGE_UPDATE
@@ -1730,19 +1743,21 @@ function XPerl_Target_Set_Bits(self)
 
 	self.conf.buffs.size = tonumber(self.conf.buffs.size) or 20
 	XPerl_SetBuffSize(self)
---[[
-	if (tconf.healprediction) then
-		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "target", "focus")
-	else
-		self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if (tconf.healprediction) then
+			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "target", "focus")
+		else
+			self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
+
+		if (tconf.absorbs) then
+			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "target", "focus")
+		else
+			self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
 
-	if (tconf.absorbs) then
-		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "target", "focus")
-	else
-		self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	end
-]]--
 	XPerl_Target_SetWidth(self)
 
 	if (not InCombatLockdown()) then
@@ -1780,16 +1795,16 @@ function XPerl_Target_Set_Bits(self)
 end
 
 function XPerl_Target_ComboFrame_Update()
-	--local comboPoints = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player")
-	local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
-	if comboPoints > 0 and UnitCanAttack("player", "target") then
+	--local comboPoints = GetComboPoints((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player")
+	local comboPoints = UnitPower((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player", Enum.PowerType.ComboPoints)
+	if comboPoints > 0 and UnitCanAttack((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "vehicle" or "player", "target") then
 		if not ComboFrame:IsShown() then
 			ComboFrame:Show()
 			UIFrameFadeIn(ComboFrame, COMBOFRAME_FADE_IN)
 		end
 
 		local fadeInfo = { }
-		for i = 1, 5 do
+		for i = 1, WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 8 or 5 do
 			local comboPoint = _G["ComboPoint"..i]
 			if i < 6 then
 				comboPoint:Show()
@@ -1801,7 +1816,7 @@ function XPerl_Target_ComboFrame_Update()
 				end
 			end
 			if i <= comboPoints then
-				if i > ComboFrame.lastPoints then
+				if i > (ComboFrame.lastPoints or 0) then
 					-- Fade in the highlight and set a function that triggers when it is done fading
 					fadeInfo.mode = "IN"
 					fadeInfo.timeToFade = COMBOFRAME_HIGHLIGHT_FADE_IN
@@ -1836,10 +1851,9 @@ end
 function XPerl_Target_Set_BlizzCPFrame(self)
 	if tconf.combo.blizzard then
 		ComboFrame:ClearAllPoints()
-
-		for i = 1, 5 do
+		for i = 1, WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 9 or 5 do
 			local combo = _G["ComboPoint"..i]
-			if i < 5 then
+			if i < 9 then
 				combo:ClearAllPoints()
 
 				if i < 6 then
@@ -1860,9 +1874,11 @@ function XPerl_Target_Set_BlizzCPFrame(self)
 			ComboPoint3:SetPoint("LEFT", ComboPoint2, "RIGHT", 0, 1)
 			ComboPoint4:SetPoint("LEFT", ComboPoint3, "RIGHT", 0, -1)
 			ComboPoint5:SetPoint("LEFT", ComboPoint4, "RIGHT", 0, -1)
-			--ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "BOTTOMLEFT", 0, 0)
-			--ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "BOTTOMLEFT", 0, 0)
-			--ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "BOTTOMLEFT", 0, 0)
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "BOTTOMLEFT", 0, 0)
+				ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "BOTTOMLEFT", 0, 0)
+				ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "BOTTOMLEFT", 0, 0)
+			end
 		elseif tconf.combo.pos == "bottom" then
 			ComboFrame:SetPoint("BOTTOM", self.portraitFrame, "BOTTOM", 98, -4)
 			ComboPoint1:SetPoint("BOTTOMLEFT", 0, 0)
@@ -1870,9 +1886,11 @@ function XPerl_Target_Set_BlizzCPFrame(self)
 			ComboPoint3:SetPoint("LEFT", ComboPoint2, "RIGHT", 0, -1)
 			ComboPoint4:SetPoint("LEFT", ComboPoint3, "RIGHT", 0, 1)
 			ComboPoint5:SetPoint("LEFT", ComboPoint4, "RIGHT", 0, 1)
-			--ComboPoint6:SetPoint("BOTTOMLEFT", ComboPoint2, "TOPLEFT", 0, 0)
-			--ComboPoint7:SetPoint("BOTTOMLEFT", ComboPoint3, "TOPLEFT", 0, 0)
-			--ComboPoint8:SetPoint("BOTTOMLEFT", ComboPoint4, "TOPLEFT", 0, 0)
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				ComboPoint6:SetPoint("BOTTOMLEFT", ComboPoint2, "TOPLEFT", 0, 0)
+				ComboPoint7:SetPoint("BOTTOMLEFT", ComboPoint3, "TOPLEFT", 0, 0)
+				ComboPoint8:SetPoint("BOTTOMLEFT", ComboPoint4, "TOPLEFT", 0, 0)
+			end
 		elseif tconf.combo.pos == "left" then
 			ComboFrame:SetPoint("BOTTOMLEFT", self.portraitFrame, "BOTTOMLEFT", -1, 0)
 			ComboPoint1:SetPoint("BOTTOMLEFT", 0, 0)
@@ -1880,9 +1898,11 @@ function XPerl_Target_Set_BlizzCPFrame(self)
 			ComboPoint3:SetPoint("BOTTOM", ComboPoint2, "TOP", -1, 0)
 			ComboPoint4:SetPoint("BOTTOM", ComboPoint3, "TOP", 1, 0)
 			ComboPoint5:SetPoint("BOTTOM", ComboPoint4, "TOP", 1, 0)
-			--ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "TOPRIGHT", 0, 0)
-			--ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "TOPRIGHT", 0, 0)
-			--ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "TOPRIGHT", 0, 0)
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "TOPRIGHT", 0, 0)
+				ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "TOPRIGHT", 0, 0)
+				ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "TOPRIGHT", 0, 0)
+			end
 		elseif tconf.combo.pos == "right" then
 			ComboFrame:SetPoint("BOTTOMRIGHT", self.portraitFrame, "BOTTOMRIGHT", 2, 0)
 			ComboPoint1:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -1890,9 +1910,11 @@ function XPerl_Target_Set_BlizzCPFrame(self)
 			ComboPoint3:SetPoint("BOTTOM", ComboPoint2, "TOP", 1, 0)
 			ComboPoint4:SetPoint("BOTTOM", ComboPoint3, "TOP", -1, 0)
 			ComboPoint5:SetPoint("BOTTOM", ComboPoint4, "TOP", -1, 0)
-			--ComboPoint6:SetPoint("TOPRIGHT", ComboPoint2, "TOPLEFT", 0, 0)
-			--ComboPoint7:SetPoint("TOPRIGHT", ComboPoint3, "TOPLEFT", 0, 0)
-			--ComboPoint8:SetPoint("TOPRIGHT", ComboPoint4, "TOPLEFT", 0, 0)
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				ComboPoint6:SetPoint("TOPRIGHT", ComboPoint2, "TOPLEFT", 0, 0)
+				ComboPoint7:SetPoint("TOPRIGHT", ComboPoint3, "TOPLEFT", 0, 0)
+				ComboPoint8:SetPoint("TOPRIGHT", ComboPoint4, "TOPLEFT", 0, 0)
+			end
 		else
 			ComboFrame:SetPoint("TOP", self.portraitFrame, "TOP", 98, 4)
 			ComboPoint1:SetPoint("TOPLEFT", 0, 0)
@@ -1900,9 +1922,11 @@ function XPerl_Target_Set_BlizzCPFrame(self)
 			ComboPoint3:SetPoint("LEFT", ComboPoint2, "RIGHT", 0, 1)
 			ComboPoint4:SetPoint("LEFT", ComboPoint3, "RIGHT", 0, -1)
 			ComboPoint5:SetPoint("LEFT", ComboPoint4, "RIGHT", 0, -1)
-			--ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "BOTTOMLEFT", 0, 0)
-			--ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "BOTTOMLEFT", 0, 0)
-			--ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "BOTTOMLEFT", 0, 0)
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				ComboPoint6:SetPoint("TOPLEFT", ComboPoint2, "BOTTOMLEFT", 0, 0)
+				ComboPoint7:SetPoint("TOPLEFT", ComboPoint3, "BOTTOMLEFT", 0, 0)
+				ComboPoint8:SetPoint("TOPLEFT", ComboPoint4, "BOTTOMLEFT", 0, 0)
+			end
 		end
 
 		ComboFrame:RegisterEvent("PLAYER_TARGET_CHANGED")

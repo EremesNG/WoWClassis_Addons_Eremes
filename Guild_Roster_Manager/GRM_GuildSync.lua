@@ -1,6 +1,6 @@
 -- For Sync controls!
 -- Author: Arkaan... aka "TheGenomeWhisperer"
--- Version 8.1.5R1.71
+-- Version 8.1.5R1.73
 -- To hold all Sync Methods/Functions
 GRMsync = {};
 
@@ -726,6 +726,7 @@ GRMsync.CheckPromotionDateChange = function ( msg , sender , prefix )
             if guildData[r][36][2] < epochTimeOfChange then
                 guildData[r][12] = slimDate;
                 guildData[r][25][#guildData[r][25]][2] = slimDate;
+                guildData[r][25][#guildData[r][25]][3] = GRM.TimeStampToEpoch ( " " .. slimDate , true );
                 if isSyncUpdate then
                     guildData[r][13] = GRM.TimeStampToEpoch ( promotionDate , true );
                 else
@@ -1184,7 +1185,6 @@ GRMsync.CheckCustomNoteChange = function ( msg , sender , senderRankID )
                                 guildData[i][23][2] = timeStamp;
                                 guildData[i][23][3] = sender;
                                 guildData[i][23][6] = customNote;
-                                
                                 -- Handle Log reporting logic here... 
                                 GRM.RecordCustomNoteChanges ( guildData[i][23][6] , oldNote , sender , guildData[i][1] , true )
                             end
@@ -1259,7 +1259,6 @@ GRMsync.CheckCustomNoteSyncChange = function ( msg , senderRankID , isReceivedSy
                                     guildData[i][23][2] = timeStamp;
                                     guildData[i][23][3] = editorName;
                                     guildData[i][23][6] = customNote;
-                                    
                                     -- Handle Log reporting logic here... 
                                     GRM.RecordCustomNoteChanges ( customNote , oldNote , editorName , playerName , false )
 

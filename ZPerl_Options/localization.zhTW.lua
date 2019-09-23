@@ -825,9 +825,11 @@ XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC = "顯示當前 HOTs 性質法術倒數
 XPERL_CONF_RAID_HIGHLIGHTS_TARGET	= "我的目標"
 XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC	= "表明您的目標在隊伍和團隊框架"
 XPERL_CONF_RAID_HIGHLIGHTS_MENDING		= GetSpellInfo(33076)				-- Prayer of Mending
-XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "啟用"..GetSpellInfo(33076).."追蹤。若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
-XPERL_CONF_RAID_HIGHLIGHTS_RENEWING		= GetSpellInfo(115151) -- Renewing Mist
-XPERL_CONF_RAID_HIGHLIGHTS_RENEWING_DESC= "啟用"..GetSpellInfo(115151).."追蹤. 若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "啟用"..GetSpellInfo(33076).."追蹤。若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
+	XPERL_CONF_RAID_HIGHLIGHTS_RENEWING		= GetSpellInfo(115151) -- Renewing Mist
+	XPERL_CONF_RAID_HIGHLIGHTS_RENEWING_DESC= "啟用"..GetSpellInfo(115151).."追蹤. 若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
+end
 --XPERL_CONF_RAID_HIGHLIGHTS_BEACON		= GetSpellInfo(157007) -- Beacon of Insight
 --XPERL_CONF_RAID_HIGHLIGHTS_BEACON_DESC	= "Enable the "..GetSpellInfo(157007).." tracking. With sparkles enabled, this will show a bouncing graphic to make it easier to follow the buff."
 XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES	= "閃爍效果"

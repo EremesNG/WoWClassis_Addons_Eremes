@@ -42,12 +42,14 @@ function XPerl_Party_Pet_OnLoadEvents(self)
 		"UNIT_HEALTH_FREQUENT",
 		"UNIT_MAXHEALTH",
 		"PLAYER_ENTERING_WORLD",
-		--"PET_BATTLE_OPENING_START",
-		--"PET_BATTLE_CLOSE"
+		"PET_BATTLE_OPENING_START",
+		"PET_BATTLE_CLOSE"
 	}
 
 	for i, event in pairs(events) do
-		self:RegisterEvent(event)
+		if pcall(self.RegisterEvent, self, event) then
+			self:RegisterEvent(event)
+		end
 	end
 
 	-- Set here to reduce amount of function calls made
@@ -194,6 +196,9 @@ function XPerl_Party_Pet_OnLoad(self)
 	self.nameFrame:SetAttribute("useparent-unit", true)
 	self.nameFrame:SetAttribute("unitsuffix", "pet")
 
+	XPerl_RegisterClickCastFrame(self.nameFrame)
+	XPerl_RegisterClickCastFrame(self)
+
 	XPerl_RegisterHighlight(self.highlight, 2)
 	XPerl_RegisterPerlFrames(self, {self.nameFrame, self.statsFrame})
 
@@ -230,7 +235,6 @@ local function XPerl_Party_Pet_UpdateName(self)
 
 	local Partypetname = UnitName(self.partyid)
 	if (Partypetname ~= nil) then
-		if GetFakeName~=nil then Partypetname=GetFakeName(Partypetname,"ZPerlPartyPet:UpdateName") end -- DaMaGepy
 		self.nameFrame.text:SetText(Partypetname)
 		if (UnitIsPVP(self.ownerid)) then
 			self.nameFrame.text:SetTextColor(0, 1, 0)
@@ -690,7 +694,7 @@ function XPerl_Party_Pet_Set_Bits1(self)
 		end
 		if (buffs) then
 			local prev = self
-			for k,v in pairs(buffs) do
+			for k, v in pairs(buffs) do
 				v:ClearAllPoints()
 				if (pconf.flip) then
 					v:SetPoint("TOPRIGHT", prev, prevAnchor, 0, 0)
@@ -744,17 +748,18 @@ function XPerl_Party_Pet_Set_Bits()
 
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_ENABLE")
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_DISABLE")
-	--[[
-	if (pconf.healprediction) then
-		XPerl_Party_Pet_EventFrame:RegisterEvent("UNIT_HEAL_PREDICTION")
-	else
-		XPerl_Party_Pet_EventFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
-	end
 
-	if (pconf.absorbs) then
-		XPerl_Party_Pet_EventFrame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	else
-		XPerl_Party_Pet_EventFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if (pconf.healprediction) then
+			XPerl_Party_Pet_EventFrame:RegisterEvent("UNIT_HEAL_PREDICTION")
+		else
+			XPerl_Party_Pet_EventFrame:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
+
+		if (pconf.absorbs) then
+			XPerl_Party_Pet_EventFrame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		else
+			XPerl_Party_Pet_EventFrame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
-	]]--
 end

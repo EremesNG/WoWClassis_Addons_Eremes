@@ -27,7 +27,23 @@ GRML.French = function()
     -- BEGIN TRANSLATION WORK HERE --
     ---------------------------------
 
-    GRM_L["Guild"] = "Guilde"
+    -- SET YOUR OWN CUSTOM SLASH COMMAND FOR GRM
+    GRM_L["/XXXX"] = true            -- /grm will always work, now you can make your own acronym that fits your language.
+
+    GRM_L["German"] = "Allemand"
+	GRM_L["English"] = "Anglais"
+	GRM_L["French"] = "Français"
+	GRM_L["Italian"] = "Italien"
+	GRM_L["Russian"] = "Russe"
+	GRM_L["SpanishMX"] = "Espagnol (MX)"
+	GRM_L["SpanishEU"] = "Espagnol (EU)"
+    GRM_L["Portuguese"] = "Portugais (EU)"
+    GRM_L["PortugueseBR"] = "Portugais (BR)"
+	GRM_L["Korean"] = "Coréen"
+	GRM_L["MandarinCN"] = "Mandarin (China)"
+    GRM_L["MandarinTW"] = "Mandarin (Taiwan)"
+    GRM_L["Dutch"] = "Néerlandais"
+    GRM_L["Danish"] = "Danois"
 
     -- PLAYER MAIN ROSTER DETAILS WINDOW
     GRM_L["Level: "] = "Niveau"
@@ -77,6 +93,7 @@ GRML.French = function()
     GRM_L["(Press Tab)"] = "Appuyez sur TAB"
     GRM_L["Shift-Mouseover Name On Roster Also Works"] = "Maj + Survoler un nom dans la liste fonctionne également"
     GRM_L["Guild Log"] = "Journal de guilde"
+    GRM_L["Guild"] = "Guilde"
 
     -- TOOLTIPS
     GRM_L["Rank History"] = "Historique des grades" 
@@ -1028,7 +1045,7 @@ GRML.French = function()
     GRM_L["Mismatched dates"] = true
     GRM_L["Matching date found in wrong note location"] = true
     GRM_L["Date not added to note"] = true
-    GRM_L["Mismatched dates and found in wrong note location"] = true
+    GRM_L["Mismatched dates, and found in wrong note location"] = true
     GRM_L["Mismatched date found in multiple locations, including correct"] = true
     GRM_L["Mismatched date found in multiple incorrect note locations"] = true
     GRM_L["Matching date found in multiple incorrect note locations"] = true
@@ -1194,6 +1211,22 @@ GRML.French = function()
     
     -- 1.71
     GRM_L["(Disabled in Classic)"] = true           -- For the Options... rather than removing them all
+
+    -- 1.73
+    GRM_L["{name} is no longer in the Guild!"] = true       -- There should really be 3 options. They got kicked, they left on their own, or if not found in the event log, they are just no longer in the guild
+    GRM_L["is no longer in the Guild!"] = true              -- THIS MUST MATCH THE PREVIOUS LINE with missing name.
+    GRM_L["Applying update patches... one moment."] = true
+    GRM_L["Update Complete... {num} patches applied."] = true   -- Plural
+    GRM_L["Update Complete... 1 patch applied."] = true         -- Singular version
+    GRM_L["|CFFE6CC7FCtrl-Click|r to also REMOVE all alts from the ignore list"] = true     -- Safe/ignore filters list checkButton tooltip (bottom left mouseover window)
+    GRM_L["|CFFE6CC7FCtrl-Click|r to also ADD all alts to the ignore list"] = true          -- Same
+    GRM_L["Disabling will also hide the Birthday info on the roster mouseover window"] = true       -- Enable/disable birthday chekbox on UI Options and the Audit windoppw
+    GRM_L["To avoid addon taint/blocking errors in Classic, the player must manually open the Guild Roster tab the first time."] = true          -- Classic only message for players explaining why window cannot open automatically.
+    GRM_L["Confirm Date"] = true
+    GRM_L["If the date is accurate, right click and select 'Confirm Date'"] = true
+    
+     -- 1.74
+    GRM_L["Class Colorize Names in Guild Member Alerts"] = true
     
 end
 

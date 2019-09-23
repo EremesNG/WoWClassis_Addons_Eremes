@@ -939,8 +939,8 @@ function XPerl_Options_DoRangeTooltip(self)
 	if (spell) then
 		local link = GetSpellLink(spell)
 		if (link) then
-			--GameTooltip:SetHyperlink(link)
-		--else
+			GameTooltip:SetHyperlink(link)
+		else
 			GameTooltip:SetText(spell or UNKNOWN, 1, 1, 1)
 		end
 
@@ -977,20 +977,37 @@ end
 
 -- DefaultRaidClasses
 local function DefaultRaidClasses()
-	return {
-		{enable = true, name = "WARRIOR"},
-		{enable = true, name = "DEATHKNIGHT"},
-		{enable = true, name = "ROGUE"},
-		{enable = true, name = "HUNTER"},
-		{enable = true, name = "MAGE"},
-		{enable = true, name = "WARLOCK"},
-		{enable = true, name = "PRIEST"},
-		{enable = true, name = "DRUID"},
-		{enable = true, name = "SHAMAN"},
-		{enable = true, name = "PALADIN"},
-		{enable = true, name = "MONK"},
-		{enable = true, name = "DEMONHUNTER"},
-	}
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		return {
+			{enable = true, name = "WARRIOR"},
+			--{enable = true, name = "DEATHKNIGHT"},
+			{enable = true, name = "ROGUE"},
+			{enable = true, name = "HUNTER"},
+			{enable = true, name = "MAGE"},
+			{enable = true, name = "WARLOCK"},
+			{enable = true, name = "PRIEST"},
+			{enable = true, name = "DRUID"},
+			{enable = true, name = "SHAMAN"},
+			{enable = true, name = "PALADIN"},
+			--{enable = true, name = "MONK"},
+			--{enable = true, name = "DEMONHUNTER"},
+		}
+	else
+		return {
+			{enable = true, name = "WARRIOR"},
+			{enable = true, name = "DEATHKNIGHT"},
+			{enable = true, name = "ROGUE"},
+			{enable = true, name = "HUNTER"},
+			{enable = true, name = "MAGE"},
+			{enable = true, name = "WARLOCK"},
+			{enable = true, name = "PRIEST"},
+			{enable = true, name = "DRUID"},
+			{enable = true, name = "SHAMAN"},
+			{enable = true, name = "PALADIN"},
+			{enable = true, name = "MONK"},
+			{enable = true, name = "DEMONHUNTER"},
+		}
+	end
 end
 
 -- ValidateClassNames
@@ -1000,7 +1017,12 @@ local function ValidateClassNames(part)
 	end
 	-- This should never happen, but I'm sure someone will find a way to break it
 
-	local list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false,	WARLOCK = false, PALADIN = false, DEATHKNIGHT = false, MONK = false, DEMONHUNTER = false}
+	local list
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false,	WARLOCK = false, PALADIN = false}
+	else
+		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false,	WARLOCK = false, PALADIN = false, DEATHKNIGHT = false, MONK = false, DEMONHUNTER = false}
+	end
 	local valid
 	if (part.class) then
 		local classCount = 0
@@ -1081,7 +1103,7 @@ function XPerl_Options_RaidSelectAll(self, enable)
 	local val
 	local prefix = self:GetParent():GetName().."_"
 
-	for i = 1,WoWclassCount do
+	for i = 1, WoWclassCount do
 		local f = _G[prefix.."Grp"..i]
 		if (f) then
 			f:SetChecked(enable)
@@ -1429,7 +1451,7 @@ function XPerl_Options_LayoutGetList(self)
 end
 
 -- XPerl_Options_GetLayout
-function XPerl_Options_GetLayout(self, name)
+function XPerl_Options_GetLayout(name)
 	if (ZPerlConfigNew.savedPositions) then
 		for realmName, realmList in pairs(ZPerlConfigNew.savedPositions) do
 			for playerName, frames in pairs(realmList) do
@@ -1461,7 +1483,7 @@ end
 
 -- XPerl_Options_LoadFrameLayout
 function XPerl_Options_LoadFrameLayout(name)
-	local layout = XPerl_Options_GetLayout(self, name)
+	local layout = XPerl_Options_GetLayout(name)
 
 	if (layout) then
 		local name = UnitName("player")
@@ -1596,10 +1618,10 @@ function XPerl_Options_ImportOldConfig(old)
 		bar = {
 			texture		= old.BarTexture,
 			background	= Convert(old.BackgroundTextures),
-			fading		= Convert(old.FadingBars),				-- 1.8.9
-			fadeTime	= old.FadingBarsTime			or 0.5,		-- 1.9.1
-			fat		= Convert(old.FatHealthBars),
-			inverse		= Convert(old.InverseBars),				-- 1.8.6
+			fading		= Convert(old.FadingBars), -- 1.8.9
+			fadeTime	= old.FadingBarsTime or 0.5, -- 1.9.1
+			fat			= Convert(old.FatHealthBars),
+			inverse		= Convert(old.InverseBars), -- 1.8.6
 		},
 		transparency = {
 			frame		= old.Transparency			or 1,
@@ -1736,6 +1758,11 @@ function XPerl_Options_ImportOldConfig(old)
 			portrait		= Convert(old.ShowPlayerPetPortrait),
 			portrait3D		= Convert(old.ShowPlayerPetPortrait3D),
 			hitIndicator		= Convert(old.PetCombatHitIndicator),
+			happiness = {
+				enabled		= Convert(old.PetHappiness),
+				onlyWhenSad	= Convert(old.PetHappinessSad),
+				flashWhenSad	= Convert(old.PetFlashWhenSad),
+			},
 			level			= Convert(old.ShowPetLevel),
 			scale			= old.Scale_PetFrame		or 0.8,
 			name			= Convert(old.ShowPlayerPetName),
@@ -1764,7 +1791,7 @@ function XPerl_Options_ImportOldConfig(old)
 			castBar = {
 				enable		= Convert(old.ArcaneBarTarget),
 			},
-			hitIndicator		= Convert(old.TargetCombatHitIndicator),			-- 2.1.7
+			hitIndicator	= Convert(old.TargetCombatHitIndicator),			-- 2.1.7
 			classIcon		= Convert(old.ShowTargetClassIcon),
 			classText		= Convert(old.ShowTargetClassText),			-- 2.0.6
 			mobType			= Convert(old.ShowTargetMobType),
@@ -1777,7 +1804,7 @@ function XPerl_Options_ImportOldConfig(old)
 			combo = {
 				enable		= Convert(old.UseCPMeter),
 				blizzard	= Convert(old.BlizzardCPMeter),
-				pos		= old.BlizzardCPPosition	or "top",
+				pos			= old.BlizzardCPPosition	or "top",
 			},
 			pvpIcon			= Convert(old.ShowTargetPVP),			-- 1.8.3
 			scale			= old.Scale_TargetFrame		or 0.8,
@@ -2200,7 +2227,7 @@ end
 
 -- XPerl_Target_ConfigDefault
 local function XPerl_Target_ConfigDefault(default, section)
-	local defaultHD
+	local defaultHD, defaultHDwho
 	local _, class = UnitClass("player")
 	if (section == "target" and class == "ROGUE") then
 		defaultHD = 1
@@ -2262,7 +2289,7 @@ local function XPerl_Target_ConfigDefault(default, section)
 --		defer			= nil,			-- 1.9.5
 		highlightDebuffs = {
 			enable		= defaultHD,
-			who		= defaultHDwho		-- 2.2.0
+			who			= defaultHDwho		-- 2.2.0
 		},
 		size = {
 			width		= 0,
@@ -2397,7 +2424,7 @@ local function XPerl_Player_ConfigDefault(default)
 			size		= 25,
 			wrap		= 1,			-- 2.3.5
 			rows		= 2,			-- 2.3.5
-			hideBlizzard	= 0,
+			hideBlizzard	= 1,
 			count		= 40,
 			cooldown	= 1,
 			flash		= 1,
@@ -2421,6 +2448,11 @@ local function XPerl_Pet_ConfigDefault(default)
 		portrait = 1,
 		portrait3D = 1,
 		hitIndicator= 1,
+		happiness = {
+			enabled		= 1,
+			onlyWhenSad	= 1,
+			flashWhenSad	= 1,
+		},
 		threat = 1,
 		threatMode = "portraitFrame",
 		level = 1,
@@ -2651,8 +2683,15 @@ function XPerl_Custom_Config_OnShow(self)
 	XPerl_Options_Custom_StartIconDB(self)
 end
 
+local function CompareSpell(a, b)
+	local nameA = GetSpellInfo(a)
+	local nameB = GetSpellInfo(b)
+
+	return nameA < nameB
+end
+
 -- XPerl_Options_Custom_FillList
-function XPerl_Options_Custom_FillList(self)
+function XPerl_Options_Custom_FillList(self, setName)
 	if (not XPerlDB) then
 		return
 	end
@@ -2687,12 +2726,7 @@ function XPerl_Options_Custom_FillList(self)
 			if (typ == "zone") then
 				sort(list)
 			elseif (typ == "debuff") then
-				sort(list,
-					function(a, b)
-						local nameA = GetSpellInfo(a)
-						local nameB = GetSpellInfo(b)
-						return nameA < nameB
-					end)
+				sort(list, CompareSpell)
 			end
 		end
 	end
@@ -2719,7 +2753,7 @@ function XPerl_Options_Custom_FillList(self)
 	if (list) then
 		local newName
 		local line = 1
-		for i = self.start,self.start+#self.line-1 do
+		for i = self.start, self.start + #self.line - 1 do
 			if (i > #list) then
 				break
 			end
@@ -2779,9 +2813,8 @@ end
 
 -- XPerl_Options_Custom_SetIcon
 function XPerl_Options_Custom_SetIcon()
-	self = XPerl_Custom_Config
 	local name = XPerl_Custom_Configdebuffs.debuff
-	local db = self.iconDB
+	local db = XPerl_Custom_Config.iconDB
 	if (db and name) then
 		local spellid = db and db[name]
 		if (spellid) then
@@ -2919,7 +2952,7 @@ function XPerl_Options_Custom_ScanForIcons(self)
 									if (not zones[zone]) then
 										zones[zone] = {}
 									end
-									XPerlDB.custom.zones[zone][self.spellid]=true
+									XPerlDB.custom.zones[zone][self.spellid] = true
 									XPerl_Custom_ConfigNew:Hide()
 									XPerl_Custom_Config.listzone:FillList()
 									XPerl_Custom_Config.listdebuff:FillList()
@@ -2993,7 +3026,7 @@ function XPerl_Options_Custom_OnDelete(self)
 	local zone = XPerl_Options_Custom_SelectedZone(self)
 	local spellid = XPerl_Options_Custom_SelectedDebuff(self)
 	if (zone and spellid) then
-		zones = XPerlDB.custom.zones
+		local zones = XPerlDB.custom.zones
 		if (zones and zones[zone]) then
 			zones[zone][spellid] = nil
 
@@ -3362,6 +3395,13 @@ if (XPerl_UpgradeSettings) then
 
 				old.custom.zones[EJ_GetInstanceInfo(946)] = {[246220] = true, [248819] = true, [248815] = true, [244768] = true, [244071] = true, [244086] = true, [248861] = true, [248326] = true, [247552] = true, [248068] = true, [253600] = true, [249297] = true, [252760] = true, [246687] = true, [243961] = true, [245586] = true, [245995] = true, [251570] = true, [250669] = true, [255199] = true}
 				old.custom.zones[EJ_GetInstanceInfo(875)] = {[236449] = true, [235213] = true, [235240] = true, [240209] = true, [235222] = true, [238429] = true}
+			end
+
+			if (oldVersion < "5.8.2") then
+				old.pet.happiness = { }
+				old.pet.happiness.enabled = 1
+				old.pet.happiness.onlyWhenSad = 1
+				old.pet.happiness.flashWhenSad = 1
 			end
 		end
 	end

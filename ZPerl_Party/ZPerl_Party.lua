@@ -1,7 +1,6 @@
 -- X-Perl UnitFrames
 -- Author: Zek <Boodhoof-EU>
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
--- DEFAULT_CHAT_FRAME:AddMessage("ZPerl:GROUP_ROSTER_UPDATE")
 
 local XPerl_Party_Events = { }
 --local checkRaidNextUpdate
@@ -38,13 +37,6 @@ local XPerl_Party_HighlightCallback
 
 local feignDeath = GetSpellInfo(5384)
 
-UnitGroupRolesAssigned = function() return "" end
-UnitIsOtherPlayersBattlePet = function(unit) return false end
-
-function zparty() XPerl_Party_Set_Bits(); XPerl_Party_UpdateDisplayAll() end
-function zp() XPerl_Party_Set_Bits(); XPerl_Party_UpdateDisplayAll() end
-function p() XPerl_Party_Set_Bits(); XPerl_Party_UpdateDisplayAll() end
-
 ----------------------
 -- Loading Function --
 ----------------------
@@ -63,8 +55,8 @@ function XPerl_Party_Events_OnLoad(self)
 		"UNIT_AURA",
 		"UNIT_PORTRAIT_UPDATE",
 		"UNIT_TARGET",
-		--"UNIT_HEAL_PREDICTION",
-		--"UNIT_ABSORB_AMOUNT_CHANGED",
+		"UNIT_HEAL_PREDICTION",
+		"UNIT_ABSORB_AMOUNT_CHANGED",
 		"UNIT_POWER_FREQUENT",
 		"UNIT_MAXPOWER",
 		"UNIT_HEALTH_FREQUENT",
@@ -72,7 +64,7 @@ function XPerl_Party_Events_OnLoad(self)
 		"UNIT_LEVEL",
 		"UNIT_DISPLAYPOWER",
 		"UNIT_NAME_UPDATE",
-		--"UNIT_THREAT_LIST_UPDATE",
+		"UNIT_THREAT_LIST_UPDATE",
 		"RAID_TARGET_UPDATE",
 		"READY_CHECK",
 		"READY_CHECK_CONFIRM",
@@ -82,12 +74,14 @@ function XPerl_Party_Events_OnLoad(self)
 		--"PET_BATTLE_CLOSE",
 	}
 	for i, event in pairs(events) do
-		self:RegisterEvent(event)
+		if pcall(self.RegisterEvent, self, event) then
+			self:RegisterEvent(event)
+		end
 	end
 
 	--partyHeader:UnregisterEvent("UNIT_NAME_UPDATE") -- IMPORTANT! Fix for WoW 2.1 UNIT_NAME_UPDATE lockup issues
 
-	--UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- IMPORTANT! Stops raid framerate lagging when members join/leave/zone
+	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- IMPORTANT! Stops raid framerate lagging when members join/leave/zone
 
 	for i = 1, 4 do
 		XPerl_BlizzFrameDisable(_G["PartyMemberFrame"..i])
@@ -183,7 +177,7 @@ function ZPerl_Party_OnLoad(self)
 
 	local id = strmatch(self:GetName(), ".+(%d)")
 	self:SetID(tonumber(id))
-	_G["XPerl_party"..self:GetID()] = self
+	--_G["XPerl_party"..self:GetID()] = self
 
 	if (self:GetID() > 1) then
 		self.buffSetup = XPerl_party1.buffSetup
@@ -314,8 +308,8 @@ function XPerl_Party_UpdateHealth(self)
 
 	XPerl_SetHealthBar(self, Partyhealth, Partyhealthmax)
 
-	--XPerl_Party_UpdateAbsorbPrediction(self)
-	--XPerl_Party_UpdateHealPrediction(self)
+	XPerl_Party_UpdateAbsorbPrediction(self)
+	XPerl_Party_UpdateHealPrediction(self)
 
 	if (not UnitIsConnected(partyid)) then
 		reason = XPERL_LOC_OFFLINE
@@ -591,7 +585,6 @@ end
 local function XPerl_Party_UpdateName(self)
 	local partyid = self.partyid
 	local Partyname = UnitName(partyid)
-	if GetFakeName~=nil then Partyname=GetFakeName(Partyname,"ZPerlParty:UpdateName") end -- DaMaGepy
 	self.lastName = Partyname
 	self.lastGUID = UnitGUID(partyid)
 	if (Partyname) then
@@ -612,15 +605,14 @@ local function UpdateAssignedRoles(self)
 	local icon = self.nameFrame.roleIcon
 	local isTank, isHealer, isDamage
 	local inInstance, instanceType = IsInInstance()
-	if (instanceType == "party") then
+	if (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and instanceType == "party") then
 		-- No point getting it otherwise, as they can be wrong. Usually the values you had
 		-- from previous instance if you're running more than one with the same people
 
 		-- According to http://forums.worldofwarcraft.com/thread.html?topicId=26560499864
 		-- this is the new way to check for roles
 		-- Port this from XPerl_Player.lua by PlayerLin
-		--[[
-		role = UnitGroupRolesAssigned(unit)
+		local role = UnitGroupRolesAssigned(unit)
 		isTank = false
 		isHealer = false
 		isDamage = false
@@ -630,7 +622,7 @@ local function UpdateAssignedRoles(self)
 			isHealer = true
 		elseif role == "DAMAGER" then
 			isDamage = true
-		end]]
+		end
 	end
 
 	icon:ClearAllPoints()
@@ -728,15 +720,15 @@ local function XPerl_Party_UpdatePVP(self)
 		pvpIcon:Show()
 	elseif pconf.pvpIcon and factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(partyid) then
 		pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup)
---[[
-		if UnitIsMercenary(partyid) then
+
+		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitIsMercenary(partyid) then
 			if factionGroup == "Horde" then
 				pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance")
 			elseif factionGroup == "Alliance" then
 				pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde")
 			end
 		end
-]]
+
 		pvpIcon:Show()
 	else
 		pvpIcon:Hide()
@@ -770,9 +762,6 @@ function XPerl_Party_UpdateCombat(self)
 		self.nameFrame.combatIcon:Hide()
 		self.nameFrame.warningIcon:Hide()
 	end
-	--XPerl_Party_Set_Bits();
-	--XPerl_Party_UpdateDisplayAll()
-	--DEFAULT_CHAT_FRAME:AddMessage("ZPerl:Party_UpdateCombat")	
 end
 
 -- XPerl_Party_UpdateClass
@@ -893,15 +882,21 @@ local function CheckRaid()
 		local singleGroup = XPerl_Party_SingleGroup()
 
 		if (not pconf or ((pconf.inRaid and IsInRaid()) or (pconf.smallRaid and singleGroup) or (GetNumGroupMembers() > 0 and not IsInRaid()))) then -- or GetNumGroupMembers() > 0
-			--if not C_PetBattles.IsInBattle() then
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				if not C_PetBattles.IsInBattle() then
+					if (not partyHeader:IsShown()) then
+						partyHeader:Show()
+					end
+				else
+					if (partyHeader:IsShown()) then
+						partyHeader:Hide()
+					end
+				end
+			else
 				if (not partyHeader:IsShown()) then
 					partyHeader:Show()
 				end
-			--else
-			--	if (partyHeader:IsShown()) then
-			--		partyHeader:Hide()
-			--	end
-			--end
+			end
 		else
 			if (partyHeader:IsShown()) then
 				partyHeader:Hide()
@@ -914,7 +909,7 @@ end
 local function XPerl_Party_TargetUpdateHealth(self)
 	local tf = self.targetFrame
 	local targetid = self.targetid
-	local hp, hpMax, heal, abosrb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), 0, 0
+	local hp, hpMax, heal, abosrb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetIncomingHeals(targetid), WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetTotalAbsorbs(targetid)
 	tf.lastHP, tf.lastHPMax, tf.lastHeal, tf.lastAbsorb = hp, hpMax, heal, abosrb
 	tf.lastUpdate = GetTime()
 
@@ -941,8 +936,8 @@ local function XPerl_Party_TargetUpdateHealth(self)
 	end
 	tf.healthBar.text:Show()
 
-	--XPerl_Party_TargetUpdateAbsorbPrediction(self.targetFrame)
-	--XPerl_Party_TargetUpdateHealPrediction(self.targetFrame)
+	XPerl_Party_TargetUpdateAbsorbPrediction(self.targetFrame)
+	XPerl_Party_TargetUpdateHealPrediction(self.targetFrame)
 
 	if (UnitIsDeadOrGhost(targetid)) then
 		tf.healthBar:SetStatusBarColor(0.5, 0.5, 0.5, 1)
@@ -1009,7 +1004,6 @@ local function XPerl_Party_UpdateTarget(self)
 			local targetname = UnitName(targetid)
 			if (targetname and targetname ~= UNKNOWNOBJECT) then
 				--self.targetFrame:SetAlpha(1)
-				if GetFakeName~=nil then targetname=GetFakeName(targetname,"ZPerlParty:UpdateName") end -- DaMaGepy
 				self.targetFrame.text:SetText(targetname)
 				XPerl_SetUnitNameColor(self.targetFrame.text, targetid)
 				XPerl_Party_TargetUpdateHealth(self)
@@ -1046,7 +1040,7 @@ function XPerl_Party_OnUpdate(self, elapsed)
 		end
 
 		if (pconf.target.large and self.targetFrame:IsShown()) then
-			local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), 0, 0
+			local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetIncomingHeals(targetid), WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetTotalAbsorbs(targetid)
 			if (hp ~= self.targetFrame.lastHP or hpMax ~= self.targetFrame.lastHPMax or heal ~= self.targetFrame.lastHeal or absorb ~= self.targetFrame.lastAbsorb or GetTime() > self.targetFrame.lastUpdate + 5000) then
 				XPerl_Party_TargetUpdateHealth(self)
 			end
@@ -1293,6 +1287,7 @@ function XPerl_Party_Events:PLAYER_ENTERING_WORLD()
 		XPerl_ProtectedCall(XPerl_Party_SetInitialAttributes)
 		CheckRaid()
 	end
+
 	XPerl_Party_UpdateDisplayAll()
 end
 
@@ -1337,9 +1332,7 @@ function XPerl_Party_Events:GROUP_ROSTER_UPDATE()
 	--checkRaidNextUpdate = 3
 	CheckRaid()
 	XPerl_SetHighlights()
-	XPerl_Party_Set_Bits();
 	XPerl_Party_UpdateDisplayAll()
-	--DEFAULT_CHAT_FRAME:AddMessage("ZPerl:GROUP_ROSTER_UPDATE")
 end
 
 XPerl_Party_Events.PLAYER_LOGIN = XPerl_Party_Events.GROUP_ROSTER_UPDATE
@@ -1728,12 +1721,12 @@ function XPerl_Party_SetInitialAttributes()
 		self.nameFrame.menu = XPerl_ShowGenericMenu
 		XPerl_RegisterClickCastFrame(self.nameFrame)
 
-		self:SetAttribute("initial-height", CalcHeight())
-		self:SetAttribute("initial-width", CalcWidth())
-	end
+		--self:SetAttribute("initial-height", CalcHeight())
+		--self:SetAttribute("initial-width", CalcWidth())
+	end]]
 
 	-- Fix Secure Header taint in combat
-	local maxColumns = partyHeader:GetAttribute("maxColumns") or 1
+	--[[local maxColumns = partyHeader:GetAttribute("maxColumns") or 1
 	local unitsPerColumn = partyHeader:GetAttribute("unitsPerColumn") or 5
 	local startingIndex = partyHeader:GetAttribute("startingIndex") or 1
 	local maxUnits = maxColumns * unitsPerColumn
@@ -1846,19 +1839,21 @@ function XPerl_Party_Set_Bits()
 			XPerl_Party_Set_Bits1(v)
 		end
 	end
---[[
-	if pconf.healprediction then
-		XPerl_Party_Events_Frame:RegisterEvent("UNIT_HEAL_PREDICTION")
-	else
-		XPerl_Party_Events_Frame:UnregisterEvent("UNIT_HEAL_PREDICTION")
+
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if pconf.healprediction then
+			XPerl_Party_Events_Frame:RegisterEvent("UNIT_HEAL_PREDICTION")
+		else
+			XPerl_Party_Events_Frame:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
+
+		if pconf.absorbs then
+			XPerl_Party_Events_Frame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		else
+			XPerl_Party_Events_Frame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
 
-	if pconf.absorbs then
-		XPerl_Party_Events_Frame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	else
-		XPerl_Party_Events_Frame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	end
-]]--
 	XPerl_Party_SetInitialAttributes()
 
 	if (XPerl_Party_AnchorVirtual:IsShown()) then

@@ -79,10 +79,18 @@ function XPerl_Player_Pet_OnLoad(self)
 		frame = self:GetFrameRef("ZPerlPlayerPet")
 	]])
 
-	--RegisterStateDriver(self.state, "petbattleupdate", "[petbattle] inpetbattle; none")
+	self.state:SetAttribute("_onstate-petbattleupdate", [[
+		if newstate == "inpetbattle" then
+			frame:Hide()
+		else
+			frame:Show()
+		end
+	]])
+
+	RegisterStateDriver(self.state, "petbattleupdate", "[petbattle] inpetbattle; none")
 
 	--RegisterAttributeDriver(self.nameFrame, "unit", "[vehicleui] player; pet")
-	--RegisterAttributeDriver(self, "unit", "[vehicleui] player; pet")
+	RegisterAttributeDriver(self, "unit", "[vehicleui] player; pet")
 
 	XPerl_RegisterClickCastFrame(self.nameFrame)
 	XPerl_RegisterClickCastFrame(self)
@@ -101,29 +109,40 @@ function XPerl_Player_Pet_OnLoad(self)
 		"UNIT_FLAGS",
 		"UNIT_AURA",
 		"UNIT_PET",
-		"UNIT_HAPPINESS", -- CLASSIC
+		"UNIT_HAPPINESS",
 		"PET_ATTACK_START",
 		"UNIT_COMBAT",
 		"VARIABLES_LOADED",
 		--[["PLAYER_REGEN_ENABLED",]]
 		"PLAYER_ENTERING_WORLD",
-		--"UNIT_ENTERED_VEHICLE",
-		--"UNIT_EXITED_VEHICLE",
-		--"UNIT_THREAT_LIST_UPDATE",
+		"UNIT_ENTERED_VEHICLE",
+		"UNIT_EXITED_VEHICLE",
+		"UNIT_THREAT_LIST_UPDATE",
 		"PLAYER_TARGET_CHANGED",
 		"UNIT_TARGET",
 		--"PET_BATTLE_OPENING_START",
 		--"PET_BATTLE_CLOSE"
 	}
+	local _, classFileName = UnitClass("player")
 	for i, event in pairs(events) do
 		if string.find(event, "^UNIT_") then
 			if event == "UNIT_THREAT_LIST_UPDATE" then
-				self:RegisterUnitEvent(event, "target")
+				if pcall(self.RegisterUnitEvent, self, event, "target") then
+					self:RegisterUnitEvent(event, "target")
+				end
+			elseif event == "UNIT_HAPPINESS" and classFileName == "HUNTER" then
+				if pcall(self.RegisterUnitEvent, self, event, "pet") then
+					self:RegisterUnitEvent(event, "pet")
+				end
 			else
-				self:RegisterUnitEvent(event, "pet", "player")
+				if pcall(self.RegisterUnitEvent, self, event, "pet", "player") then
+					self:RegisterUnitEvent(event, "pet", "player")
+				end
 			end
 		else
-			self:RegisterEvent(event)
+			if pcall(self.RegisterEvent, self, event) then
+				self:RegisterEvent(event)
+			end
 		end
 	end
 
@@ -143,7 +162,7 @@ function XPerl_Player_Pet_OnLoad(self)
 	self:SetScript("OnShow", XPerl_Unit_UpdatePortrait)
 
 	if (XPerl_ArcaneBar_RegisterFrame) then
-		XPerl_ArcaneBar_RegisterFrame(self.nameFrame, "pet") -- DaMaGepy: maybe delete "player" too....
+		XPerl_ArcaneBar_RegisterFrame(self.nameFrame, (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) and "player" or "pet")
 	end
 
 	XPerl_RegisterHighlight(self.highlight, 2)
@@ -181,49 +200,27 @@ function XPerl_Player_Pet_HighlightCallback(self, updateGUID)
 	end
 end
 
-
-
--- XPerl_Player_Pet_UpdateName -----------------------------------------------------------------------------------------------------------------------------
+-- XPerl_Player_Pet_UpdateName
 local function XPerl_Player_Pet_UpdateName(self)
-	local partyid = self.partyid		-- "pet"
+	local partyid = self.partyid
 	local petname = UnitName(partyid)
-		if GetFakeName~=nil then petname=GetFakeName(petname,"ZPerlPartyPet:UpdateName") end -- DaMaGepy
-		
-		if (petname == UNKNOWN) then
-			self.nameFrame.text:SetText("")
-		else
-			self.nameFrame.text:SetText(petname)
-		end
-	
-		if (partyid == "pet") then
-			local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
-			
-			-- Hunter Pet Happiness Temporary fix for Classic
-			if happiness~=nil then
-				if petname==nil then petname="UNKNOWN" end
-				--DEFAULT_CHAT_FRAME:AddMessage(partyid.."    "..petname.." = "..happiness)
-				local happyadd="";
-				if happiness<2      then happyadd="|cFFFF5555:("		-- red unhappy
-				elseif happiness==2 then happyadd="|cFFCCCC22:||"		-- yellow content
-				                    else happyadd="|cFF40FF40:)" end	-- green happy
-				self.nameFrame.text:SetText(petname.."   "..happyadd)
-				--DEFAULT_CHAT_FRAME:AddMessage("Happiness = "..happiness.."  "..happyadd)				
-			else
-				--DEFAULT_CHAT_FRAME:AddMessage("NO happiness!")
-				--if petname~=nil then self.nameFrame.text:SetText(petname.."   |cFF777777---") end
-			end			
-			local c = conf.colour.reaction.none
-			self.nameFrame.text:SetTextColor(c.r, c.g, c.b, conf.transparency.text)
-		elseif (not UnitIsFriend("player", "pet")) then		-- Pet or you charmed
-			local c = conf.colour.reaction.enemy
-			self.nameFrame.text:SetTextColor(c.r, c.g, c.b, conf.transparency.text)
-		else
-			XPerl_ColourFriendlyUnit(self.nameFrame.text, partyid)
-		end
 
+	if (petname == UNKNOWN) then
+		self.nameFrame.text:SetText("")
+	else
+		self.nameFrame.text:SetText(petname)
+	end
+
+	if (partyid == "pet") then
+		local c = conf.colour.reaction.none
+		self.nameFrame.text:SetTextColor(c.r, c.g, c.b, conf.transparency.text)
+	elseif (not UnitIsFriend("player", "pet")) then		-- Pet or you charmed
+		local c = conf.colour.reaction.enemy
+		self.nameFrame.text:SetTextColor(c.r, c.g, c.b, conf.transparency.text)
+	else
+		XPerl_ColourFriendlyUnit(self.nameFrame.text, partyid)
+	end
 end
-
-
 
 -- XPerl_Player_Pet_UpdateLevel
 local function XPerl_Player_Pet_UpdateLevel(self)
@@ -310,9 +307,49 @@ local function XPerl_Player_Pet_Buff_UpdateAll(self)
 	end
 end
 
+---------------
+-- Happiness --
+---------------
+function XPerl_Player_Pet_SetHappiness(self)
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		return
+	end
+
+	local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
+	if (not happiness) then
+		happiness = 3
+	end
+
+	local icon = self.happyFrame.icon
+	icon.tex:SetTexCoord(0.5625 - (0.1875 * happiness), 0.75 - (0.1875 * happiness), 0, 0.359375)
+
+	if (pconf.happiness.enabled and (not pconf.happiness.onlyWhenSad or happiness < 3)) then
+		self.happyFrame:Show()
+
+		icon.tooltip = _G[("PET_HAPPINESS"..happiness)]
+		icon.tooltipDamage = format(PET_DAMAGE_PERCENTAGE, damagePercentage)
+		if (loyaltyRate < 0) then
+			icon.tooltipLoyalty = LOSING_LOYALTY
+		elseif (loyaltyRate > 0) then
+			icon.tooltipLoyalty = GAINING_LOYALTY
+		else
+			icon.tooltipLoyalty = nil
+		end
+
+		if (pconf.happiness.flashWhenSad and happiness < 3) then
+			XPerl_FrameFlash(self.happyFrame)
+		else
+			XPerl_FrameFlashStop(self.happyFrame)
+		end
+	else
+		XPerl_FrameFlashStop(self.happyFrame)
+		self.happyFrame:Hide()
+	end
+end
+
 -- XPerl_Player_Pet_Update_Control
 local function XPerl_Player_Pet_Update_Control(self)
-	if (UnitIsCharmed(self.partyid) --[[and not UnitInVehicle("player")]]) then
+	if (UnitIsCharmed(self.partyid) and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and not UnitInVehicle("player")) then
 		self.nameFrame.warningIcon:Show()
 	else
 		self.nameFrame.warningIcon:Hide()
@@ -354,6 +391,9 @@ function XPerl_Player_Pet_UpdateDisplay(self)
 	XPerl_Player_Pet_UpdateName(self)
 	XPerl_Player_Pet_UpdateHealth(self)
 	XPerl_SetManaBarType(self)
+	if (XPerl_Player_Pet_SetHappiness) then
+		XPerl_Player_Pet_SetHappiness(self)
+	end
 	XPerl_Player_Pet_UpdateMana(self)
 	XPerl_Player_Pet_UpdateLevel(self)
 	XPerl_Player_Pet_Buff_UpdateAll(self)
@@ -376,6 +416,12 @@ end
 
 -- VARIABLES_LOADED
 function XPerl_Player_Pet_Events:VARIABLES_LOADED()
+	local _, classFileName = UnitClass("player")
+	if not classFileName == "HUNTER" then
+		XPerl_Player_Pet_Events.UNIT_HAPPINESS = nil
+		XPerl_Player_Pet_SetHappiness = nil
+	end
+
 	XPerl_Player_Pet_Events.VARIABLES_LOADED = nil
 end
 
@@ -387,7 +433,7 @@ end
 -- UNIT_PET
 function XPerl_Player_Pet_Events:UNIT_PET()
 	if (conf) then		-- DK can issue very early UNIT_PET, long before PEW. We refresh on entering world regardless
-		self.partyid = "pet"
+		--self.partyid = UnitHasVehicleUI("player") and "player" or "pet"
 		XPerl_Player_Pet_UpdateDisplay(self)
 	end
 end
@@ -412,16 +458,6 @@ XPerl_Player_Pet_Events.PET_STABLE_SHOW = XPerl_Player_Pet_Events.UNIT_PET
 
 -- UNIT_NAME_UPDATE
 function XPerl_Player_Pet_Events:UNIT_NAME_UPDATE()
-	XPerl_Player_Pet_UpdateName(self)
-end
-
--- UNIT_HAPPINESS ---------------------------------------------------------------------------------------------------------- "unitTarget"
-function XPerl_Player_Pet_Events:UNIT_HAPPINESS()
-	if (arg1 == "pet") then
-		--XPerl_Player_Pet_UpdateDisplay();	-- Update all, fixes bug with stables in 1.11
-		XPerl_Player_Pet_SetHappiness()
-		XPerl_Player_Pet_UpdateCombat(XPerl_Player_Pet)
-	end
 	XPerl_Player_Pet_UpdateName(self)
 end
 
@@ -453,16 +489,20 @@ function XPerl_Player_Pet_Events:UNIT_LEVEL()
 	XPerl_Player_Pet_UpdateLevel(self)
 end
 
-XPerl_Player_Pet_Events.UNIT_PET_EXPERIENCE = XPerl_Player_Pet_Events.UNIT_LEVEL
-
 -- UNIT_DISPLAYPOWER
 function XPerl_Player_Pet_Events:UNIT_DISPLAYPOWER()
 	XPerl_SetManaBarType(self)
 end
 
+-- UNIT_HAPPINESS
+function XPerl_Player_Pet_Events:UNIT_HAPPINESS()
+	XPerl_Player_Pet_SetHappiness(self)
+	XPerl_Player_Pet_UpdateCombat(self)
+end
+
 -- PET_ATTACK_START
 function XPerl_Player_Pet_Events:PET_ATTACK_START()
-	XPerl_Player_Pet_UpdateCombat(XPerl_Player_Pet)
+	XPerl_Player_Pet_UpdateCombat(self)
 end
 
 -- UNIT_COMBAT
@@ -499,25 +539,29 @@ end
 
 -- PLAYER_ENTERING_WORLD
 function XPerl_Player_Pet_Events:PLAYER_ENTERING_WORLD()
+	if (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI("player")) then
+		self.partyid = "player"
+		self:SetAttribute("unit", "player")
+	else
 		self.partyid = "pet"
 		self:SetAttribute("unit", "pet")
+	end
 end
 
 -- UNIT_ENTERED_VEHICLE
 function XPerl_Player_Pet_Events:UNIT_ENTERED_VEHICLE(unit, showVehicle)
-	--[[if (unit == "player" and showVehicle) then
+	if (unit == "player" and showVehicle) then
 		self.partyid = "player"
 		if (XPerl_ArcaneBar_SetUnit) then
 			XPerl_ArcaneBar_SetUnit(self.nameFrame, "player")
 		end
-		if (not InCombatLockdown()) then
+		--[[if (not InCombatLockdown()) then
 			self:SetAttribute("unit", "player")
-		end
+		end]]
 		XPerl_Player_Pet_UpdateDisplay(self)
 	else
 		XPerl_Player_Pet_Events.UNIT_EXITED_VEHICLE(self, unit)
 	end
-	]]--
 end
 
 -- UNIT_EXITED_VEHICLE
@@ -535,7 +579,6 @@ function XPerl_Player_Pet_Events:UNIT_EXITED_VEHICLE(unit)
 		end
 	end
 end
-
 
 function XPerl_Player_Pet_Events:UNIT_THREAT_LIST_UPDATE(unit)
 	if (unit == "target") then
@@ -714,19 +757,21 @@ function XPerl_Player_Pet_Set_Bits(self)
 
 	pconf.buffs.size = tonumber(pconf.buffs.size) or 20
 	XPerl_SetBuffSize(self)
---[[
-	if (pconf.healprediction) then
-		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "pet", "player")
-	else
-		self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if (pconf.healprediction) then
+			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", "pet", "player")
+		else
+			self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
+
+		if (pconf.absorbs) then
+			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "pet", "player")
+		else
+			self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
 
-	if (pconf.absorbs) then
-		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "pet", "player")
-	else
-		self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	end
-]]--
 	XPerl_Player_Pet_SetWidth(self)
 
 	if (self:IsShown()) then

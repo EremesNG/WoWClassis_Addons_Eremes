@@ -91,7 +91,7 @@ local function CurrentConfig()
 		if (not ZPerlConfigNew[GetRealmName()][playerName] or not QuickValidate(ZPerlConfigNew[GetRealmName()][playerName])) then
 			local new = {}
 			XPerl_Defaults(new)
-			ZPerlConfigNew[GetRealmName()][playerName] = new		-- TODO use last used config
+			ZPerlConfigNew[GetRealmName()][playerName] = new -- TODO: use last used config
 		end
 
 		ret = ZPerlConfigNew[GetRealmName()][playerName]
@@ -99,7 +99,7 @@ local function CurrentConfig()
 		if (not ZPerlConfigNew.global or not QuickValidate(ZPerlConfigNew.global)) then
 			local new = {}
 			XPerl_Defaults(new)
-			ZPerlConfigNew.global = new					-- TODO use last used config
+			ZPerlConfigNew.global = new -- TODO: use last used config
 		end
 
 		ret = ZPerlConfigNew.global
@@ -291,7 +291,7 @@ function ZPerl_ForceImportAll()
 end
 
 -- XPerl_GetLayout
-function XPerl_GetLayout(self, name)
+function XPerl_GetLayout(name)
 	if (ZPerlConfigNew.savedPositions) then
 		for realmName, realmList in pairs(ZPerlConfigNew.savedPositions) do
 			for playerName, frames in pairs(realmList) do
@@ -312,7 +312,7 @@ end
 
 -- XPerl_LoadFrameLayout
 function XPerl_LoadFrameLayout(name)
-	local layout = XPerl_GetLayout(self, name)
+	local layout = XPerl_GetLayout(name)
 
 	if (layout) then
 		local name = UnitName("player")

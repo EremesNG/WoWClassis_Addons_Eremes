@@ -1,0 +1,8 @@
+﻿## Interface: 11302
+## Title : Scrolling Loot Text
+## Notes : If activated, will hide your Lootframe and automatically pick up the Loot displaying it in Blizzards Scrolling Combat Text with the Icon and the Name in the colour of the Rarity.
+## SavedVariablesPerCharacter: Activation, ShowL, ShowC, ShowH, ShowM, Scale, DisplayIcons
+## RequiredDeps: Blizzard_CombatText
+embeds.xml
+SLoTe.lua
+Bindings.xml

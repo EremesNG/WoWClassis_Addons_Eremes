@@ -19,7 +19,7 @@
 # ## Notes: Classic WoW Dungeon Maps
 # ## Notes-zhTW: 艾澤拉斯副本地圖模組
 #@end-debug@
-## Version: v1.45.00.11302.04
+## Version: v1.45.00.11302.05
 ## Author: arith, Dynaletik, dubcat
 ## X-Date: 2019-09-04T7:42:05Z
 ## X-Credits: Dan Gilbert, Lothaer

@@ -6,8 +6,8 @@
 ## OptionalDeps: !nLog, Babylonian, DebugLib, SlideBar, Auc-Advanced, Configator, LibExtraTip, TipHelper, LibDataBroker
 ## SavedVariables: BeanCounterDB, BeanCounterDBSettings, BeanCounterDBNames, BeanCounterAccountDB, BeanCounterMailPatch
 ##
-## Version: 8.2.6381 (SwimmingSeadragon)
-## Revision: $Id: BeanCounter.toc 6381 2019-08-29 20:52:32Z none $
+## Version: 8.2.6422 (SwimmingSeadragon)
+## Revision: $Id: BeanCounter.toc 6422 2019-09-13 05:07:31Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Auctioneer
 ## X-Category: Auction House

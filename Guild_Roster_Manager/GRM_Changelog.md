@@ -1,3 +1,116 @@
+**VERSION 8.2R1.74 DATE: September 19th, 2019**
+
+*Smoothing some more things out!!!*
+
+*Note: Each update will be tagged with **Classic/Retail/Both** for context*
+
+**--------------**
+**QUALITY OF LIFE**
+**--------------**
+
+* BOTH: Brazilian Portuguese has been nearly fully transalted and is now selectable in the drop-down as an option. TY @@Drakar#0666 (Discord)
+
+* BOTH: Logic on system message class coloring has been updated. You can now enable/disable "Guild member alert" system messages to include the class color rather than it be enabled by default in the General Options tab.
+
+* BOTH: Scanning process in checking for changes is now improved. I actually haven't looked at this in quite a while but identified an inefficieny in it that could result in it skipping a pass, so even if you had it set to scan once per say, 30 seconds, it might only check for changes once per 60 seconds, on the 2nd attempt, or if you check every 10 seconds, then once per 20 seconds, skipping every other pass. This was a surprising improvement.
+
+* BOTH: If a guild member that uses GRM is promoted or demoted themselves, their rank permissions should now be logged instantly so to avoid any confusion as to why sync permission may or may not functioning correctly. There may be a slight delay in Classic compared to retail here
+
+* BOTH: The "Ignore Macro Tool Filters" button should now no longer overlap the alts window when you have 12 alts and will adjust its spacing if < 12 or > 12 or exactly 12, which is necessary
+
+* BOTH: Language names are now translated in all 14 supported langues in their language selection dropdowns. 
+
+* BOTH Localization efforts for translation work can now create their very own /grm slash command. /grm not make sense in your language? Make your own acronym!!! Note, /grm will always work, it allows you to create an additional slash command trigger. I have placed the slash command option at the top of each locale file
+
+* BOTH: Cleaned up a few grammar mistakes pointed out!
+
+* BOTH: When making a global setting change to the custom note, it not only forces the sync rank restriction for all, it also will reset all the individual notes to the given rank level to normalize them. This is necessary as too many were forcing filtering out. This can be retriggered the next time the rank is restriction is changed for all or for all new settings.
+
+**--------------**
+**BUGS AND BUGS!**
+**--------------**
+
+* BOTH: The "Recommendations"  to suggest to kick a player was only reporting on 1 name per pass due to an error. It now should properly report all of them together in a group.
+
+* BOTH: Kicking all alts should now properly work consistently and populate the kick macro tool
+
+* BOTH:  Right click to confirm verified dates the button should now properly disappear when right-clicking player names to set as main/alt and should now be properly space when right-clicking Notification settting on player status - as well as fixed some unnoticed sizing issues too.
+
+* RETAIL: Potentially fixed an issue of a growing tooltip bug in the roster. Let me know!
+
+* RETAIL: Mouseover was not working on the Old Roster window after last update - as well as some other issues with checkbox on Community window. This is resolved now.
+
+* RETAIL: Found a potential bug that can cause something to endlessly loop when lots of new people join back to back, quickly. Escape timer was re-engaging back to zero on each loop.
+
+
+**VERSION 8.2R1.73 DATE: September 17th, 2019**
+
+*A staggering amount of work went into this update over the last week. But, you see, I am motivated to get everything smoothed out as soon as possible so I can start enjoying Classic myself! With that being said, lots of busy work here, bug fixing, and even some new stuff. I find that as I dig into this port to Classic I keep stumbling upon old code where I go, "Why did I do it like that?" lol - so I keep getting distracted by all these little tangents. Thank you for your patience. Come check, see if your bug got fixed!*
+
+*Note: Each update will be tagged with **Classic/Retail/Both** for context*
+
+***NEW FEATURES***
+
+* Added a "Confirm Date" button to the right-Click menu so you can just quickly confirm a date if it is already accurate. This applies to the "!!" unverified date tags. It should only appear if the date is unverified when you right click.
+
+**--------------**
+**QUALITY OF LIFE**
+**--------------**
+
+* RETAIL: Players promoted/demoted should now be detected instantly in retail, and no longer just when you do it, but if another officer in the guild changes someone's rank you will instantly update yours based on the system message. Please note that this does not work in Classic in full capacity due to limitations of the lack of a guild event log. The compromise is GRM will instantly detect your own changes, but not necessarily those of your officers when it comes to promotions/demotions. This may change in the future, but it will require me to go parse the strings for 11 clients rather than rely on the logs, so not priority. 
+
+* RETAIL: People kicked/leaving the guild should now also be consistently detected instantly. Same circumtstance for Classic as above.
+
+* RETAIL: RankdropDown text now is updated when rank change occurs. For some reason Blizz has still not updated this text error on the CommunityFrame guild interface. I bandaid it for now for them.
+
+* CLASSIC: The ability to ban a player when removing them from the guild, as well as ban all of their alts has been fully integrated in to Classic now. The window should now appear.
+
+* BOTH: When kicking a player from the guild, if you select to kick all their alts as well, the process is now fully integrated into the Macro Tool, and the window will popup ready for hotkey action with the macro already built and ready to go. This will allow you to much easier kick all their alts within seconds of you kicking them as well.
+
+* BOTH: There is now a 3rd option when a player leaves the guild. The log reports that the player was kicked, that they left the guild, or if it is not able to be determined, that they are no longer in the guild. The 3rd option applies more towards Classic, but can definitely apply in retail. It just makes more sense to say "The player is no longer in the guild" than "The player left the guild" when it cannot be determined if they were kicked or they left, because the action occurred when you were not online.
+
+* BOTH: Mouseover window can now be disabled in Retail community frame, or in the Classic roster frame as well... Checkboxes are in slightly different positions but still obvious
+
+* BOTH: The addon will no longer rely on adding people to your friends list to determine their server status, if they are there or not. A much more reliable and faster method has been implemented. Yay! In the next retail patch, the new recruitment interface will do away with that "hackery" completely as well. Thankfully! If you unfortunately encountered the annoying error of friends that were not removed from your lists due to a crash of GRM before it could... use the following script in chat (be warned, it will clear ALL non battle.net friends).
+
+'/run GRM.ClearFriendsList()'
+
+* BOTH: Disable and Enabling the Birthday feature is now available with a checkbox right in the Audit window (this will also hide the bday info on the mouseover window if disabled)
+
+* BOTH: "Check All" option on the log side panel where you can filter everything now behaves better. The check all should auto be checked if all are already checked, and it will uncheck as you uncheck one. Overall UX is better
+
+* BOTH: On Adding a player to the "Ignore List" for the Macro tool, you can now CTRL-Click their checkbox on the bottom left mouseover to either add or remove all their alts as well from or to the list.
+
+* BOTH: Log should now properly refresh if a player rejoins the guild and the log is open without needing to click off and rejoin
+
+* BOTH: Language should now properly localize when player changes them on the mouseoverTooltip button
+
+* BOTH: Cleaned up the patching process a bit. This largely does not affect most players, but in the case of someone who installed a very early version of GRM and then updated to the most new version, many updates would need to be patched and applied and could be a bit of a resource hog the first time on login causing the game to possibly momentarily freeze until completion, or worst case, time-out altogether. Note, this would only affect someone that installed the addon probably > 1.5 to 2 years ago and never updated since then. But, I have to look forward in that as time goes on the potential issue can only exacerbate. This also smooths out any issues of freezing during an update as it breaks them up into blocks of 5 patches per 2 seconds through a recursive patching method that is just more efficient. It will even announce to the player when a patch is being applied and when that is completely, no longer just a "GRM update to version XXXX" - it will still say that, but in case of patches being applied, it will announce them, announce completion, and announce how much work was done.
+
+**--------------**
+**BUGS AND BUGS!**
+**--------------**
+
+* CLASSIC: Taint should (hopefully) no longer be an issue in Classic. Tthere was an issue where the addon would block certain actions from occurring due to taint. In retail the exact method is used with no taint in communities, but in Classic it was problematic due to a change in permissions and UI restrictions.
+
+* CLASSIC: Addon should no longer, **for real this time lol**, report players were demoted to the same rank when nothing happened.
+
+* CLASSIC: Character count should no longer appear on the popup window unless editing the MOTD
+
+* CLASSIC: Mouseover should continue to work proprely on the "Guild Status" screen. Some cases it would hide and then stay hidden.
+
+* CLASSIC: Fixed and issue with live tracking of changes in the guild would stop scanning periodically after a player joined the guild
+
+* BOTH: Hybrid Scrollframes were throwing an error if you tried to scroll and there wasn't enough data that required there to even be scrolling. This used to not be an issue until I broke it recently of course!  I accidentally had enabled the scrollwheel action when maxScrollLength equaled to zero, when it should have been disabled. Simple fix at least.
+
+* BOTH: Addon was erroneously reporting player name changes and overwriting player names with a date timestamp! Oops! This also would end up with a downstream mess of issues, from false rank renames, etc...
+
+* BOTH: Fixed an issue where even if you have disabled reporting to the CHAT that the player left the guild, it still did.
+
+* BOTH: Players using Cyrillic characters were unable to properly input some names as bans due to a formatting issue and it not parsing it correctly with some input error protection. This is resolved now, but affected players using the Russian Client.
+
+
+
 **VERSION 8.2R1.72 DATE: September 10th, 2019**
 
 * Major bug fix - for many addon would not load in 1.71 update - this is resolved

@@ -32,8 +32,8 @@ GRM.ClassicCheckForNewMember = function( text )
                 memberInfo = {
 
                 rosterName,
-                guildRank, 
-                rankOrder - 1,   -- minus one as the GetGuildRosterInfo provides indexing at 0
+                guildRank,
+                rankOrder,   -- minus one as the GetGuildRosterInfo provides indexing at 0
                 level,
                 note,
                 officerNote,
@@ -50,7 +50,7 @@ GRM.ClassicCheckForNewMember = function( text )
                 }
 
                 GRM_G.changeHappenedExitScan = true;
-                GRM.RecordJoinChanges ( memberInfo , GRM.GetClassColorRGB ( class , true ) .. GRM.SlimName ( name ) .. "|r" , true , select ( 2 , GRM.GetTimestamp() ) );
+                GRM.RecordJoinChanges ( memberInfo , GRM.GetClassColorRGB ( class , true ) .. GRM.SlimName ( name ) .. "|r" , true , select ( 2 , GRM.GetTimestamp() ) , true );
             end
         end
 
@@ -63,14 +63,23 @@ GRM.ClassicCheckForNewMember = function( text )
             C_Timer.After ( 10 , function()
                 if GRM_G.DesignateMain then
                     GRM.SetMain ( name , name , false , 0 );
-                    GRM.Report ( GRM.L ( "GRM Auto-Detect! {name} has joined the guild and will be set as Main" , name ) );
+                    GRM.Report ( GRM.L ( "GRM Auto-Detect! {name} has joined the guild and will be set as Main" , GRM.GetClassifiedName ( name , true ) ) );
                     if GRM_UI.GRM_RosterChangeLogFrame.GRM_AuditFrame:IsVisible() then
                         GRM.RefreshAuditFrames ( true , true );
                     end
                 end
             end)
         end
+    elseif GRM_G.RejoinControlCheck < 35 then
+        GRM_G.RejoinControlCheck = GRM_G.RejoinControlCheck + 1;
+        C_Timer.After ( 0.1 , function()
+            -- Re-Check 1 time.
+            GRM.ClassicCheckForNewMember( text );
+        end);
+        return;
     end
+    GRM_G.RejoinControlCheck = 0;
+    GuildRoster();
 end
 
 -- Method:          GRM.GetParsedNameFromInviteAnnouncementWithoutServer ( string )

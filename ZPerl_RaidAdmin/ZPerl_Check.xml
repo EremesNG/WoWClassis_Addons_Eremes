@@ -133,12 +133,12 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						XPerl_Check_OnClickTick()
+						XPerl_Check_OnClickTick(self)
 						XPerl_Check_OnClickItem(arg1)
 					</OnClick>
 					<OnEnter>
 						self:GetParent():LockHighlight()
-						XPerl_Check_OnEnter()
+						XPerl_Check_OnEnter(self)
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
@@ -210,7 +210,7 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 			</OnLoad>
 			<OnEnter>
-				XPerl_Check_OnEnter()
+				XPerl_Check_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()
@@ -647,7 +647,7 @@
 				XPerl_Check_OnClickItem(arg1)
 			</OnClick>
 			<OnEnter>
-				XPerl_Check_OnEnter()
+				XPerl_Check_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()

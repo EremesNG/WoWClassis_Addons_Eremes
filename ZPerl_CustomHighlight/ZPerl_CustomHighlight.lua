@@ -37,17 +37,17 @@ end
 
 -- Pull zone names from encounter journal so they don't need to be localized.
 -- Cataclysm Raids
-local XPERL_LOC_ZONE_BARADIN_HOLD = EJ_GetInstanceInfo(75)
-local XPERL_LOC_ZONE_BLACKWING_DECENT = EJ_GetInstanceInfo(73)
-local XPERL_LOC_ZONE_BASTION_OF_TWILIGHT = EJ_GetInstanceInfo(72)
-local XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS = EJ_GetInstanceInfo(74)
-local XPERL_LOC_ZONE_FIRELANDS = EJ_GetInstanceInfo(78)
-local XPERL_LOC_ZONE_DRAGONSOUL = EJ_GetInstanceInfo(187)
-local XPERL_LOC_ZONE_EMERALD_NIGHTMARE = EJ_GetInstanceInfo(768)
-local XPERL_LOC_ZONE_TRIAL_OF_VALOR = EJ_GetInstanceInfo(861)
-local XPERL_LOC_ZONE_NIGHTHOLD = EJ_GetInstanceInfo(786)
-local XPERL_LOC_ZONE_TOMB_OF_SARGERAS = EJ_GetInstanceInfo(875)
-local XPERL_LOC_ZONE_ANTORUS = EJ_GetInstanceInfo(946)
+local XPERL_LOC_ZONE_BARADIN_HOLD = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(75)
+local XPERL_LOC_ZONE_BLACKWING_DECENT = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(73)
+local XPERL_LOC_ZONE_BASTION_OF_TWILIGHT = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(72)
+local XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(74)
+local XPERL_LOC_ZONE_FIRELANDS = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(78)
+local XPERL_LOC_ZONE_DRAGONSOUL = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(187)
+local XPERL_LOC_ZONE_EMERALD_NIGHTMARE = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(768)
+local XPERL_LOC_ZONE_TRIAL_OF_VALOR = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(861)
+local XPERL_LOC_ZONE_NIGHTHOLD = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(786)
+local XPERL_LOC_ZONE_TOMB_OF_SARGERAS = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(875)
+local XPERL_LOC_ZONE_ANTORUS = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and EJ_GetInstanceInfo(946)
 --[[
 -- Mists of Pandaria Raids
 local XPERL_LOC_ZONE_MOGUSHAN_VAULTS = EJ_GetInstanceInfo(317)
@@ -520,7 +520,7 @@ function ch:Check(frame, unit)
 		end
 
 		for i = 1, 40 do
-			local name, _, icon = UnitDebuff(unit, i)
+			local name, icon = UnitDebuff(unit, i)
 			if (not name) then
 				break
 			end

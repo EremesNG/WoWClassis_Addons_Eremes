@@ -12,10 +12,12 @@ GRML.TranslationStatusEnum = {
     SpanishMX = false,
     SpanishEU = false,
     Portuguese = false,
+    PortugueseBR = false,
     Korean = false,
     MandarinCN = false,
     MandarinTW = false,
-    Dutch = false
+    Dutch = false,
+    Danish = false
 }
 
 GRML.Languages = {
@@ -26,11 +28,13 @@ GRML.Languages = {
     "Russian",
     "SpanishMX",
     "SpanishEU",
-    "Portuguese" ,
+    "Portuguese",
+    "PortugueseBR",
     "Korean",
     "MandarinCN",
     "MandarinTW",
-    "Dutch"
+    "Dutch",
+    "Danish"
 }
 
 -- Array that holds all the initialization functions to load the dictionary of each language.
@@ -43,10 +47,12 @@ GRML.LoadLanguage = {
     GRML.SpanishMX,
     GRML.SpanishEU,
     GRML.Portuguese,
+    GRML.PortugueseBR,
     GRML.Korean,
     GRML.MandarinCN,
     GRML.MandarinTW,
-    GRML.Dutch
+    GRML.Dutch,
+    GRML.Danish
 }
 
 -- Method:          GRML.GetFontNameFromLocation ( string )
@@ -125,6 +131,9 @@ GRML.SetNewLanguage = function ( index , firstLoad )
     else
         GRM_UI.ReloadAllFrames ( true );
     end
+
+    -- Allow implementation of custom slash command.
+    SLASH_GRM3 = GRM.L ( '/XXXX' );
 end
 
 -- Method:          GRML.SetFontModifier()
@@ -170,7 +179,7 @@ end
 GRML.GetFontChoiceIndex = function( localizationIndex )
     local result = 1;
     if GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][44] ~= 1 then
-        if ( localizationIndex < 5 or ( localizationIndex > 5 and localizationIndex < 9 ) ) then
+        if ( localizationIndex < 5 or ( localizationIndex > 5 and localizationIndex < 10 ) or result > 13 ) then
             result = 2
         else
             result = GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][44];
@@ -179,13 +188,13 @@ GRML.GetFontChoiceIndex = function( localizationIndex )
         if localizationIndex == 5 and GRM_G.Region ~= "ruRU" then
             -- Russian Cyrilic
             result = 3;
-        elseif localizationIndex == 9 and GRM_G.Region ~= "koKR" then
+        elseif localizationIndex == 10 and GRM_G.Region ~= "koKR" then
             -- Korean
             result = 4;
-        elseif localizationIndex == 10 and GRM_G.Region ~= "zhCN" then
+        elseif localizationIndex == 11 and GRM_G.Region ~= "zhCN" then
             -- Mandarin Chines
             result = 5;
-        elseif localizationIndex == 11 and GRM_G.Region ~= "zhTW" then
+        elseif localizationIndex == 12 and GRM_G.Region ~= "zhTW" then
             -- Taiwanese
             result = 6;
         end
@@ -228,6 +237,7 @@ if GRM_G.Region == "deDE" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "aus der Gilde geworfen."
     GRM_L["joined the guild."] = "Gilde angeschlossen."
+    GRM_L["left the guild."] = "hat die Gilde verlassen."
     GRM_L["has promoted"] = "befördert."
     GRM_L["has demoted"] = "degradiert."
     GRM_L["Professions"] = "Berufe"
@@ -277,6 +287,7 @@ elseif GRM_G.Region == "frFR" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "a été renvoyé"
     GRM_L["joined the guild."] = "rejoint la guilde."
+    GRM_L["left the guild."] = "a quitté la guilde."
     GRM_L["has promoted"] = "a promu"
     GRM_L["has demoted"] = "a rétrogradé"
     GRM_L["Professions"] = "Métiers"
@@ -320,6 +331,7 @@ elseif GRM_G.Region == "itIT" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "stato cacciato dalla"
     GRM_L["joined the guild."] = "si unisce alla gilda."
+    GRM_L["left the guild."] = "lascia la gilda."
     GRM_L["has promoted"] = "al grado"
     GRM_L["has demoted"] = " degrada "
     GRM_L["Professions"] = "Professioni"
@@ -363,6 +375,7 @@ elseif GRM_G.Region == "ruRU" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "исключает из гильдии "
     GRM_L["joined the guild."] = "к гильдии."
+    GRM_L["left the guild."] = "покидает гильдию."
     GRM_L["has promoted"] = " производит "
     GRM_L["has demoted"] = " разжалует "
     GRM_L["Professions"] = "Профессии"
@@ -406,6 +419,7 @@ elseif GRM_G.Region == "esMX" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "ha sido expulsado"
     GRM_L["joined the guild."] = "a la hermandad."
+    GRM_L["left the guild."] = "ha abandonado la hermandad."
     GRM_L["has promoted"] = "ha ascendido"
     GRM_L["has demoted"] = "ha degradado"
     GRM_L["Professions"] = "Profesiones"
@@ -448,6 +462,7 @@ elseif GRM_G.Region == "esES" then
     GRM_G.LocalizedIndex = 7;
     GRM_L["has been kicked"] = "ha sido expulsado"
     GRM_L["joined the guild."] = "a la hermandad."
+    GRM_L["left the guild."] = "ha abandonado la hermandad."
     GRM_L["has promoted"] = "ha ascendido"
     GRM_L["has demoted"] = "ha degradado"
     GRM_L["Professions"] = "Profesiones"
@@ -491,6 +506,7 @@ elseif GRM_G.Region == "ptBR" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "foi expulso da"
     GRM_L["joined the guild."] = "entrou na guilda."
+    GRM_L["left the guild."] = "saiu da guilda."
     GRM_L["has promoted"] = " promoveu "
     GRM_L["has demoted"] = " rebaixou "
     GRM_L["Professions"] = "Profissões"
@@ -534,6 +550,7 @@ elseif GRM_G.Region == "koKR" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "길드에서 추방했습니다."
     GRM_L["joined the guild."] = "님이 길드에 가입했습니다"
+    GRM_L["left the guild."] = true
     GRM_L["has promoted"] = "로 올렸습니다."
     GRM_L["has demoted"] = "로 내렸습니다."
     GRM_L["Professions"] = "전문 기술"
@@ -548,6 +565,7 @@ elseif GRM_G.Region == "koKR" then
     -- CLASSES - R Specific
     GRM_L["R_Deathknight"] = "죽음의 기사"
     GRM_L["R_Demonhunter"] = "악마사냥꾼"
+    GRM_L["left the guild."] = "님이 길드를 탈퇴했습니다."
     GRM_L["R_Druid"] = "드루이드"
     GRM_L["R_Hunter"] = "사냥꾼"
     GRM_L["R_Mage"] = "마법사"
@@ -577,6 +595,7 @@ elseif GRM_G.Region == "zhCN" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "开除出公会。"
     GRM_L["joined the guild."] = "加入了公会。"
+    GRM_L["left the guild."] = "离开了公会。"
     GRM_L["has promoted"] = "晋升为"
     GRM_L["has demoted"] = "降职为"
     GRM_L["Professions"] = "专业"
@@ -620,6 +639,7 @@ elseif GRM_G.Region == "zhTW" then
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = "踢出公會。"
     GRM_L["joined the guild."] = "加入了公會。"
+    GRM_L["left the guild."] = "離開了公會。"
     GRM_L["has promoted"] = "晉升為"
     GRM_L["has demoted"] = "降職為"
     GRM_L["Professions"] = "專業技能"
@@ -663,6 +683,7 @@ elseif GRM_G.Region == "enUS" or GRM_G.Region == "enGB" or not GRM_G.Localized t
     -- SYSTEM MESSAGES (DO NOT CHANGE THESE!!!! They are used for the back-end code to recognize for parsing info out, not for player UI
     GRM_L["has been kicked"] = true
     GRM_L["joined the guild."] = true
+    GRM_L["left the guild."] = true
     GRM_L["has promoted"] = true
     GRM_L["has demoted"] = true
     GRM_L["Professions"] = true

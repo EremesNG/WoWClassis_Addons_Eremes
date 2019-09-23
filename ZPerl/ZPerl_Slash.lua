@@ -16,8 +16,6 @@ local function XPerl_SlashHandler(msg)
 	end
 	if (args[1] == nil or args[1] == XPERL_CMD_MENU or args[1] == XPERL_CMD_OPTIONS) then
 		XPerl_Toggle()
-	elseif (args[1] == "p") then
-		if zparty()~=nil then zparty() end
 	elseif (args[1] == XPERL_CMD_LOCK) then
 		XPerlLocked = 1
 		if (XPerl_RaidTitles) then
@@ -41,7 +39,7 @@ local function XPerl_SlashHandler(msg)
 			for realmName, realmList in pairs(ZPerlConfigNew) do
 				if (type(realmList) == "table" and realmName ~= "global" and realmName ~= "savedPositions") then
 					for playerName, realmSettings in pairs(realmList) do
-						if (strlower(realmName) == strlower(GetRealmName()) and strlower(playerName) == myName) then
+						if (strlower(realmName) == strlower(GetRealmName()) and strlower(playerName) == strlower(UnitName("player"))) then
 							current = XPERL_CONFIG_CURRENT
 						else
 							current = ""

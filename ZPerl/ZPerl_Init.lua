@@ -10,10 +10,14 @@ end, "$Revision:  $")
 
 local GetNumSubgroupMembers = GetNumSubgroupMembers
 local GetNumGroupMembers = GetNumGroupMembers
+local UnitIsGroupAssistant = UnitIsGroupAssistant
 
-local UnitIsGroupAssistant = UnitIsGroupAssistant;
-
-local classOrder = {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK", "MONK"}
+local classOrder
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	classOrder = {"WARRIOR", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK", "MONK"}
+else
+	classOrder = {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK", "MONK", "DEMONHUNTER"}
+end
 
 -- SetTex
 local highlightPositions = {
@@ -219,7 +223,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 
 	--local withList = XPerl_GetReusableTable()
 	local withList = { }
-	for unitid, unitName, unitClass, group, zone, online, dead in XPerl_NextMember do
+	--[=[for unitid, unitName, unitClass, group, zone, online, dead in XPerl_NextMember do
 		local use
 
 		if (not conf.buffHelper.visible) then
@@ -237,7 +241,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 		if (unitName and use and online and not dead) then
 			local hasBuff
 			for num = 1, 40 do
-			local name, _, buffTexture, count, _, fullDuration, endTime, isMine, isStealable = UnitAura(unitid, num, filter)
+				local name, icon, count, _, fullDuration, endTime, isMine, isStealable = UnitAura(unitid, num, filter)
 				if (not name) then
 					break
 				end
@@ -256,7 +260,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 				end
 				if (hasBuff) then
 					if (without and checkExpiring) then
-						local found = checkExpiring[buffTextureNoPath]
+						local found = checkExpiring[name]
 
 						if (found) then
 							if (endTime and endTime > 0 and endTime <= GetTime() + (found * 60)) then
@@ -292,13 +296,13 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 				end
 			end
 		end
-	end
+	end]=]
 
 	if (conf.buffHelper.sort == "group") then
 		for i = 1, 8 do
 			local list = withList[i]
 			if (list) then
-				sort(list, function(a,b) return a.name < b.name end)
+				sort(list, function(a, b) return a.name < b.name end)
 
 				names = (names or "").."|r"..i..": "
 				for i, item in ipairs(list) do
@@ -358,9 +362,9 @@ end
 
 -- XPerl_ToolTip_AddBuffDuration
 local function XPerl_ToolTip_AddBuffDuration(self, partyid, buffID, filter)
-	local name, _, buff, count, _, dur, max, caster, isStealable = UnitAura(partyid, buffID, filter)
+	local name, _, count, _, dur, max, caster, isStealable = UnitAura(partyid, buffID, filter)
 
-	if (IsInRaid() or UnitInParty("player")) then
+	--[[if (IsInRaid() or UnitInParty("player")) then
 		if (conf.buffHelper.enable and partyid and (UnitInParty(partyid) or UnitInRaid(partyid))) then
 			if (name) then
 				local names, count = GetNamesWithoutBuff(name, IsAltKeyDown(), filter)
@@ -379,7 +383,7 @@ local function XPerl_ToolTip_AddBuffDuration(self, partyid, buffID, filter)
 				end
 			end
 		end
-	end
+	end--]]
 
 	if (caster and conf.buffs.names) then
 		local casterName = UnitFullName(caster)
@@ -520,7 +524,7 @@ function ZPerl_Init()
 		CT_RegisterMod(XPerl_ProductName.." "..XPerl_VersionNumber, "By "..XPerl_Author, 4, XPerl_ModMenuIcon, XPerl_LongDescription, "switch", "", XPerl_Toggle)
 	end
 
-	if (myAddOnsFrame) then
+	--[[if (myAddOnsFrame) then
 		myAddOnsList.XPerl_Description = {
 			name			= XPerl_Description,
 			description		= XPerl_LongDescription,
@@ -529,26 +533,12 @@ function ZPerl_Init()
 			frame			= "XPerl_Globals",
 			optionsframe	= "XPerl_Options"
 		}
-	end
+	end--]]
 
 	--XPerl_RegisterSMBarTextures()
 
 	XPerl_pcall(ZPerl_DebufHighlightInit)
-	
-	-- DaMaGepy 
-	
-	if (BuffFrame:IsShown()) then
-		BuffFrame:UnregisterEvent("UNIT_AURA")
-		BuffFrame:Hide()
-		TemporaryEnchantFrame:Hide()
-		securecall("BuffFrame_Update")
-		BuffFrame:Show()
-		BuffFrame:RegisterEvent("UNIT_AURA")
-		TemporaryEnchantFrame:Show()
-		securecall("BuffFrame_Update")
-	end
-	
-	XPerl_Player_BuffSetup(XPerl_Player)
+
 	ZPerl_Init = nil
 end
 

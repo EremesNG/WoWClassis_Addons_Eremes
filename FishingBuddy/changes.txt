@@ -1,3 +1,6 @@
+Version 0.5
+- Batteries included version, outfit manager and broker
+
 Version 0.4
 - Make sure we know the name of the Fishing skill
 - Don't do fishing stuff if the toon doesn't know Fishing yet

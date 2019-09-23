@@ -920,9 +920,7 @@
 						end
 						XPerlLocked = 0
 
-						if (var ~= "OptionsColour") then
-							XPerl_OptionActions()
-						end
+						XPerl_OptionActions()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1291,7 +1289,7 @@
 					<OnLoad>
 						self:SetID(self:GetParent():GetID())
 						self.tooltipText = XPERL_CONF_RAID_CLASS_DOWN
-						if (self:GetID() == 12) then
+						if (self:GetID() == (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 9 or 12)) then
 							self:Hide()
 						end
 					</OnLoad>
@@ -1748,7 +1746,7 @@
 	</Frame>
 
 	<!-- Options Frames -->
-	<Frame name="XPerl_Options" inherits="XPerl_OptionsTemplate" parent="XPerl_OptionsAnchor" hidden="true">
+	<Frame name="XPerl_Options" inherits="XPerl_OptionsTemplate" clampedToScreen="true" hidden="true">
 		<Scripts>
 			<OnShow>
 				self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -1814,8 +1812,8 @@
 					end
 
 					local width = 220 + totalTabWidth
-					if (not (width >= 700)) then
-						width = 700
+					if (not (width >= 740)) then
+						width = 740
 					end
 					self:SetWidth(width)
 					XPerl_OptionsAnchor:SetWidth(width)
@@ -1823,16 +1821,25 @@
 
 					XPerl_RegisterScalableFrame(self, XPerl_OptionsAnchor, 0.5, 1.2)
 
+					self.initWidth = width
 					self.initDone = true
 				end
 
 				self:Setup()
+				XPerl_RestorePosition(XPerl_OptionsAnchor)
+				self:SetParent(XPerl_OptionsAnchor)
+				self:SetScale(XPerl_OptionsAnchor:GetWidth() / self.initWidth)
+				self:ClearAllPoints()
+				self:SetPoint("TOPLEFT", XPerl_OptionsAnchor, "TOPLEFT", 0, 0)
 			</OnShow>
 			<OnHide>
 				self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 				self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 				XPerl_Options_InCombatChange(UnitAffectingCombat("player"))
 				XPerl_OptionsAnchor:StopMovingOrSizing()
+				if (XPerl_SavePosition) then
+					XPerl_SavePosition(XPerl_OptionsAnchor)
+				end
 			</OnHide>
 			<OnEvent>
 				if (event == "PLAYER_REGEN_DISABLED") then
@@ -3854,6 +3861,10 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
+								if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+									self:Hide()
+									return
+								end
 								local _, class = UnitClass("player")
 								if class == "MONK" then
 									XPerl_OptionsSetMyText(self, "XPERL_CONF_RAID_HIGHLIGHTS_RENEWING")
@@ -5069,6 +5080,7 @@
 								self.Validate = function()
 									XPerl_Options_EnableSibling(self, "DockRunes")
 								end
+								XPerl_Options_RegisterProtected(self)
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
@@ -5091,6 +5103,7 @@
 									self:Hide()
 								end
 								XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_DOCKRUNES")
+								XPerl_Options_RegisterProtected(self)
 								self.configBase = "XPerlDB.player"
 								self.flashFrame = XPerl_Player and XPerl_Player.runes
 								self.configIndex = "dockRunes"
@@ -5117,6 +5130,7 @@
 									self:Hide()
 								end
 								XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_LOCKRUNES")
+								XPerl_Options_RegisterProtected(self)
 								self.configBase = "XPerlDB.player"
 								self.flashFrame = XPerl_Player and XPerl_Player.runes
 								self.configIndex = "lockRunes"
@@ -6020,7 +6034,7 @@
 										self.configBase = "XPerlDB.player.totems"
 										self.configIndex = "enable"
 										self.configClick = function()
-											<!-- TotemFrame_Update() -->
+											TotemFrame_Update()
 										end
 									</OnLoad>
 								</Scripts>
@@ -6308,11 +6322,81 @@
 						</Scripts>
 					</CheckButton>
 
-					<CheckButton name="$parent_Level" inherits="XPerlCheckButtonTemplate">
+					<CheckButton name="$parent_Happiness" inherits="XPerlCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent_ArcaneBar" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_PET_HAPPINESS")
+								self.Validate = function()
+									XPerl_Options_EnableSibling(self, "OnlySad")
+									XPerl_Options_EnableSibling(self, "FlashSad")
+								end
+								self.flashFrame = XPerl_Player_PethappyFrame
+								self.configBase = "XPerlDB.pet.happiness"
+								self.configIndex = "enable"
+								self.configClick = XPerl_Player_Pet_Reset
+								XPerl_Options_RegisterProtected(self)
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parent_OnlySad" inherits="XPerlCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOMRIGHT" relativeTo="$parent_Happiness">
+								<Offset>
+									<AbsDimension x="0" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_PET_ONLYSAD")
+								self.flashFrame = XPerl_Player_PethappyFrame
+								self.configBase = "XPerlDB.pet.happiness"
+								self.configIndex = "onlyWhenSad"
+								self.configClick = XPerl_Player_Pet_Reset
+								XPerl_Options_RegisterProtected(self)
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parent_FlashSad" inherits="XPerlCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="26" y="26"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_OnlySad" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_PET_FLASHSAD")
+								self.flashFrame = XPerl_Player_PethappyFrame
+								self.configBase = "XPerlDB.pet.happiness"
+								self.configIndex = "flashWhenSad"
+								self.configClick = XPerl_Player_Pet_Reset
+								XPerl_Options_RegisterProtected(self)
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parent_Level" inherits="XPerlCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_FlashSad" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="6"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -12700,6 +12784,10 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+											return
+										end
 										_G[self:GetName().."Text"]:SetText("10")
 										self.tooltipText = XPERL_CONF_RAID_GROUP_DESC
 										self.configBase = "XPerlDB.raid.group"
@@ -12723,6 +12811,10 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+											return
+										end
 										_G[self:GetName().."Text"]:SetText("11")
 										self.tooltipText = XPERL_CONF_RAID_GROUP_DESC
 										self.configBase = "XPerlDB.raid.group"
@@ -12746,6 +12838,10 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+											return
+										end
 										_G[self:GetName().."Text"]:SetText("12")
 										self.tooltipText = XPERL_CONF_RAID_GROUP_DESC
 										self.configBase = "XPerlDB.raid.group"
@@ -12863,7 +12959,6 @@
 									</Anchor>
 								</Anchors>
 							</Frame>
-					<!--
 							<Frame name="$parent_ClassSel10" inherits="XPerl_OptClassSelTemplate" id="10">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent_ClassSel9" relativePoint="BOTTOMLEFT">
@@ -12872,6 +12967,13 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Scripts>
+									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+										end
+									</OnLoad>
+								</Scripts>
 							</Frame>
 							<Frame name="$parent_ClassSel11" inherits="XPerl_OptClassSelTemplate" id="11">
 								<Anchors>
@@ -12881,6 +12983,13 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Scripts>
+									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+										end
+									</OnLoad>
+								</Scripts>
 							</Frame>
 
 							<Frame name="$parent_ClassSel12" inherits="XPerl_OptClassSelTemplate" id="12">
@@ -12891,8 +13000,15 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
+								<Scripts>
+									<OnLoad>
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+											self:Hide()
+										end
+									</OnLoad>
+								</Scripts>
 							</Frame>
-					-->
+
 							<Button name="$parent_All" inherits="XPerlButtonTemplate">
 								<Size>
 									<AbsDimension x="70" y="24"/>
@@ -16921,7 +17037,9 @@
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>
-						FauxScrollFrame_OnVerticalScroll(self, offset, 1, function() self:GetParent():FillList() end)
+						FauxScrollFrame_OnVerticalScroll(self, offset, 1, function()
+							self:GetParent():FillList()
+						end)
 					</OnVerticalScroll>
 					<OnMouseWheel>
 						local f = _G[self:GetName().."ScrollBar"]
@@ -16931,7 +17049,7 @@
 							f:SetValue(f:GetValue() - 3)
 						end
 
-						GetParent():FillList()
+						self:GetParent():FillList()
 					</OnMouseWheel>
 				</Scripts>
 			</ScrollFrame>

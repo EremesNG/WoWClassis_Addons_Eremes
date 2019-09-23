@@ -215,7 +215,7 @@ GRM_UI.LoadToolFrames = function ( isManual )
                     end
                     GRM_G.HK = false;
                     GRM.PurgeMacrodNames();
-                    GRM.BuildQueuedScrollFrame ( true , false );
+                    GRM.BuildQueuedScrollFrame ( true , false , false );
                     GRM.BuildMacrodScrollFrame ( true , true );
 
                     if GRM_G.CurrentlyScanning then
@@ -1364,21 +1364,26 @@ end
 GRM.TriggerKickQueuedWindowRefresh = function()
     GRM_UI.RestoreTooltipScale();
     GameTooltip:Hide();
-    GRM.BuildQueuedScrollFrame ( true , true );
+    GRM.BuildQueuedScrollFrame ( true , true , false );
     GRM_UI.RefreshToolButtonsOnUpdate();
 end
 
--- Method:          GRM.BuildQueuedScrollFrame( bool , bool )
+-- Method:          GRM.BuildQueuedScrollFrame( bool , bool , bool )
 -- What it Does:    Updates the Queued scrollframe as needed
 -- Purpose:         UX of the GRM mass kick tool
-GRM.BuildQueuedScrollFrame = function ( showAll , fullRefresh )
+GRM.BuildQueuedScrollFrame = function ( showAll , fullRefresh , isBanAltList )
     local hybridScrollFrameButtonCount = 13;
     local buttonHeight = 25;
     local scrollHeight = 0;
     local buttonWidth = GRM_UI.GRM_ToolCoreFrame.GRM_ToolQueuedScrollFrame:GetWidth() - 5;
 
     if showAll and fullRefresh then
-        GRM_UI.GRM_ToolCoreFrame.QueuedEntries = GRM.GetQueuedEntries ( true );
+        if not isBanAltList then
+            GRM_UI.GRM_ToolCoreFrame.QueuedEntries = GRM.GetQueuedEntries ( true );
+        else
+            GRM_UI.GRM_ToolCoreFrame.QueuedEntries = GRM.DeepCopyArray ( GRM_G.KickAllAltsTable );
+            GRM_G.KickAllAltsTable = {};
+        end
     end
 
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolQueuedScrollChildFrame.AllButtons = GRM_UI.GRM_ToolCoreFrame.GRM_ToolQueuedScrollChildFrame.AllButtons or {};
@@ -2891,10 +2896,10 @@ GRM.SetNumHoursToKickValue = function()
     end
 end
 
--- Method:          GRM_UI.RefreshManagementTool()
+-- Method:          GRM_UI.RefreshManagementTool( bool )
 -- What it Does:    Refreshes the management tool
 -- Purpose:         Compartmentalize the refresh details.
-GRM_UI.RefreshManagementTool = function()
+GRM_UI.RefreshManagementTool = function( isBanAltList )
     if not GRM_UI.GRM_ToolCoreFrame.IsInitialized then
 
         -- Check permissions - set tab as default one 
@@ -2909,7 +2914,7 @@ GRM_UI.RefreshManagementTool = function()
         GRM_UI.LoadToolFrames ( false );
     end
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolMacrodScrollChildFrame.BlacklistedNames = {};  -- reset the blacklist.
-    GRM.BuildQueuedScrollFrame ( true , true );
+    GRM.BuildQueuedScrollFrame ( true , true , isBanAltList );
     -- On reshow, always reset the macro
     GRM_UI.GRM_ToolCoreFrame.MacroEntries = {};
     GRM.BuildMacrodScrollFrame ( true , false );
@@ -2917,6 +2922,12 @@ GRM_UI.RefreshManagementTool = function()
     -- Load the options properly
     GRM_UI.LoadRulesUI();
     GRM_UI.RefreshToolButtonsOnUpdate();
+
+    -- Populate the macro 
+    if isBanAltList then
+        GRM_UI.GRM_ToolCoreFrame.GRM_ToolBuildMacroButton:Click();
+    end
+
 end
 
 -- Method:          GRM_UI.RefreshToolButtonsOnUpdate()
@@ -2983,7 +2994,8 @@ GRM_UI.LoadRulesUI = function()
 end
 
 GRM_UI.GRM_ToolCoreFrame:SetScript ( "OnShow" , function ()
-    GRM_UI.RefreshManagementTool();
+    GRM_UI.RefreshManagementTool( GRM_G.KickAltControl );
+    GRM_G.KickAltControl = false;
 end);
 
 

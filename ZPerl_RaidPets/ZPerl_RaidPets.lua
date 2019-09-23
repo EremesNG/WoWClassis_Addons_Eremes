@@ -15,6 +15,12 @@ end, "$Revision:  $")
 
 local GetNumGroupMembers = GetNumGroupMembers
 
+local localGroups = LOCALIZED_CLASS_NAMES_MALE
+local WoWclassCount = 0
+for k, v in pairs(localGroups) do
+	WoWclassCount = WoWclassCount + 1
+end
+
 --local taintFrames = {}
 
 -- XPerl_RaidPets_OnEvent
@@ -139,7 +145,7 @@ end
 local function XPerl_RaidPets_UpdateName(self)
 	local partyid = SecureButton_GetUnit(self)
 	local name
-	if (self.ownerid and (UnitInVehicle(self.ownerid) or UnitHasVehicleUI(self.ownerid))) then
+	if (self.ownerid and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and (UnitInVehicle(self.ownerid) or UnitHasVehicleUI(self.ownerid))) then
 		name = UnitName(self.ownerid)
 		if (name) then
 			self.text:SetFormattedText("<%s>", name)
@@ -601,7 +607,7 @@ function XPerl_RaidPets_Align()
 		local counts = XPerl_RaidGroupCounts()
 		local lastUsed = 0
 		if (counts) then
-			for i = 1, 11 do
+			for i = 1, WoWclassCount do
 				if (counts[i] > 0) then
 					lastUsed = i
 				end
@@ -658,22 +664,28 @@ function XPerl_RaidPets_OptionActions()
 
 	for i, event in pairs(events) do
 		if (rconf.enable) then
-			XPerl_RaidPets_Frame:RegisterEvent(event)
+			if pcall(XPerl_RaidPets_Frame.RegisterEvent, XPerl_RaidPets_Frame, event) then
+				XPerl_RaidPets_Frame:RegisterEvent(event)
+			end
 		else
-			XPerl_RaidPets_Frame:UnregisterEvent(event)
+			if pcall(XPerl_RaidPets_Frame.UnregisterEvent, XPerl_RaidPets_Frame, event) then
+				XPerl_RaidPets_Frame:UnregisterEvent(event)
+			end
 		end
 	end
 
-	if (raidconf.healprediction) then
-		XPerl_RaidPets_Frame:RegisterEvent("UNIT_HEAL_PREDICTION")
-	else
-		XPerl_RaidPets_Frame:UnregisterEvent("UNIT_HEAL_PREDICTION")
-	end
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if (raidconf.healprediction) then
+			XPerl_RaidPets_Frame:RegisterEvent("UNIT_HEAL_PREDICTION")
+		else
+			XPerl_RaidPets_Frame:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
 
-	if (raidconf.absorbs) then
-		XPerl_RaidPets_Frame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	else
-		XPerl_RaidPets_Frame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		if (raidconf.absorbs) then
+			XPerl_RaidPets_Frame:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		else
+			XPerl_RaidPets_Frame:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
 
 	XPerl_RaidPets_Titles()

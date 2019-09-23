@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101070
+local MINOR_VERSION = 101071
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -74,11 +74,10 @@ if not lastVersion then
     FishLib.gearcheck = true
     FishLib.hasgear = false;
     FishLib.PLAYER_SKILL_READY = "PlayerSkillReady"
+    FishLib.havedata = WOW.classic;
 end
 
 FishLib.registered = FishLib.registered or CBH:New(FishLib, nil, nil, false)
-
-FishLib.havedata = WOW.classic;
 
 -- Secure action button
 local SABUTTONNAME = "LibFishingSAButton";
@@ -121,7 +120,22 @@ FishLib.continent_fishing = {
     { ["max"] = 175, ["skillid"] = 2585, ["cat"] = 1114, ["rank"] = 0 },	-- Zandalar Fishing
 }
 
-function FishLib:GetTradeSkillData() end;
+
+-- Go ahead and forcibly get the trade skill data
+function FishLib:GetTradeSkillData()
+    if self:IsClassic() then
+        return
+    end
+    local btn = _G[SABUTTONNAME];
+    if btn then
+        if (not IsAddOnLoaded("Blizzard_TradeSkillUI")) then
+            LoadAddOn("Blizzard_TradeSkillUI");
+        end
+        btn.skillupdate:SetScript("OnUpdate", SkillInitialize);
+        btn.skillupdate:Show()
+    end
+end
+
 function FishLib:QueueUpdateFishingSkillData() end;
 DEFAULT_SKILL.max = 75
 
@@ -2062,6 +2076,41 @@ function FishLib:GetOutfitBonus()
     -- end
     local pole, lure = self:GetPoleBonus();
     return bonus + pole, lure;
+end
+
+local function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
+	if ( location < 0 ) then -- Thanks Seerah!
+		return false, false, false, 0;
+	end
+	
+	local player = (bit.band(location, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0);
+	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
+	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
+	local voidStorage = (bit.band(location, ITEM_INVENTORY_LOCATION_VOIDSTORAGE) ~= 0);
+	local tab, voidSlot;
+
+	if ( player ) then
+		location = location - ITEM_INVENTORY_LOCATION_PLAYER;
+	elseif ( bank ) then
+		location = location - ITEM_INVENTORY_LOCATION_BANK;
+	elseif ( voidStorage ) then
+		location = location - ITEM_INVENTORY_LOCATION_VOIDSTORAGE;
+		tab = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
+		voidSlot = location - bit.lshift(tab, ITEM_INVENTORY_BAG_BIT_OFFSET);
+	end
+	
+	if ( bags ) then
+		location = location - ITEM_INVENTORY_LOCATION_BAGS;
+		local bag = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
+		local slot = location - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET);	
+		
+		if ( bank ) then
+			bag = bag + ITEM_INVENTORY_BANK_BAG_OFFSET;
+		end
+		return player, bank, bags, voidStorage, slot, bag, tab, voidSlot
+	else
+		return player, bank, bags, voidStorage, location, nil, tab, voidSlot
+	end
 end
 
 function FishLib:GetBestFishingItem(slotid)

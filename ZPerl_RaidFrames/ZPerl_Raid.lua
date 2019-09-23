@@ -73,15 +73,28 @@ for k, v in pairs(localGroups) do
 	WoWclassCount = WoWclassCount + 1
 end
 
-local resSpells = {
-	[GetSpellInfo(2006)] = true,			-- Resurrection
-	[GetSpellInfo(2008)] = true,			-- Ancestral Spirit
-	[GetSpellInfo(20484)] = true,			-- Rebirth
-	[GetSpellInfo(7328)] = true,			-- Redemption
-	[GetSpellInfo(50769)] = true,			-- Revive
-	--[GetSpellInfo(83968)] = true,			-- Mass Resurrection
-	[GetSpellInfo(115178)] = true,			-- Resuscitate
-}
+local resSpells
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	resSpells = {
+		[GetSpellInfo(2006)] = true,			-- Resurrection
+		[GetSpellInfo(2008)] = true,			-- Ancestral Spirit
+		[GetSpellInfo(20484)] = true,			-- Rebirth
+		[GetSpellInfo(7328)] = true,			-- Redemption
+		--[GetSpellInfo(50769)] = true,			-- Revive
+		--[GetSpellInfo(83968)] = true,			-- Mass Resurrection
+		--[GetSpellInfo(115178)] = true,			-- Resuscitate
+	}
+else
+	resSpells = {
+		[GetSpellInfo(2006)] = true,			-- Resurrection
+		[GetSpellInfo(2008)] = true,			-- Ancestral Spirit
+		[GetSpellInfo(20484)] = true,			-- Rebirth
+		[GetSpellInfo(7328)] = true,			-- Redemption
+		[GetSpellInfo(50769)] = true,			-- Revive
+		--[GetSpellInfo(83968)] = true,			-- Mass Resurrection
+		[GetSpellInfo(115178)] = true,			-- Resuscitate
+	}
+end
 
 local hotSpells = XPERL_HIGHLIGHT_SPELLS.hotSpells
 
@@ -125,7 +138,9 @@ function XPerl_Raid_OnLoad(self)
 	}
 
 	for i, event in pairs(events) do
-		self:RegisterEvent(event)
+		if pcall(self.RegisterEvent, self, event) then
+			self:RegisterEvent(event)
+		end
 	end
 
 	self:SetScript("OnEvent", XPerl_Raid_OnEvent)
@@ -135,57 +150,59 @@ function XPerl_Raid_OnLoad(self)
 		tinsert(raidHeaders, _G[XPERL_RAIDGRP_PREFIX..i])
 	end
 
-	self.state = CreateFrame("Frame", nil, nil, "SecureHandlerStateTemplate")
-	self.state:SetFrameRef("ZPerlRaidHeader1", _G[XPERL_RAIDGRP_PREFIX..1])
-	self.state:SetFrameRef("ZPerlRaidHeader2", _G[XPERL_RAIDGRP_PREFIX..2])
-	self.state:SetFrameRef("ZPerlRaidHeader3", _G[XPERL_RAIDGRP_PREFIX..3])
-	self.state:SetFrameRef("ZPerlRaidHeader4", _G[XPERL_RAIDGRP_PREFIX..4])
-	self.state:SetFrameRef("ZPerlRaidHeader5", _G[XPERL_RAIDGRP_PREFIX..5])
-	self.state:SetFrameRef("ZPerlRaidHeader6", _G[XPERL_RAIDGRP_PREFIX..6])
-	self.state:SetFrameRef("ZPerlRaidHeader7", _G[XPERL_RAIDGRP_PREFIX..7])
-	self.state:SetFrameRef("ZPerlRaidHeader8", _G[XPERL_RAIDGRP_PREFIX..8])
-	self.state:SetFrameRef("ZPerlRaidHeader9", _G[XPERL_RAIDGRP_PREFIX..9])
-	self.state:SetFrameRef("ZPerlRaidHeader10", _G[XPERL_RAIDGRP_PREFIX..10])
-	self.state:SetFrameRef("ZPerlRaidHeader11", _G[XPERL_RAIDGRP_PREFIX..11])
-	self.state:SetFrameRef("ZPerlRaidHeader12", _G[XPERL_RAIDGRP_PREFIX..12])
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		self.state = CreateFrame("Frame", nil, nil, "SecureHandlerStateTemplate")
+		self.state:SetFrameRef("ZPerlRaidHeader1", _G[XPERL_RAIDGRP_PREFIX..1])
+		self.state:SetFrameRef("ZPerlRaidHeader2", _G[XPERL_RAIDGRP_PREFIX..2])
+		self.state:SetFrameRef("ZPerlRaidHeader3", _G[XPERL_RAIDGRP_PREFIX..3])
+		self.state:SetFrameRef("ZPerlRaidHeader4", _G[XPERL_RAIDGRP_PREFIX..4])
+		self.state:SetFrameRef("ZPerlRaidHeader5", _G[XPERL_RAIDGRP_PREFIX..5])
+		self.state:SetFrameRef("ZPerlRaidHeader6", _G[XPERL_RAIDGRP_PREFIX..6])
+		self.state:SetFrameRef("ZPerlRaidHeader7", _G[XPERL_RAIDGRP_PREFIX..7])
+		self.state:SetFrameRef("ZPerlRaidHeader8", _G[XPERL_RAIDGRP_PREFIX..8])
+		self.state:SetFrameRef("ZPerlRaidHeader9", _G[XPERL_RAIDGRP_PREFIX..9])
+		self.state:SetFrameRef("ZPerlRaidHeader10", _G[XPERL_RAIDGRP_PREFIX..10])
+		self.state:SetFrameRef("ZPerlRaidHeader11", _G[XPERL_RAIDGRP_PREFIX..11])
+		self.state:SetFrameRef("ZPerlRaidHeader12", _G[XPERL_RAIDGRP_PREFIX..12])
 
-	self.state:SetAttribute("partySmallRaid", XPerlDB.party.smallRaid)
-	self.state:SetAttribute("raidEnabled", XPerlDB.raid.enable)
+		self.state:SetAttribute("partySmallRaid", XPerlDB.party.smallRaid)
+		self.state:SetAttribute("raidEnabled", XPerlDB.raid.enable)
 
-	self.state:SetAttribute("_onstate-groupupdate", [[
-		--print(newstate)
+		self.state:SetAttribute("_onstate-groupupdate", [[
+			--print(newstate)
 
-		if newstate == "hide" then
-			self:GetFrameRef("ZPerlRaidHeader1"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader2"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader3"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader4"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader5"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader6"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader7"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader8"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader9"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader10"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader11"):Hide()
-			self:GetFrameRef("ZPerlRaidHeader12"):Hide()
-		elseif self:GetAttribute('partySmallRaid') or not self:GetAttribute('raidEnabled') then
-			return
-		else
-			self:GetFrameRef("ZPerlRaidHeader1"):Show()
-			self:GetFrameRef("ZPerlRaidHeader2"):Show()
-			self:GetFrameRef("ZPerlRaidHeader3"):Show()
-			self:GetFrameRef("ZPerlRaidHeader4"):Show()
-			self:GetFrameRef("ZPerlRaidHeader5"):Show()
-			self:GetFrameRef("ZPerlRaidHeader6"):Show()
-			self:GetFrameRef("ZPerlRaidHeader7"):Show()
-			self:GetFrameRef("ZPerlRaidHeader8"):Show()
-			self:GetFrameRef("ZPerlRaidHeader9"):Show()
-			self:GetFrameRef("ZPerlRaidHeader10"):Show()
-			self:GetFrameRef("ZPerlRaidHeader11"):Show()
-			self:GetFrameRef("ZPerlRaidHeader12"):Show()
-		end
-	]])
-	RegisterStateDriver(self.state, "groupupdate", "[petbattle] hide; show")
+			if newstate == "hide" then
+				self:GetFrameRef("ZPerlRaidHeader1"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader2"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader3"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader4"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader5"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader6"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader7"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader8"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader9"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader10"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader11"):Hide()
+				self:GetFrameRef("ZPerlRaidHeader12"):Hide()
+			elseif self:GetAttribute('partySmallRaid') or not self:GetAttribute('raidEnabled') then
+				return
+			else
+				self:GetFrameRef("ZPerlRaidHeader1"):Show()
+				self:GetFrameRef("ZPerlRaidHeader2"):Show()
+				self:GetFrameRef("ZPerlRaidHeader3"):Show()
+				self:GetFrameRef("ZPerlRaidHeader4"):Show()
+				self:GetFrameRef("ZPerlRaidHeader5"):Show()
+				self:GetFrameRef("ZPerlRaidHeader6"):Show()
+				self:GetFrameRef("ZPerlRaidHeader7"):Show()
+				self:GetFrameRef("ZPerlRaidHeader8"):Show()
+				self:GetFrameRef("ZPerlRaidHeader9"):Show()
+				self:GetFrameRef("ZPerlRaidHeader10"):Show()
+				self:GetFrameRef("ZPerlRaidHeader11"):Show()
+				self:GetFrameRef("ZPerlRaidHeader12"):Show()
+			end
+		]])
+		RegisterStateDriver(self.state, "groupupdate", "[petbattle] hide; show")
+	end
 
 	self.time = 0
 	self.Array = { }
@@ -1177,7 +1194,9 @@ function XPerl_Raid_UpdateDisplay(self)
 		XPerl_Raid_UpdateManaType(self)
 		XPerl_Raid_UpdateMana(self)
 	end
-	XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
+	end
 	XPerl_Raid_UpdatePlayerFlags(self)
 	XPerl_Raid_UpdateHealth(self)
 	XPerl_Raid_UpdateName(self)
@@ -1214,14 +1233,14 @@ function XPerl_Raid_HideShowRaid()
 	end
 
 	for i = 1, WoWclassCount do
-		if (rconf.group[i] and enable and (i < 11 or rconf.sortByClass) and not singleGroup) then
-			if not C_PetBattles.IsInBattle() then
+		if (rconf.group[i] and enable and (i < 9 or rconf.sortByClass) and not singleGroup) then
+			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and not C_PetBattles.IsInBattle() then
 				if (not raidHeaders[i]:IsShown()) then
 					raidHeaders[i]:Show()
 				end
 			else
-				if (raidHeaders[i]:IsShown()) then
-					raidHeaders[i]:Hide()
+				if (not raidHeaders[i]:IsShown()) then
+					raidHeaders[i]:Show()
 				end
 			end
 		else
@@ -1264,10 +1283,14 @@ local function DisableCompactRaidFrames()
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate5Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate10Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate15Players", false)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate25Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate40Players", false)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec1", false)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec2", false)
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", false)
+	else
+		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate25Players", false)
+		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec1", false)
+		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec2", false)
+	end
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvP", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvE", false)
 	--CompactUnitFrameProfiles_ApplyCurrentSettings()
@@ -1426,10 +1449,12 @@ function XPerl_Raid_Events:GROUP_ROSTER_UPDATE()
 	BuildGuidMap()
 	if (IsInRaid() or (IsInGroup() and rconf.inParty)) then
 		XPerl_Raid_Frame:Show()
-		if (rconf.raid_role) then
-			for i, frame in pairs(FrameArray) do
-				if (frame.partyid) then
-					XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
+		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+			if (rconf.raid_role) then
+				for i, frame in pairs(FrameArray) do
+					if (frame.partyid) then
+						XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
+					end
 				end
 			end
 		end
@@ -1918,7 +1943,7 @@ end
 
 -- XPerl_ScaleRaid
 function XPerl_ScaleRaid()
-	for frame = 1, WoWclassCount do
+	for frame = 1, 12 do
 		local f = _G["XPerl_Raid_Title"..frame]
 		if (f) then
 			f:SetScale(rconf.scale)
@@ -1932,7 +1957,7 @@ function XPerl_Raid_SetWidth()
 		XPerl_OutOfCombatQueue[XPerl_Raid_SetWidth] = true
 		return
 	end
-	for i = 1, WoWclassCount do
+	for i = 1, 12 do
 		local f = _G["XPerl_Raid_Title"..i]
 		if (f) then
 			f:SetWidth(80 + rconf.size.width)
@@ -2066,7 +2091,7 @@ end
 
 -- XPerl_EnableRaidMouse()
 function XPerl_EnableRaidMouse()
-	for i = 1, WoWclassCount do
+	for i = 1, 12 do
 		local frame = _G["XPerl_Raid_Title"..i]
 		if (XPerlLocked == 0) then
 			frame:EnableMouse(true)
@@ -2168,6 +2193,10 @@ local normalRezzers = {
 	MONK = true
 }
 
+local function SortCooldown(a, b)
+	return a.cd < b.cd
+end
+
 local function GetCombatRezzerList()
 	local anyCombat = 0
 	local anyAlive = 0
@@ -2221,9 +2250,7 @@ local function GetCombatRezzerList()
 		end
 
 		if (#ret > 0) then
-			sort(ret, function(a,b)
-				return a.cd < b.cd
-			end)
+			sort(ret, SortCooldown)
 
 			local list = ""
 			for k,v in ipairs(ret) do
@@ -2388,20 +2415,37 @@ local function SetMainHeaderAttributes(self)
 end
 
 local function DefaultRaidClasses()
-	return {
-		{enable = true, name = "WARRIOR"},
-		{enable = true, name = "DEATHKNIGHT"},
-		{enable = true, name = "ROGUE"},
-		{enable = true, name = "HUNTER"},
-		{enable = true, name = "MAGE"},
-		{enable = true, name = "WARLOCK"},
-		{enable = true, name = "PRIEST"},
-		{enable = true, name = "DRUID"},
-		{enable = true, name = "SHAMAN"},
-		{enable = true, name = "PALADIN"},
-		{enable = true, name = "MONK"},
-		{enable = true, name = "DEMONHUNTER"},
-	}
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		return {
+			{enable = true, name = "WARRIOR"},
+			--{enable = true, name = "DEATHKNIGHT"},
+			{enable = true, name = "ROGUE"},
+			{enable = true, name = "HUNTER"},
+			{enable = true, name = "MAGE"},
+			{enable = true, name = "WARLOCK"},
+			{enable = true, name = "PRIEST"},
+			{enable = true, name = "DRUID"},
+			{enable = true, name = "SHAMAN"},
+			{enable = true, name = "PALADIN"},
+			--{enable = true, name = "MONK"},
+			--{enable = true, name = "DEMONHUNTER"},
+		}
+	else
+		return {
+			{enable = true, name = "WARRIOR"},
+			{enable = true, name = "DEATHKNIGHT"},
+			{enable = true, name = "ROGUE"},
+			{enable = true, name = "HUNTER"},
+			{enable = true, name = "MAGE"},
+			{enable = true, name = "WARLOCK"},
+			{enable = true, name = "PRIEST"},
+			{enable = true, name = "DRUID"},
+			{enable = true, name = "SHAMAN"},
+			{enable = true, name = "PALADIN"},
+			{enable = true, name = "MONK"},
+			{enable = true, name = "DEMONHUNTER"},
+		}
+	end
 end
 
 local function GroupFilter(n)
@@ -2451,7 +2495,7 @@ function XPerl_Raid_ChangeAttributes()
 
 	rconf.anchor = (rconf and rconf.anchor) or "TOP"
 
-	for i = 1, rconf.sortByClass and WoWclassCount or 12 do
+	for i = 1, rconf.sortByClass and WoWclassCount or (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 9 or 12) do
 		local groupHeader = raidHeaders[i]
 
 		-- Hide this when we change attributes, so the whole re-calc is only done once, instead of for every attribute change
@@ -2516,7 +2560,7 @@ function XPerl_Raid_Set_Bits(self)
 	XPerl_ScaleRaid()
 	XPerl_Raid_SetWidth()
 
-	for i = 1, WoWclassCount do
+	for i = 1, 12 do
 		XPerl_SavePosition(_G["XPerl_Raid_Title"..i], true)
 	end
 
@@ -2535,16 +2579,18 @@ function XPerl_Raid_Set_Bits(self)
 
 	SkipHighlightUpdate = nil
 
-	if (rconf.healprediction) then
-		self:RegisterEvent("UNIT_HEAL_PREDICTION")
-	else
-		self:UnregisterEvent("UNIT_HEAL_PREDICTION")
-	end
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if (rconf.healprediction) then
+			self:RegisterEvent("UNIT_HEAL_PREDICTION")
+		else
+			self:UnregisterEvent("UNIT_HEAL_PREDICTION")
+		end
 
-	if (rconf.absorbs) then
-		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
-	else
-		self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		if (rconf.absorbs) then
+			self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		else
+			self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
+		end
 	end
 
 	if (IsInRaid() or (IsInGroup() and rconf.inParty)) then

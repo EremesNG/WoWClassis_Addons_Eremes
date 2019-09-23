@@ -8,8 +8,13 @@ local perc1F = "%.1f"..PERCENT_SYMBOL
 
 XPerl_RequestConfig(function(New)
 	conf = New
-end, "$Revision: 1135 $")
-XPerl_SetModuleRevision("$Revision: 1135 $")
+end, "$Revision: 1158 $")
+XPerl_SetModuleRevision("$Revision: 1158 $")
+
+local LCD = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and LibStub and LibStub("LibClassicDurations")
+if LCD then
+	LCD:Register("ZPerl")
+end
 
 -- Upvalues
 local _G = _G
@@ -113,6 +118,26 @@ local UnitReaction = UnitReaction
 local UnregisterUnitWatch = UnregisterUnitWatch
 local UpdateAddOnCPUUsage = UpdateAddOnCPUUsage
 local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
+
+local RealUnitHealth
+local RealUnitHealthMax
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	RealUnitHealth = function(unit)
+		if RealMobHealth then
+			local cur, max = RealMobHealth.GetUnitHealth(unit)
+			if cur then return cur end
+		end
+		return UnitHealth(unit)
+	end
+
+	RealUnitHealthMax = function(unit)
+		if RealMobHealth then
+			local cur, max = RealMobHealth.GetUnitHealth(unit)
+			if max then return max end
+		end
+		return UnitHealthMax(unit)
+	end
+end
 
 local CreateFrame = CreateFrame
 
@@ -319,7 +344,7 @@ local SpiritRealm = GetSpellInfo(235621)
 local function DoRangeCheck(unit, opt)
 	local range
 	if (opt.PlusHealth) then
-		local hp, hpMax = UnitIsGhost(unit) and 1 or (UnitIsDead(unit) and 0 or UnitHealth(unit)), UnitHealthMax(unit)
+		local hp, hpMax = UnitIsGhost(unit) and 1 or (UnitIsDead(unit) and 0 or (RealUnitHealth and RealUnitHealth(unit) or UnitHealth(unit))), (RealUnitHealthMax and RealUnitHealthMax(unit) or UnitHealthMax(unit))
 		-- Begin 4.3 divide by 0 work around.
 		local percent
 		if UnitIsDeadOrGhost(unit) or (hp == 0 and hpMax == 0) then -- Probably dead target
@@ -367,11 +392,7 @@ local function DoRangeCheck(unit, opt)
 			range = nil
 		else--]]
 		if (opt.interact) then
-			if (opt.interact == 6) then
-				--[[range, checkedRange = UnitInRange(unit) -- 40 yards
-				if not checkedRange then
-					range = 1
-				end]]
+			if (opt.interact == 6) then -- 45y
 				local checkedRange
 				if UnitCanAssist("player", unit) then
 					-- Wrangling Rope (45y)
@@ -394,15 +415,11 @@ local function DoRangeCheck(unit, opt)
 						end
 					end
 				end
-			elseif (opt.interact == 5) then
-				--[[range, checkedRange = UnitInRange(unit) -- 40 yards
-				if not checkedRange then
-					range = 1
-				end]]
+			elseif (opt.interact == 5) then -- 40y
 				local checkedRange
 				if UnitCanAssist("player", unit) then
 					-- Vial of the Sunwell (40y)
-					range = IsItemInRange(34471, unit)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 34471 or 1713 --[[Ankh of Life]], unit)
 					if range == nil then
 						-- Fallback (40y)
 						range, checkedRange = UnitInRange(unit)
@@ -421,60 +438,77 @@ local function DoRangeCheck(unit, opt)
 						end
 					end
 				end
-			elseif (opt.interact == 3) then
-				-- Sparrowhawk Net (10y)
-				range = IsItemInRange(32321, unit)
-				if range == nil then
-					-- Fallback (8y)
-					range = CheckInteractDistance(unit, 2)
+			elseif (opt.interact == 3) then -- 10y
+				if UnitCanAssist("player", unit) then
+					-- Sparrowhawk Net (10y)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 32321 or 21866 --[[Alterac Ram Collar DND]], unit)
+					if range == nil then
+						-- Fallback (8y) (Classic = 10 yards)
+						range = CheckInteractDistance(unit, WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 2 or 1)
+					end
+				else
+					-- Sparrowhawk Net (10y)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 32321 or 9618 --[[Wildkin Muisek Vessel]], unit)
+					if range == nil then
+						-- Fallback (8y) (Classic = 10 yards)
+						range = CheckInteractDistance(unit, WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 2 or 1)
+					end
 				end
-			elseif (opt.interact == 2) then
+			elseif (opt.interact == 2) then -- 20y
 				if UnitCanAssist("player", unit) then
 					-- Mistletoe (20y)
 					range = IsItemInRange(21519, unit)
 					if range == nil then
-						-- Fallback (28y)
-						range = CheckInteractDistance(unit, 1)
+						-- Fallback (28y) (Classic = 21 yards)
+						range = CheckInteractDistance(unit, 4)
 					end
 				else
 					-- Gnomish Death Ray (20y)
-					range = IsItemInRange(10645, unit)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 10645 or 1191 --[[Bag of Marbles]], unit)
 					if range == nil then
-						-- Fallback (28y)
-						range = CheckInteractDistance(unit, 1)
+						-- Fallback (28y) (Classic = 21 yards)
+						range = CheckInteractDistance(unit, 4)
 					end
 				end
-			elseif (opt.interact == 1) then
-				-- Handful of Snowflakes (30y)
-				range = IsItemInRange(34191, unit)
-				if range == nil then
-					range = CheckInteractDistance(unit, opt.interact)
+			elseif (opt.interact == 1) then -- 30y
+				if UnitCanAssist("player", unit) then
+					-- Handful of Snowflakes (30y)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 34191 or 1180 --[[Scroll of Stamina]], unit)
+					if range == nil then
+						-- Fallback (28y) (Classic = 21 yards)
+						range = CheckInteractDistance(unit, 4)
+					end
+				else
+					-- Handful of Snowflakes (30y)
+					range = IsItemInRange(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and 34191 or 835 --[[Large Rope Net]], unit)
+					if range == nil then
+						-- Fallback (28y) (Classic = 21 yards)
+						range = CheckInteractDistance(unit, 4)
+					end
 				end
-			--[[else
-				range = CheckInteractDistance(unit, opt.interact)]]
 			end
 			-- CheckInteractDistance
-			-- 1 = Compare Achievements = 28 yards
-			-- 2 = Trade = 8 yards
-			-- 3 = Duel = 7 yards
-			-- 4 = Follow = 28 yards
-			-- 5 = ??? = 7 yards
+			-- 1 = Inspect = 28 yards (Classic = 10 yards)
+			-- 2 = Trade = 8 yards (Classic = 11 yards)
+			-- 3 = Duel = 7 yards (Classic = 10 yards)
+			-- 4 = Follow = 28 yards (Classic = 21 yards)
+			-- 5 = ??? = 7 yards (Classic = 10 yards)
 		elseif (opt.spell) then
 			if UnitCanAssist("player", unit) then
 				range = IsSpellInRange(opt.spell, unit)
 				if range == nil then
 					-- Fallback (28y)
-					range = CheckInteractDistance(unit, 1)
+					range = CheckInteractDistance(unit, 4)
 				end
 			elseif UnitCanAttack("player", unit) then
 				range = IsSpellInRange(opt.spell, unit)
 				if range == nil then
 					-- Fallback (28y)
-					range = CheckInteractDistance(unit, 1)
+					range = CheckInteractDistance(unit, 4)
 				end
 			else
 				-- Fallback (28y)
-				range = CheckInteractDistance(unit, 1)
+				range = CheckInteractDistance(unit, 4)
 			end
 		elseif (opt.item and UnitCanAssist("player", unit)) then
 			range = IsItemInRange(opt.item, unit)
@@ -767,45 +801,65 @@ hiddenParent:Hide()
 -- XPerl_BlizzFrameDisable
 function XPerl_BlizzFrameDisable(self)
 	if (self) then
-		UnregisterUnitWatch(self)		-- Should stop Archaeologist from re-showing target frame
+		UnregisterUnitWatch(self)
+
 		self:UnregisterAllEvents()
-		-- Make it so it won't be visible, even if shown by another mod
-		--[[self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", -400, 500)]]
+
+		if self == PlayerFrame then
+			local events = {
+				"PLAYER_ENTERING_WORLD",
+				"UNIT_ENTERING_VEHICLE",
+				"UNIT_ENTERED_VEHICLE",
+				"UNIT_EXITING_VEHICLE",
+				"UNIT_EXITED_VEHICLE",
+			}
+
+			for i, event in pairs(events) do
+				if pcall(self.RegisterEvent, self, event) then
+					self:RegisterEvent(event)
+				end
+			end
+		end
+
 		self:SetMovable(true)
 		self:SetUserPlaced(true)
 		self:SetDontSavePosition(true)
 		self:SetMovable(false)
+
 		if not InCombatLockdown() then
 			self:Hide()
 		end
 		self:SetParent(hiddenParent)
+
 		self:HookScript("OnShow", function(self)
 			if not InCombatLockdown() then
 				self:Hide()
 			end
 		end)
 
-		local frame = _G[self:GetName()]
-
-		local health = frame.healthbar
+		local health = self.healthbar
 		if health then
 			health:UnregisterAllEvents()
 		end
 
-		local power = frame.manabar
+		local power = self.manabar
 		if power then
 			power:UnregisterAllEvents()
 		end
 
-		local spell = frame.spellbar
+		local spell = self.spellbar
 		if spell then
 			spell:UnregisterAllEvents()
 		end
 
-		local altpowerbar = frame.powerBarAlt
-		if altpowerbar then
-			altpowerbar:UnregisterAllEvents()
+		local powerBarAlt = self.powerBarAlt
+		if powerBarAlt then
+			powerBarAlt:UnregisterAllEvents()
+		end
+
+		local buffFrame = self.BuffFrame
+		if buffFrame then
+			buffFrame:UnregisterAllEvents()
 		end
 	end
 end
@@ -1510,12 +1564,12 @@ function XPerl_MinimapButton_Details(tt, ldb)
 end
 
 function XPerl_GetDisplayedPowerType(unitID) -- copied from CompactUnitFrame.lua
-	--[[local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(unitID)
+	local _, _, _, _, _, _, showOnRaid = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitAlternatePowerInfo(unitID)
 	if ( showOnRaid and UnitHasVehicleUI(unitID) and (UnitInParty(unitID) or UnitInRaid(unitID)) ) then
 		return ALTERNATE_POWER_INDEX
-	else ]]--
+	else
 		return UnitPowerType(unitID)
-	--end
+	end
 end
 
 local ManaColours = {
@@ -1775,11 +1829,9 @@ function XPerl_CombatFlashSetFrames(self)
 	end
 end
 
---[[local MagicCureTalents = {
-	["DRUID"] = GetSpellInfo(88423),			-- Nature's Cure
-	["PALADIN"] = GetSpellInfo(53551),			-- Sacred Cleansing
-	["SHAMAN"] = GetSpellInfo(77130),			-- Improved Cleanse Spirit
-}]]--
+local MagicCureTalentsClassic = {
+	["PALADIN"] = 4987, -- Clense
+}
 
 local MagicCureTalents = {
 	["DRUID"] = 4, -- Resto
@@ -1790,7 +1842,7 @@ local MagicCureTalents = {
 
 local function CanClassCureMagic(class)
 	if (MagicCureTalents[class]) then
-		return true--(GetSpecialization() == MagicCureTalents[class])--IsSpellKnown(MagicCureTalents[class])
+		return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and GetSpecialization() == MagicCureTalents[class] or IsSpellKnown(MagicCureTalentsClassic[class])
 	end
 end
 
@@ -1946,13 +1998,13 @@ function XPerl_CheckDebuffs(self, unit, resetBorders)
 	local _, unitClass = UnitClass(unit)
 
 	for i = 1, 40 do
-		local debuffName, debuff, debuffStack, debuffType = UnitDebuff(unit, i)
-		if (not debuff) then
+		local name, _, _, debuffType = UnitDebuff(unit, i)
+		if (not name) then
 			break
 		end
 
 		if (debuffType) then
-			local exclude = ArcaneExclusions[debuffName]
+			local exclude = ArcaneExclusions[name]
 			if (not exclude or (type(exclude) == "table" and not exclude[unitClass])) then
 				Curses[debuffType] = debuffType
 				debuffCount = debuffCount + 1
@@ -2105,25 +2157,27 @@ end
 -- XPerl_RestoreAllPositions
 function XPerl_RestoreAllPositions()
 	local table = XPerl_GetSavePositionTable()
-	if (table) then
+	if table then
 		for k, v in pairs(table) do
-			if (k == "XPerl_Runes" or k == "XPerl_Frame" or k == "XPerl_RaidMonitor_Frame" or k == "XPerl_Check" or k == "XPerl_AdminFrame" or k == "XPerl_Assists_Frame") then
+			if k == "XPerl_Runes" or k == "XPerl_Frame" or k == "XPerl_RaidMonitor_Frame" or k == "XPerl_Check" or k == "XPerl_AdminFrame" or k == "XPerl_Assists_Frame" then
 				-- Fix for a wrong name with versions 2.3.2 and 2.3.2a
 				-- It was using XPerl_Frame instead of XPerl_MTList_Anchor
 				-- and XPerl_RaidMonitor_Frame instead of XPerl_RaidMonitor_Anchor
 				-- And now a change to XPerl_Check to XPerl_CheckAnchor and XPerl_AdminFrame to XPerl_AdminFrameAnchor
 				table[k] = nil
+			elseif k == "XPerl_Options" or k == "XPerl_OptionsAnchor" then
+				-- Noop
 			else
 				local frame = _G[k]
-				if (frame) then
+				if frame then
 					--[[if k == "XPerl_Runes" and conf.player.dockRunes then
 						break
 					end]]
-					if (v.left and v.top) then
+					if v.left and v.top then
 						frame:ClearAllPoints()
 						frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", v.left / frame:GetScale(), v.top / frame:GetScale())
-						if (v.height and v.width) then
-							if (frame:IsResizable()) then
+						if v.height and v.width then
+							if frame:IsResizable() then
 								frame:SetHeight(v.height)
 								frame:SetWidth(v.width)
 							else
@@ -2147,117 +2201,206 @@ function XPerl_RestoreAllPositions()
 	end
 end
 
-local BuffExceptions = {
-	PRIEST = {
-		[GetSpellInfo(774)] = true,					-- Rejuvenation
-		[GetSpellInfo(8936)] = true,				-- Regrowth
-		--[GetSpellInfo(33076)] = true,				-- Prayer of Mending
-		--[GetSpellInfo(81749)] = true,				-- Atonement
-	},
-	DRUID = {
-		[GetSpellInfo(139)] = true,					-- Renew
-	},
-	WARLOCK = {
-		[GetSpellInfo(20707)] = true,				-- Soulstone Resurrection
-	},
-	HUNTER = {
-		[GetSpellInfo(13165)] = true,				-- Aspect of the Hawk
-		[GetSpellInfo(5118)] = true,				-- Aspect of the Cheetah
-		[GetSpellInfo(13159)] = true,				-- Aspect of the Pack
-		--[GetSpellInfo(61648)] = true,				-- Aspect of the Beast
-		[GetSpellInfo(13163)] = true,			-- Aspect of the Monkey
-		[GetSpellInfo(19506)] = true,				-- Trueshot Aura
-		[GetSpellInfo(5384)] = true,				-- Feign Death
-	},
-	ROGUE = {
-		[GetSpellInfo(1784)] = true,				-- Stealth
-		[GetSpellInfo(1856)] = true,				-- Vanish
-		[GetSpellInfo(2983)] = true,				-- Sprint
-		[GetSpellInfo(13750)] = true,				-- Adrenaline Rush
-		[GetSpellInfo(13877)] = true,				-- Blade Flurry
-	},
-	PALADIN = {
-		[GetSpellInfo(20154)] = true,				-- Seal of Righteousness
-		[GetSpellInfo(20165)] = true,				-- Seal of Insight
-		[GetSpellInfo(20164)] = true,				-- Seal of Justice
-		--[GetSpellInfo(31801)] = true,				-- Seal of Truth
-		[GetSpellInfo(20375)] = true,				-- Seal of Command
-		[GetSpellInfo(20166)] = true,				-- Seal of Wisdom
-		[GetSpellInfo(20165)] = true,				-- Seal of Light
-		--[GetSpellInfo(53736)] = true,				-- Seal of Corruption
-		--[GetSpellInfo(31892)] = true,				-- Seal of Blood
-		--[GetSpellInfo(31801)] = true,				-- Seal of Vengeance
-		[GetSpellInfo(25780)] = true,				-- Righteous Fury
-		[GetSpellInfo(20925)] = true,				-- Holy Shield
-		--[GetSpellInfo(54428)] = true,				-- Divine Plea
-	},
-}
-
-local DebuffExceptions = {
-	ALL = {
-		[GetSpellInfo(11196)] = true,				-- Recently Bandaged
-	},
-	PRIEST = {
-		[GetSpellInfo(6788)] = true,				-- Weakened Soul
-	},
-	PALADIN = {
-		[GetSpellInfo(25771)] = true				-- Forbearance
+local BuffExceptions
+local DebuffExceptions
+local SeasonalDebuffs
+local RaidFrameIgnores
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	BuffExceptions = {
+		PRIEST = {
+			[GetSpellInfo(774)] = true,					-- Rejuvenation
+			[GetSpellInfo(8936)] = true,				-- Regrowth
+			--[GetSpellInfo(33076)] = true,				-- Prayer of Mending
+			--[GetSpellInfo(81749)] = true,				-- Atonement
+		},
+		DRUID = {
+			[GetSpellInfo(139)] = true,					-- Renew
+		},
+		WARLOCK = {
+			[GetSpellInfo(20707)] = true,				-- Soulstone Resurrection
+		},
+		HUNTER = {
+			[GetSpellInfo(13165)] = true,				-- Aspect of the Hawk
+			[GetSpellInfo(5118)] = true,				-- Aspect of the Cheetah
+			[GetSpellInfo(13159)] = true,				-- Aspect of the Pack
+			--[GetSpellInfo(61648)] = true,				-- Aspect of the Beast
+			[GetSpellInfo(13163)] = true,			-- Aspect of the Monkey
+			[GetSpellInfo(19506)] = true,				-- Trueshot Aura
+			[GetSpellInfo(5384)] = true,				-- Feign Death
+		},
+		ROGUE = {
+			[GetSpellInfo(1784)] = true,				-- Stealth
+			[GetSpellInfo(1856)] = true,				-- Vanish
+			[GetSpellInfo(2983)] = true,				-- Sprint
+			[GetSpellInfo(13750)] = true,				-- Adrenaline Rush
+			[GetSpellInfo(13877)] = true,				-- Blade Flurry
+		},
+		PALADIN = {
+			[GetSpellInfo(20154)] = true,				-- Seal of Righteousness
+			[GetSpellInfo(20165)] = true,				-- Seal of Insight
+			[GetSpellInfo(20164)] = true,				-- Seal of Justice
+			--[GetSpellInfo(31801)] = true,				-- Seal of Truth
+			[GetSpellInfo(20375)] = true,				-- Seal of Command
+			[GetSpellInfo(20166)] = true,				-- Seal of Wisdom
+			[GetSpellInfo(20165)] = true,				-- Seal of Light
+			--[GetSpellInfo(53736)] = true,				-- Seal of Corruption
+			--[GetSpellInfo(31892)] = true,				-- Seal of Blood
+			--[GetSpellInfo(31801)] = true,				-- Seal of Vengeance
+			[GetSpellInfo(25780)] = true,				-- Righteous Fury
+			[GetSpellInfo(20925)] = true,				-- Holy Shield
+			--[GetSpellInfo(54428)] = true,				-- Divine Plea
+		},
 	}
-}
+	DebuffExceptions = {
+		ALL = {
+			[GetSpellInfo(11196)] = true,				-- Recently Bandaged
+		},
+		PRIEST = {
+			[GetSpellInfo(6788)] = true,				-- Weakened Soul
+		},
+		PALADIN = {
+			[GetSpellInfo(25771)] = true				-- Forbearance
+		}
+	}
 
-local SeasonalDebuffs = {
-	[GetSpellInfo(26004)] = true,					-- Mistletoe
-	[GetSpellInfo(26680)] = true,					-- Adored
-	[GetSpellInfo(26898)] = true,					-- Heartbroken
-	--[GetSpellInfo(64805)] = true,					-- Bested Darnassus
-	--[GetSpellInfo(64808)] = true,					-- Bested the Exodar
-	--[GetSpellInfo(64809)] = true,					-- Bested Gnomeregan
-	--[GetSpellInfo(64810)] = true,					-- Bested Ironforge
-	--[GetSpellInfo(64811)] = true,					-- Bested Orgrimmar
-	--[GetSpellInfo(64812)] = true,					-- Bested Sen'jin
-	--[GetSpellInfo(64813)] = true,					-- Bested Silvermoon City
-	--[GetSpellInfo(64814)] = true,					-- Bested Stormwind
-	--[GetSpellInfo(64815)] = true,					-- Bested Thunder Bluff
-	--[GetSpellInfo(64816)] = true,					-- Bested the Undercity
-	--[GetSpellInfo(36900)] = true,					-- Soul Split: Evil!
-	--[GetSpellInfo(36901)] = true,					-- Soul Split: Good
-	--[GetSpellInfo(36899)] = true,					-- Transporter Malfunction
-	[GetSpellInfo(24755)] = true,					-- Tricked or Treated
-	--[GetSpellInfo(69127)] = true,					-- Chill of the Throne
-	--[GetSpellInfo(69438)] = true,					-- Sample Satisfaction
-}
+	SeasonalDebuffs = {
+		[GetSpellInfo(26004)] = true,					-- Mistletoe
+		[GetSpellInfo(26680)] = true,					-- Adored
+		[GetSpellInfo(26898)] = true,					-- Heartbroken
+		--[GetSpellInfo(64805)] = true,					-- Bested Darnassus
+		--[GetSpellInfo(64808)] = true,					-- Bested the Exodar
+		--[GetSpellInfo(64809)] = true,					-- Bested Gnomeregan
+		--[GetSpellInfo(64810)] = true,					-- Bested Ironforge
+		--[GetSpellInfo(64811)] = true,					-- Bested Orgrimmar
+		--[GetSpellInfo(64812)] = true,					-- Bested Sen'jin
+		--[GetSpellInfo(64813)] = true,					-- Bested Silvermoon City
+		--[GetSpellInfo(64814)] = true,					-- Bested Stormwind
+		--[GetSpellInfo(64815)] = true,					-- Bested Thunder Bluff
+		--[GetSpellInfo(64816)] = true,					-- Bested the Undercity
+		--[GetSpellInfo(36900)] = true,					-- Soul Split: Evil!
+		--[GetSpellInfo(36901)] = true,					-- Soul Split: Good
+		--[GetSpellInfo(36899)] = true,					-- Transporter Malfunction
+		[GetSpellInfo(24755)] = true,					-- Tricked or Treated
+		--[GetSpellInfo(69127)] = true,					-- Chill of the Throne
+		--[GetSpellInfo(69438)] = true,					-- Sample Satisfaction
+	}
 
-local RaidFrameIgnores = {
-	[GetSpellInfo(26013)] = true,					-- Deserter
-	--[GetSpellInfo(71041)] = true,					-- Dungeon Deserter
-	--[GetSpellInfo(71328)] = true,					-- Dungeon Cooldown
-}
+	RaidFrameIgnores = {
+		[GetSpellInfo(26013)] = true,					-- Deserter
+		--[GetSpellInfo(71041)] = true,					-- Dungeon Deserter
+		--[GetSpellInfo(71328)] = true,					-- Dungeon Cooldown
+	}
+else
+	BuffExceptions = {
+		PRIEST = {
+			[GetSpellInfo(774)] = true,					-- Rejuvenation
+			[GetSpellInfo(8936)] = true,				-- Regrowth
+			[GetSpellInfo(33076)] = true,				-- Prayer of Mending
+			[GetSpellInfo(81749)] = true,				-- Atonement
+		},
+		DRUID = {
+			[GetSpellInfo(139)] = true,					-- Renew
+		},
+		WARLOCK = {
+			[GetSpellInfo(20707)] = true,				-- Soulstone Resurrection
+		},
+		HUNTER = {
+			--[GetSpellInfo(13165)] = true,				-- Aspect of the Hawk
+			--[GetSpellInfo(5118)] = true,				-- Aspect of the Cheetah
+			--[GetSpellInfo(13159)] = true,				-- Aspect of the Pack
+			[GetSpellInfo(61648)] = true,				-- Aspect of the Beast
+			-- [GetSpellInfo(13163)] = true,			-- Aspect of the Monkey
+			--[GetSpellInfo(19506)] = true,				-- Trueshot Aura
+			[GetSpellInfo(5384)] = true,				-- Feign Death
+		},
+		ROGUE = {
+			[GetSpellInfo(1784)] = true,				-- Stealth
+			[GetSpellInfo(1856)] = true,				-- Vanish
+			[GetSpellInfo(2983)] = true,				-- Sprint
+			[GetSpellInfo(13750)] = true,				-- Adrenaline Rush
+			[GetSpellInfo(13877)] = true,				-- Blade Flurry
+		},
+		PALADIN = {
+			--[GetSpellInfo(20154)] = true,				-- Seal of Righteousness
+			--[GetSpellInfo(20165)] = true,				-- Seal of Insight
+			--[GetSpellInfo(20164)] = true,				-- Seal of Justice
+			--[GetSpellInfo(31801)] = true,				-- Seal of Truth
+			--[GetSpellInfo(20375)] = true,				-- Seal of Command
+			--[GetSpellInfo(20166)] = true,				-- Seal of Wisdom
+			--[GetSpellInfo(20165)] = true,				-- Seal of Light
+			--[GetSpellInfo(53736)] = true,				-- Seal of Corruption
+			--[GetSpellInfo(31892)] = true,				-- Seal of Blood
+			--[GetSpellInfo(31801)] = true,				-- Seal of Vengeance
+			[GetSpellInfo(25780)] = true,				-- Righteous Fury
+			--[GetSpellInfo(20925)] = true,				-- Holy Shield
+			--[GetSpellInfo(54428)] = true,				-- Divine Plea
+		},
+	}
+	DebuffExceptions = {
+		ALL = {
+			[GetSpellInfo(11196)] = true,				-- Recently Bandaged
+		},
+		PRIEST = {
+			[GetSpellInfo(6788)] = true,				-- Weakened Soul
+		},
+		PALADIN = {
+			[GetSpellInfo(25771)] = true				-- Forbearance
+		}
+	}
+	SeasonalDebuffs = {
+		[GetSpellInfo(26004)] = true,					-- Mistletoe
+		[GetSpellInfo(26680)] = true,					-- Adored
+		[GetSpellInfo(26898)] = true,					-- Heartbroken
+		[GetSpellInfo(64805)] = true,					-- Bested Darnassus
+		[GetSpellInfo(64808)] = true,					-- Bested the Exodar
+		[GetSpellInfo(64809)] = true,					-- Bested Gnomeregan
+		[GetSpellInfo(64810)] = true,					-- Bested Ironforge
+		[GetSpellInfo(64811)] = true,					-- Bested Orgrimmar
+		[GetSpellInfo(64812)] = true,					-- Bested Sen'jin
+		[GetSpellInfo(64813)] = true,					-- Bested Silvermoon City
+		[GetSpellInfo(64814)] = true,					-- Bested Stormwind
+		[GetSpellInfo(64815)] = true,					-- Bested Thunder Bluff
+		[GetSpellInfo(64816)] = true,					-- Bested the Undercity
+		[GetSpellInfo(36900)] = true,					-- Soul Split: Evil!
+		[GetSpellInfo(36901)] = true,					-- Soul Split: Good
+		[GetSpellInfo(36899)] = true,					-- Transporter Malfunction
+		[GetSpellInfo(24755)] = true,					-- Tricked or Treated
+		[GetSpellInfo(69127)] = true,					-- Chill of the Throne
+		[GetSpellInfo(69438)] = true,					-- Sample Satisfaction
+	}
+
+	RaidFrameIgnores = {
+		[GetSpellInfo(26013)] = true,					-- Deserter
+		[GetSpellInfo(71041)] = true,					-- Dungeon Deserter
+		[GetSpellInfo(71328)] = true,					-- Dungeon Cooldown
+	}
+end
 
 -- BuffException
 local showInfo
 local function BuffException(unit, index, flag, func, exceptions, raidFrames)
-	local name, buff, count, debuffType, dur, max, isMine, isStealable
+	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID
 	if (flag ~= "RAID") then
 		-- Not filtered, just return it
-		name, buff, count, debuffType, dur, max, isMine, isStealable = func(unit, index)
-		return name, buff, count, debuffType, dur, max, isMine, isStealable, index
+		name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID = func(unit, index)
+		return name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index
 	end
 
-	name, buff, count, debuffType, dur, max, isMine, isStealable = func(unit, index, "RAID")
-	if (buff) then
+	name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID = func(unit, index, "RAID")
+	if (icon) then
 		-- We need the index of the buff unfiltered later for tooltips
 		for i = 1, 40 do
-			local name1, _, buff1, count1, debuffType1, dur1, max1, isMine1, isStealable1 = func(unit, i)
+			local name1, icon1, count1, _, _, _, unitCaster1 = func(unit, i)
 			if (not name1) then
 				break
 			end
-			if (name == name1 and buff == buff1 and count == count1 and isMine == isMine1) then
+			if (name == name1 and icon == icon1 and count == count1 and unitCaster == unitCaster1) then
 				index = i
 				break
 			end
 		end
 
-		return name, buff, count, debuffType, dur, max, isMine, isStealable, index
+		return name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index
 	end
 
 	-- See how many filtered buffs WoW has returned by default
@@ -2276,7 +2419,7 @@ local function BuffException(unit, index, flag, func, exceptions, raidFrames)
 	local classExceptions = exceptions[playerClass]
 	local allExceptions = exceptions.ALL
 	for i = 1, 40 do
-		name, buff, count, debuffType, dur, max, isMine, isStealable = func(unit, i)
+		name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID = func(unit, i)
 		if (not name) then
 			break
 		end
@@ -2302,7 +2445,7 @@ local function BuffException(unit, index, flag, func, exceptions, raidFrames)
 		if (good) then
 			foundValid = foundValid + 1
 			if (foundValid + normalBuffFilterCount == index) then
-				return name, buff, count, debuffType, dur, max, isMine, isStealable, i
+				return name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, i
 			end
 		end
 	end
@@ -2310,17 +2453,17 @@ end
 
 -- DebuffException
 local function DebuffException(unit, start, flag, func, raidFrames)
-	local name, buff, count, debuffType, dur, max, caster, isStealable, index
+	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index
 	local valid = 0
 	for i = 1, 40 do
-		name, buff, count, debuffType, dur, max, caster, isStealable, index = BuffException(unit, i, flag, func, DebuffExceptions, raidFrames)
+		name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index = BuffException(unit, i, flag, func, DebuffExceptions, raidFrames)
 		if (not name) then
 			break
 		end
 		if (not SeasonalDebuffs[name] and not (raidFrames and RaidFrameIgnores[name])) then
 			valid = valid + 1
 			if (valid == start) then
-				return name, buff, count, debuffType, dur, max, caster, isStealable, index
+				return name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index
 			end
 		end
 	end
@@ -2328,21 +2471,21 @@ end
 
 -- XPerl_UnitBuff
 function XPerl_UnitBuff(unit, index, flag, raidFrames)
-	return BuffException(unit, index, flag, Utopia_UnitBuff or UnitBuff, BuffExceptions, raidFrames)
+	return BuffException(unit, index, flag, UnitBuff, BuffExceptions, raidFrames)
 end
 
--- XPerl_UnitBuff
+-- XPerl_UnitDebuff
 function XPerl_UnitDebuff(unit, index, flag, raidFrames)
 	if (conf.buffs.ignoreSeasonal or raidFrames) then
-		return DebuffException(unit, index, flag, Utopia_UnitDebuff or UnitDebuff, raidFrames)
+		return DebuffException(unit, index, flag, UnitDebuff, raidFrames)
 	end
-	return BuffException(unit, index, flag, Utopia_UnitDebuff or UnitDebuff, DebuffExceptions, raidFrames)
+	return BuffException(unit, index, flag, UnitDebuff, DebuffExceptions, raidFrames)
 end
 
 -- XPerl_TooltipSetUnitBuff
 -- Retreives the index of the actual unfiltered buff, and uses this on unfiltered tooltip call
 function XPerl_TooltipSetUnitBuff(self, unit, ind, filter, raidFrames)
-	local name, buff, count, _, dur, max, caster, isStealable, index = BuffException(unit, ind, filter, UnitBuff, BuffExceptions, raidFrames)
+	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index = BuffException(unit, ind, filter, UnitBuff, BuffExceptions, raidFrames)
 	if (name and index) then
 		if (Utopia_SetUnitBuff) then
 			Utopia_SetUnitBuff(self, unit, index)
@@ -2355,7 +2498,7 @@ end
 -- XPerl_TooltipSetUnitDebuff
 -- Retreives the index of the actual unfiltered debuff, and uses this on unfiltered tooltip call
 function XPerl_TooltipSetUnitDebuff(self, unit, ind, filter, raidFrames)
-	local name, buff, count, debuffType, dur, max, caster, isStealable, index = XPerl_UnitDebuff(unit, ind, filter, raidFrames)
+	local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID, index = XPerl_UnitDebuff(unit, ind, filter, raidFrames)
 	if (name and index) then
 		if (Utopia_SetUnitDebuff) then
 			Utopia_SetUnitDebuff(self, unit, index)
@@ -2678,10 +2821,10 @@ local function AuraButtonOnShow(self)
 		cd.countdown:SetTextColor(1, 1, 0)
 	end
 
-	local name, buff, count, _, duration, endTime, caster, isStealable = UnitAura("player", self.xindex, self.xfilter)
-	if endTime and duration then
-		local start = endTime - duration
-		XPerl_CooldownFrame_SetTimer(self.cooldown, start, duration, 1, caster == "player")
+	local name, icon, count, debuffType, duration, expirationTime, unitCaster = UnitAura("player", self.xindex, self.xfilter)
+	if duration and expirationTime then
+		local start = expirationTime - duration
+		XPerl_CooldownFrame_SetTimer(self.cooldown, start, duration, 1, unitCaster == "player")
 	end
 end
 
@@ -2911,7 +3054,7 @@ end
 
 -- XPerl_Unit_BuffPositions
 function XPerl_Unit_BuffPositions(self, buffList1, buffList2, size1, size2)
-	local optMix = format("%d%d%d%d%d%d%d", self.perlBuffs or 0, self.perlDebuffs or 0, self.perlBuffsMine or 0, self.perlDebuffsMine or 0, UnitCanAttack("player", self.partyid) and 1 or 2, (UnitPowerMax(self.partyid) > 0 and 1) or 0, (self.creatureTypeFrame and self.creatureTypeFrame:IsVisible() and 1) or 0)
+	local optMix = format("%d%d%d%d%d%d%d", self.perlBuffs or 0, self.perlDebuffs or 0, self.perlBuffsMine or 0, self.perlDebuffsMine or 0, UnitCanAttack("player", self.partyid) and 1 or 0, (UnitPowerMax(self.partyid) > 0) and 1 or 0, (self.creatureTypeFrame and self.creatureTypeFrame:IsVisible()) and 1 or 0)
 	if (optMix ~= self.buffOptMix) then
 		WieghAnchor(self)
 
@@ -2979,7 +3122,7 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 
 	if (self.conf and UnitExists(partyid)) then
 		if (not maxBuffs) then
-			maxBuffs = 24
+			maxBuffs = 40
 		end
 		if (not maxDebuffs) then
 			maxDebuffs = 40
@@ -3010,27 +3153,29 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 				-- our own buffs.
 				for buffnum = 1, maxBuffs do
 					local filter = castableOnly == 1 and "RAID" or nil
-					local name, buff, count, _, duration, endTime, isMine, isStealable = XPerl_UnitBuff(partyid, buffnum, filter)
+					local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID = XPerl_UnitBuff(partyid, buffnum, filter)
 					if (not name) then
 						if (mine == 1) then
 							maxBuffs = buffnum - 1
 						end
 						break
 					end
+
+					local isPlayer
 					if (self.conf.buffs.bigpet) then
-						isMine = isMine == "player" or isMine == "pet" or isMine == "vehicle"
+						isPlayer = unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"
 					else
-						isMine = isMine == "player" or isMine == "vehicle"
+						isPlayer = unitCaster == "player" or unitCaster == "vehicle"
 					end
 
-					if (buff and (((mine == 1) and (isMine or isStealable)) or ((mine == 2) and not (isMine or isStealable)))) then
+					if (icon and (((mine == 1) and (isPlayer or canStealOrPurge)) or ((mine == 2) and not (isPlayer or canStealOrPurge)))) then
 						local button = XPerl_GetBuffButton(self, buffIconIndex, 0, true, buffnum)
 						button.filter = filter
 						button:SetAlpha(1)
 
 						buffs = buffs + 1
 
-						button.icon:SetTexture(buff)
+						button.icon:SetTexture(icon)
 						if (count > 1) then
 							button.count:SetText(count)
 							button.count:Show()
@@ -3038,11 +3183,19 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 							button.count:Hide()
 						end
 
+						if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and LCD and duration == 0 and expirationTime == 0 then
+							local auraDuration, auraExpirationTime = LCD:GetAuraDurationByUnit(partyid, spellID, unitCaster, name)
+							if auraDuration and auraExpirationTime then
+								duration = auraDuration
+								expirationTime = auraExpirationTime
+							end
+						end
+
 						-- Handle cooldowns
 						if (button.cooldown) then
-							if (duration and conf.buffs.cooldown and (isMine or conf.buffs.cooldownAny)) then
-								local start = endTime - duration
-								XPerl_CooldownFrame_SetTimer(button.cooldown, start, duration, 1, isMine)
+							if (duration and duration > 0 and expirationTime and expirationTime > 0 and conf.buffs.cooldown and (isPlayer or conf.buffs.cooldownAny)) then
+								local start = expirationTime - duration
+								XPerl_CooldownFrame_SetTimer(button.cooldown, start, duration, 1, isPlayer)
 							else
 								button.cooldown:Hide()
 							end
@@ -3050,7 +3203,7 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 
 						button:Show()
 
-						if (isStealable) then --  and UnitCanAttack("player", partyid)
+						if (canStealOrPurge) then --  and UnitCanAttack("player", partyid)
 							if (not button.steal) then
 								button.steal = CreateFrame("Frame", nil, button)
 								button.steal:SetPoint("TOPLEFT", -2, 2)
@@ -3084,7 +3237,7 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 
 						lastIcon = buffIconIndex
 
-						if ((self.conf.buffs.big and isMine) or (self.conf.buffs.bigStealable and isStealable)) then
+						if ((self.conf.buffs.big and isPlayer) or (self.conf.buffs.bigStealable and canStealOrPurge)) then
 							buffsMine = buffsMine + 1
 							button.big = true
 							button:SetScale((self.conf.buffs.size * 2) / 32)
@@ -3124,7 +3277,8 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 
 				for buffnum = 1, maxDebuffs do
 					local filter = (isFriendly and curableOnly == 1) and "RAID" or nil
-					local name, debuff, debuffApplications, debuffType, duration, endTime, isMine, isStealable = XPerl_UnitDebuff(partyid, buffnum, filter)
+					local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, nameplateShowPersonal, spellID = XPerl_UnitDebuff(partyid, buffnum, filter)
+
 					if (not name) then
 						if (mine == 1) then
 							maxDebuffs = buffnum - 1
@@ -3132,22 +3286,23 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 						break
 					end
 
+					local isPlayer
 					if (self.conf.buffs.bigpet) then
-						isMine = isMine == "player" or isMine == "pet" or isMine == "vehicle"
+						isPlayer = unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"
 					else
-						isMine = isMine == "player"
+						isPlayer = unitCaster == "player"
 					end
 
-					if (debuff and (((mine == 1) and isMine) or ((mine == 2) and not isMine))) then
+					if (icon and (((mine == 1) and isPlayer) or ((mine == 2) and not isPlayer))) then
 						local button = XPerl_GetBuffButton(self, buffIconIndex, 1, true, buffnum)
 						button.filter = filter
 						button:SetAlpha(1)
 
 						debuffs = debuffs + 1
 
-						button.icon:SetTexture(debuff)
-						if ((debuffApplications or 0) > 1) then
-							button.count:SetText(debuffApplications)
+						button.icon:SetTexture(icon)
+						if ((count or 0) > 1) then
+							button.count:SetText(count)
 							button.count:Show()
 						else
 							button.count:Hide()
@@ -3156,11 +3311,19 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 						local borderColor = DebuffTypeColor[(debuffType or "none")]
 						button.border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b)
 
+						if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and LCD and duration == 0 and expirationTime == 0 then
+							local auraDuration, auraExpirationTime = LCD:GetAuraDurationByUnit(partyid, spellID, unitCaster, name)
+							if auraDuration and auraExpirationTime then
+								duration = auraDuration
+								expirationTime = auraExpirationTime
+							end
+						end
+
 						-- Handle cooldowns
 						if (button.cooldown) then
-							if (duration and conf.buffs.cooldown and (isMine or conf.buffs.cooldownAny)) then
-								local start = endTime - duration
-								XPerl_CooldownFrame_SetTimer(button.cooldown, start, duration, 1, isMine)
+							if (duration and duration > 0 and expirationTime and expirationTime > 0 and conf.buffs.cooldown and (isPlayer or conf.buffs.cooldownAny)) then
+								local start = expirationTime - duration
+								XPerl_CooldownFrame_SetTimer(button.cooldown, start, duration, 1, isPlayer)
 							else
 								button.cooldown:Hide()
 							end
@@ -3169,7 +3332,7 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 						lastIcon = buffIconIndex
 						button:Show()
 
-						if (self.conf.debuffs.big and isMine) then
+						if (self.conf.debuffs.big and isPlayer) then
 							debuffsMine = debuffsMine + 1
 							button.big = true
 							button:SetScale((self.conf.debuffs.size * 2) / 32)
@@ -3451,26 +3614,8 @@ end
 --This function sucks, it needs reworking so it self corrects /0 problems here. But i haven't quite figured out how to approach it here yet. So i just fix stuff at sethealth functions.
 function XPerl_Unit_GetHealth(self)
 	local partyid = self.partyid
-	--if partyid=="focus" then partyid="target" end
-	local hp, hpMax = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or UnitHealth(partyid)), UnitHealthMax(partyid)
-	if RealMobHealth~=nil then  -- DaMaGepy		;
-		if RealMobHealth.IsUnitMob(partyid) then
-			if hpMax>0 and partyid~=nil then
-				if RealMobHealth.GetUnitHealth~=nil then 
-					if RealMobHealth.UnitHasHealthData(partyid) then
-						local MH_hp, MH_hpMax = RealMobHealth.GetUnitHealth(partyid)
-						if MH_hp~=nil and MH_hpMax~=nil then hp=MH_hp; hpMax=MH_hpMax; end
-					end
-				elseif RealMobHealth.GetHealth~=nil then 
-					local MH_hp, MH_hpMax = RealMobHealth.GetHealth(partyid)
-					if MH_hp~=nil and MH_hpMax~=nil then hp=MH_hp; hpMax=MH_hpMax; end				
-				end
-			end
-		end
-	end		
-	
-	
-	
+	local hp, hpMax = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or (RealUnitHealth and RealUnitHealth(partyid) or UnitHealth(partyid))), (RealUnitHealthMax and RealUnitHealthMax(partyid) or UnitHealthMax(partyid))
+
 	if (hp > hpMax) then
 		if (UnitIsGhost(partyid)) then
 			hp = 1
@@ -3810,8 +3955,8 @@ function XPerl_SetExpectedAbsorbs(self)
 		if not unit then
 			unit = self:GetParent().targetid
 		end
-		--[[
-		local amount = UnitGetTotalAbsorbs(unit)
+
+		local amount = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetTotalAbsorbs(unit)
 		if (amount and amount > 0 and not UnitIsDeadOrGhost(unit)) then
 			local healthMax = UnitHealthMax(unit)
 			local health = UnitIsGhost(unit) and 1 or (UnitIsDead(unit) and 0 or UnitHealth(unit))
@@ -3852,7 +3997,6 @@ function XPerl_SetExpectedAbsorbs(self)
 			bar:SetPoint("BottomRight", healthBar, "BottomRight", -position, 0)
 			return
 		end
-		]]--
 		bar:Hide()
 	end
 end
@@ -3871,8 +4015,8 @@ function XPerl_SetExpectedHealth(self)
 		if not unit then
 			unit = self:GetParent().targetid
 		end
-		--[[
-		local amount = UnitGetIncomingHeals(unit)
+
+		local amount = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGetIncomingHeals(unit)
 		if (amount and amount > 0 and not UnitIsDeadOrGhost(unit)) then
 			local healthMax = UnitHealthMax(unit)
 			local health = UnitIsGhost(unit) and 1 or (UnitIsDead(unit) and 0 or UnitHealth(unit))
@@ -3891,7 +4035,6 @@ function XPerl_SetExpectedHealth(self)
 			bar:SetValue(min(healthMax, health + amount))
 			return
 		end
-		]]--
 		bar:Hide()
 	end
 end
@@ -3948,7 +4091,7 @@ end
 
 -- XPerl_Unit_ThreatStatus
 function XPerl_Unit_ThreatStatus(self, relative, immediate)
-	if (not self.partyid or not self.conf) then
+	if (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or not self.partyid or not self.conf) then
 		return
 	end
 
@@ -3999,7 +4142,7 @@ function XPerl_Unit_ThreatStatus(self, relative, immediate)
 			if (one) then
 				-- scaledPercent is 0% - 100%, 100 means you pull agro
 				-- rawPercent is before normalization so can go up to 110% or 130% before you pull agro
-				--isTanking, state, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(one, two)
+				isTanking, state, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation(one, two)
 			end
 		end
 

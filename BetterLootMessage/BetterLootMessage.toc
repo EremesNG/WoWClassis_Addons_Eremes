@@ -1,0 +1,8 @@
+## Interface: 11302
+## Title: Better Loot Message
+## Author: Atila00 / Atiloa (Senesi Théo)
+## Notes: Better Loot Message provide simpler and lighter loot messages.
+## Version: 1.04
+
+BetterLootMessage.lua
+

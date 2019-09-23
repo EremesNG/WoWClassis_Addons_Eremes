@@ -572,7 +572,7 @@ end
 
 local function CheckCastingKeys()
     if FishingBuddy.ReadyForFishing() then
-        return FL:IsClassic() or (CastingKeys() or GSA("KeepOnTruckin") or ReadyForFishing());
+        return FL:IsClassic() or (CastingKeys() or FishingBuddy.ActiveSetting("KeepOnTruckin") or ReadyForFishing());
     end
     return False
 end

@@ -413,9 +413,9 @@ function XPerl_MTRosterChanged()
 		end
 
 		-- Scan roster, adding any new ones, and removing found ones from old tanks list
-		for i = 1,GetNumGroupMembers() do
+		for i = 1, GetNumGroupMembers() do
 			local unitid = "raid"..i
-			if (UnitGroupRolesAssigned(unitid) == "TANK" or GetPartyAssignment("maintank", unitid)) then
+			if ((WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitGroupRolesAssigned(unitid) == "TANK") or GetPartyAssignment("maintank", unitid)) then
 				local name = GetUnitName(unitid)
 				local name2, realm = UnitName(unitid)
 				if (name ~= name2) then

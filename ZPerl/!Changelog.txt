@@ -1,3 +1,32 @@
+**r1158**
+* Fixed some issues with player frame states for druids/priests/shamans.
+* Target cast bar should work when the target is the player.
+* Fixed channel spells.
+
+**r1157**
+* TOC fixes.
+
+**r1153**
+* Fixed hidden but clickable raid frame movers.
+
+**r1149**
+* Fixed pvp icons for classic.
+* Added hunter pet happiness support. (untested)
+* Fixed status highlighting extra sparkles texture.
+* Various fixes for both classic and retail.
+
+**r1141**
+* Compatibility update for World of Warcraft Classic with RealMobHealth support.
+* Added Clique support for party pet frame.
+* Various fixes for retail.
+
+**r1139**
+* Fixing various issues with the default Blizzard buff frame.
+* Raid Pets anchoring fixes.
+
+**r1137**
+* Updated for 8.2.0.
+
 **r1135**
 * Edit box fixes.
 
