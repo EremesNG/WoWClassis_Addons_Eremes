@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 XPerl_ProductName		= "|cFFD00000Z-Perl|r UnitFrames"
@@ -37,18 +37,29 @@ XPERL_TYPE_ELITE			= "Elite"
 XPERL_TYPE_RARE				= "Rare"
 
 -- Zones
-XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN	= "Serpentshrine Cavern"
+XPERL_LOC_ZONE_ANTORUS				= "Antorus"
+XPERL_LOC_ZONE_BARADIN_HOLD 		= "Baradin Hold"
+XPERL_LOC_ZONE_BASTION_OF_TWILIGHT	= "Basion of Twilight"
 XPERL_LOC_ZONE_BLACK_TEMPLE			= "Black Temple"
-XPERL_LOC_ZONE_HYJAL_SUMMIT			= "Hyjal Summit"
-XPERL_LOC_ZONE_KARAZHAN				= "Karazhan"
-XPERL_LOC_ZONE_SUNWELL_PLATEAU		= "Sunwell Plateau"
-XPERL_LOC_ZONE_NAXXRAMAS			= "Naxxramas"
-XPERL_LOC_ZONE_OBSIDIAN_SANCTUM		= "The Obsidian Sanctum"
+XPERL_LOC_ZONE_BLACKWING_DECENT		= "Blackwing Decent"
+XPERL_LOC_ZONE_DRAGONSOUL			= "Dragonsoul"
+XPERL_LOC_ZONE_EMERALD_NIGHTMARE	= "Emerald Nightmare"
 XPERL_LOC_ZONE_EYE_OF_ETERNITY		= "The Eye of Eternity"
-XPERL_LOC_ZONE_ULDUAR				= "Ulduar"
-XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER= "Trial of the Crusader"
+XPERL_LOC_ZONE_FIRELANDS			= "Firelands"
+XPERL_LOC_ZONE_HYJAL_SUMMIT			= "Hyjal Summit"
 XPERL_LOC_ZONE_ICECROWN_CITADEL		= "Icecrown Citadel"
+XPERL_LOC_ZONE_KARAZHAN				= "Karazhan"
+XPERL_LOC_ZONE_NAXXRAMAS			= "Naxxramas"
+XPERL_LOC_ZONE_NIGHTHOLD			= "Nighthold"
+XPERL_LOC_ZONE_OBSIDIAN_SANCTUM		= "The Obsidian Sanctum"
 XPERL_LOC_ZONE_RUBY_SANCTUM			= "The Ruby Sanctum"
+XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN	= "Serpentshrine Cavern"
+XPERL_LOC_ZONE_SUNWELL_PLATEAU		= "Sunwell Plateau"
+XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS = "Throne of Four Winds"
+XPERL_LOC_ZONE_TOMB_OF_SARGERAS		= "Tomb of Sargeras"
+XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER= "Trial of the Crusader"
+XPERL_LOC_ZONE_TRIAL_OF_VALOR		= "Trial of Valor"
+XPERL_LOC_ZONE_ULDUAR				= "Ulduar"
 --Any zones 4.x and higher can all be localized from EJ, in 5.0, even these above zones are in EJ which means the rest can go bye bye too
 
 -- Status

@@ -1229,6 +1229,40 @@ GRML.PortugueseBR = function()
 
     -- 1.74
     GRM_L["Class Colorize Names in Guild Member Alerts"] = true
+    GRM_L["All player custom notes re-enabled for sync and their checkboxes set."] = true
+    
+    -- 1.75
+    GRM_L["!note"] = true               -- !note in English will always work. This gives you the option of creating your own key to register a public note.
+    GRM_L["No officer online to set {name}'s note"] = true
+    GRM_L["No officer is currently online to update your note"] = true
+    GRM_L["Note updated by @{name}"] = true              -- As in "Note updated by @Arkaan"
+    GRM_L["Allow Guild Members to Type \"!note\" to Set Their Own Public Note"] = true
+    GRM_L["'!note' trigger has been globally enabled"] = true
+    GRM_L["Enabled"] = true         -- As in, the opposite of Disabled
+    GRM_L["'!note' trigger has been globally ENABLED"] = true
+    GRM_L["'!note' trigger has been globally DISABLED"] = true
+    GRM_L["'g7^X' - Designate '!note' use. g7^1 = Enabled, g7^2 = Disabled"] = true
+
+    -- 1.76
+    GRM_L["Same Rank"] = true                                                                   -- Macro Tool, Ignore List window - tooltip info on why no action is being done on some players who may be on it.
+    GRM_L["Higher Rank"] = true                                                                 -- Macro Tool, Ignore List window - tooltip info on why no action is being done on some players who may be on it.
+    GRM_L["Feature Disabled. There is no Calendar in Classic"] = true                           -- Events Tab top warning
+    GRM_L["This only affects settings for your current guild: {name}"] = true                   -- Tooltip for Options > General > Sync settings to all alts in same guild
+    GRM_L["GC"] = true                                                                          -- Options window, acronym for "Global Controls" and will be adjacent to all settings that have global controls
+    GRM_L["*GC = Global Control - Use Guild Info to Force Setting For All"] = true              -- Top left Options window
+    GRM_L["Export Global Controls"] = true                                                      -- Options > Officer Tab > Bottom left export button
+    GRM_L["Global Control Values Set in Guild Info"] = true                                     -- Export GuildInfo tool tooltip
+    GRM_L["Configure your settings. Click to export"] = true                                    -- Tooltip line 2- same as above
+    GRM_L["Unable to add globals controls to GuildInfo. There is not enough room."] = true      -- If export of globals is not able to complete
+    GRM_L["Global controls exported to the guild info note. Updating..."] = true                -- Success in exporting
+    GRM_L["Your rank cannot edit the Guild Info"] = true                                              -- Mouseover tooltip helper for people without MOTD edit access
+    GRM_L["All global controls are already set. You must Edit or Remove the settings manually in the guild Info."] = true;
+    GRM_L["Do you really want to wipe all GRM data and settings account-wide?"] = true
+    GRM_L["Are you sure your settings are configured and ready for global controls?"] = true
+    GRM_L["Players the same rank or higher will not be shown"] = true
+    GRM_L["Macro"] = true       -- For the slash command  /grm tool or /grm macro - same thing
+
+        
 end
 
 -- BuildLog() - might have some extra work, conditionally based on localization as it will now have a mix of languages saved to the log, since log is not retroactively changed.

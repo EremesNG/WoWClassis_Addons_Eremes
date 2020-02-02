@@ -6,6 +6,7 @@ local function DebugBreakPrint()
     print("ERROR");
 end
 
+-- GENERAL UTIL FUNCTIONS --
 local function CSC_GetAppropriateDamage(unit, category)
 	if category == PLAYERSTAT_MELEE_COMBAT then
 		return UnitDamage(unit);
@@ -84,6 +85,7 @@ local function CSC_PaperDollFormatStat(name, base, posBuff, negBuff)
     
     return effective, text;
 end
+-- GENERAL UTIL FUNCTIONS END --
 
 -- PRIMARY STATS --
 function CSC_PaperDollFrame_SetPrimaryStats(statFrames, unit)
@@ -363,13 +365,50 @@ function CSC_PaperDollFrame_SetSpellCritChance(statFrame, unit)
 		maxSpellCrit = max(maxSpellCrit, bonusCrit);
 	end
 
-    CSC_PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, maxSpellCrit, true, maxSpellCrit);
 	statFrame.holyCrit = GetSpellCritChance(2);
 	statFrame.fireCrit = GetSpellCritChance(3);
 	statFrame.natureCrit = GetSpellCritChance(4);
 	statFrame.frostCrit = GetSpellCritChance(5);
 	statFrame.shadowCrit = GetSpellCritChance(6);
 	statFrame.arcaneCrit = GetSpellCritChance(7);
+
+	local unitClassLoc = select(2, UnitClass(unit));
+	if (unitClassLoc == "MAGE") then
+		local arcaneInstabilityCrit, criticalMassCrit = CSC_GetMageCritStatsFromTalents();
+		if (arcaneInstabilityCrit > 0) then
+			-- increases the crit of all spell schools
+			statFrame.holyCrit = statFrame.holyCrit + arcaneInstabilityCrit;
+			statFrame.fireCrit = statFrame.fireCrit + arcaneInstabilityCrit;
+			statFrame.natureCrit = statFrame.natureCrit + arcaneInstabilityCrit;
+			statFrame.frostCrit = statFrame.frostCrit + arcaneInstabilityCrit;
+			statFrame.shadowCrit = statFrame.shadowCrit + arcaneInstabilityCrit;
+			statFrame.arcaneCrit = statFrame.arcaneCrit + arcaneInstabilityCrit;
+			-- set the new maximum
+			maxSpellCrit = maxSpellCrit + arcaneInstabilityCrit;
+		end
+		if (criticalMassCrit > 0) then
+			statFrame.fireCrit = statFrame.fireCrit + criticalMassCrit;
+			-- set the new maximum
+			maxSpellCrit = max(maxSpellCrit, statFrame.fireCrit);
+		end
+	elseif (unitClassLoc == "PRIEST") then
+		local priestHolyCrit = CSC_GetPriestCritStatsFromTalents();
+		if (priestHolyCrit > 0) then
+			statFrame.holyCrit = statFrame.holyCrit + priestHolyCrit;
+			-- set the new maximum
+			maxSpellCrit = max(maxSpellCrit, statFrame.holyCrit);
+		end
+	elseif (unitClassLoc == "PALADIN") then
+		local paladinHolyCrit = CSC_GetPaladinCritStatsFromTalents();
+		if (paladinHolyCrit > 0) then
+			statFrame.holyCrit = statFrame.holyCrit + paladinHolyCrit;
+			-- set the new maximum
+			maxSpellCrit = max(maxSpellCrit, statFrame.holyCrit);
+		end
+	end
+
+	CSC_PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, maxSpellCrit, true, maxSpellCrit);
+
     statFrame:Show();
 end
 
@@ -504,6 +543,12 @@ function CSC_PaperDollFrame_SetDefense(statFrame, unit)
 	else
 		-- Use this as a backup, just in case something goes wrong
 		skillRank, skillModifier = UnitDefense(unit); --Not working properly
+	end
+
+	-- add defense from talents to the base def (still not sure if I want to add it to the base or to the modifier)
+	local defenseFromTalents = CSC_GetDefenseFromTalents(unit);
+	if (defenseFromTalents > 0) then
+		skillRank = skillRank + defenseFromTalents;
 	end
 
 	local posBuff = 0;

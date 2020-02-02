@@ -1,5 +1,5 @@
 ## Interface: 11302
-## Version: 5.8.4
+## Version: 5.8.7
 ## Author: Resike
 ## Title: Z-Perl UnitFrames
 ## Title-itIT: Z-Perl UnitFrames

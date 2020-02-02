@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local conf
@@ -307,7 +307,7 @@ function XPerl_Assists_OnEvent(self, event, unit)
 		XPerl_UpdateAssists()
 		XPerl_ShowAssists()
 		if (XPerl_SavePosition) then
-			XPerl_SavePosition(XPerl_Assists_FrameAnchor, true)
+			XPerl_SavePosition(XPerl_Assists_FrameAnchor)
 		end
 
 		if ZPerlConfigHelper and ZPerlConfigHelper.sizeAssistsX and ZPerlConfigHelper.sizeAssistsY then

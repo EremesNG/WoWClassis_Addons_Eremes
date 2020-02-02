@@ -957,7 +957,7 @@ XPERL_CONF_ADDON_RAIDMONITOR_DESC	= "Aktiviere das "..XPerl_ShortProductName.." 
 XPERL_CONF_ADDON_ARCANE				= "Arcane Bar"
 XPERL_CONF_ADDON_ARCANE_DESC		= "Aktiviere das "..XPerl_ShortProductName.."'s Arcane Casting bars. Needed if you want to display cast bars for target or party members. Also shows player's and pet's cast bars"
 XPERL_CONF_ADDON_GRIMR				= "Grim Reaper"
-XPERL_CONF_ADDON_GRIMR_DESC			= "Enable the Grim Reaper to track recent combat events for all raid or party units. Tooltip extends to show recent dmg in/out for selected unit. Useful to determine cause of death; crushings, crit streak etc."
+XPERL_CONF_ADDON_GRIMR_DESC			= "Enable the Grim Reaper to track recent combat events for all raid or party units. Tooltip extends to show recent dmg in/out for selected unit. Useful to determine cause of death: crushings, crit streak etc."
 
 XPERL_CONF_RELOADUI					= "Neu laden des UI"
 XPERL_CONF_RELOADUI_DESC			= "Lade das Benutzerinterface neu, um \195\132nderungen hinzuzuf\195\188gen"

@@ -42,7 +42,7 @@ local eventsTable = {
 -----------------------------------------------
 local function GetButtonText(self, id)
 
-	if LVL < 120 then
+	if LVL < 60 then
 		local toUp = MXP - AXP
 		local restperc = (EXXP / ((MXP / 100) * 1.5))
 
@@ -67,7 +67,7 @@ local function GetButtonText(self, id)
 end
 -----------------------------------------------
 local function GetTooltipText(self, id)
-	if LVL < 120 then
+	if LVL < 60 then
 		local toUp = MXP - AXP
 		local restperc = (EXXP / ((MXP / 100) * 1.5))
 

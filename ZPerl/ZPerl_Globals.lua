@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 XPerlLocked = 1
@@ -113,7 +113,7 @@ local function GiveConfig()
 	conf = CurrentConfig()
 	XPerlDB = conf
 
-	for k,v in pairs(ConfigRequesters) do
+	for k, v in pairs(ConfigRequesters) do
 		v(conf)
 	end
 end
@@ -122,7 +122,6 @@ XPerl_GiveConfig = GiveConfig
 
 -- XPerl_ResetDefaults
 function XPerl_ResetDefaults()
-
 	local conf = {}
 
 	XPerl_Defaults(conf)
@@ -134,6 +133,42 @@ function XPerl_ResetDefaults()
 	end
 
 	GiveConfig()
+
+	if XPerl_Assists_FrameAnchor then
+		XPerl_Assists_FrameAnchor:ClearAllPoints()
+		XPerl_Assists_FrameAnchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		if (XPerl_SavePosition) then
+			XPerl_SavePosition(XPerl_Assists_FrameAnchor)
+		end
+	end
+	if XPerl_RaidMonitor_Anchor then
+		XPerl_RaidMonitor_Anchor:ClearAllPoints()
+		XPerl_RaidMonitor_Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		if (XPerl_SavePosition) then
+			XPerl_SavePosition(XPerl_RaidMonitor_Anchor)
+		end
+	end
+	if XPerl_RosterTextAnchor then
+		XPerl_RosterTextAnchor:ClearAllPoints()
+		XPerl_RosterTextAnchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		if (XPerl_SavePosition) then
+			XPerl_SavePosition(XPerl_RosterTextAnchor)
+		end
+	end
+	if XPerl_CheckAnchor then
+		XPerl_CheckAnchor:ClearAllPoints()
+		XPerl_CheckAnchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		if (XPerl_SavePosition) then
+			XPerl_SavePosition(XPerl_CheckAnchor)
+		end
+	end
+	if XPerl_AdminFrameAnchor then
+		XPerl_AdminFrameAnchor:ClearAllPoints()
+		XPerl_AdminFrameAnchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		if (XPerl_SavePosition) then
+			XPerl_SavePosition(XPerl_AdminFrameAnchor)
+		end
+	end
 
 	XPerl_OptionActions()
 

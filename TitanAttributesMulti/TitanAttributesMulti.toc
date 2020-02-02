@@ -1,9 +1,9 @@
 ## Interface: 11302
-## Title: Titan Panel [|cff336699Attributes|r] Multi! |cff00aa00v1.0 Classic|r
+## Title: Titan Panel [|cff336699Attributes|r] Multi! |cff00aa00v1.1 Classic|r
 ## Notes: Track your attributes values! Right-click on Titan Panel, go to "Combat" tab and enjoy.
 ## Notes-ptBR: Rastreie o valor de seus atributos! Clique com o botão direito no Painel Titan, vá na aba "Combate" e aproveite.
 ## Author: Canettieri
-## Version: 1.0
+## Version: 1.1
 ## Dependencies: TitanClassic
 Core\languages\enUS-default.lua
 Core\languages\deDE.lua
@@ -25,6 +25,7 @@ TitanParry.lua
 TitanQuests.lua
 TitanRangedPower.lua
 TitanSpellPower.lua
+TitanSpirit.lua
 TitanStamina.lua
 TitanStrength.lua
 TitanXP.lua

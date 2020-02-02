@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local ArcaneBars = {}
@@ -230,7 +230,7 @@ function XPerl_ArcaneBar_OnEvent(self, event, unit, ...)
 			if (not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
 				self:Hide()
-				return;
+				return
 			end
 			self.startTime = startTime / 1000
 			self.maxValue = endTime / 1000
@@ -273,7 +273,7 @@ function XPerl_ArcaneBar_OnEvent(self, event, unit, ...)
 			if (not name or (not self.showTradeSkills and isTradeSkill)) then
 				-- if there is no name, there is no bar
 				self:Hide()
-				return;
+				return
 			end
 			self.startTime = startTime / 1000
 			self.endTime = endTime / 1000

@@ -65,6 +65,8 @@ L["maxquests"] = "Maximum Quests:|cFFFFFFFF "
 L["rangedpower"] = "Ranged Power"
 -- Spell Power (default)
  L["spellpower"] = "Spell Power"
+ -- Spirit (default)
+ L["spirit"] = "Spirit"
  -- Stamina (default)
  L["stamina"] = "Stamina"
  -- Strength (default)

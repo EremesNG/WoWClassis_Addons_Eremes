@@ -7,7 +7,7 @@
 ## SavedVariables: BeanCounterDB, BeanCounterDBSettings, BeanCounterDBNames, BeanCounterAccountDB, BeanCounterMailPatch
 ##
 ## Version: 8.2.6422 (SwimmingSeadragon)
-## Revision: $Id: BeanCounter.toc 6422 2019-09-13 05:07:31Z none $
+## Revision: $Id: BeanCounter.toc 6422 2019-09-22 00:20:05Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Auctioneer
 ## X-Category: Auction House

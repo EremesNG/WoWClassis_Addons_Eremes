@@ -4,6 +4,15 @@ Extensively used by DynamicBoxer e.g.
 https://github.com/mooreatv/DynamicBoxer/blob/master/DynamicBoxer/DBoxUI.lua 
 but also meant to be reused in other addons, not just mine.
 
+v7.13.00 Sept 25th 2019
+- AH: now wait for seller info (optionally) and yield in more places.
+v7.12.00 Sept 19th 2019
+- AH: now use periodic yield to avoid (rare) DCs
+v7.11.03 Sept 10th 2019
+- Allow non int keys in custom slider labels
+v7.11.02 Sept 9th 2019
+- Support for LibDBIcon in minimapButton (so SexyMap users are happy)
+  Fixes https://github.com/mooreatv/AuctionDB/issues/20
 v7.11.01 Sept 5th 2019
 - AH: very big bug fix for :AHGetAuctionInfoByLink() which was initializing minbid/minbuyout incorrectly
   for the first auction if it had multiple items

@@ -1,3 +1,18 @@
+**r1172**
+* Various fixes, list coming later.
+
+**r1168**
+* Fixed player pet hit indicators.
+* Reset defaults will properly reset the position of the additional extra info panels.
+* Broken custom highlight zone fixes.
+* Some other smaller fixes.
+
+**r1160**
+* Fixed custom highlighting.
+* Fixed debuff curable checker.
+* Fixed connected realm main tank names.
+* Various tooltip and other fixes.
+
 **r1158**
 * Fixed some issues with player frame states for druids/priests/shamans.
 * Target cast bar should work when the target is the player.

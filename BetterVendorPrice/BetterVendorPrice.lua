@@ -9,8 +9,10 @@
 
    Releases detail/changes are on https://github.com/mooreatv/BetterVendorPrice/releases
 
-   Intial concept inspired by "Vendor Price" by Icesythe7 with a brand new implementation
-   and different individual, current stack, full stack pricing information
+   Intial concept inspired by some other horrible code and author(s) that have been behaving like
+   a*holes and don't deserve the credit I initially gave them. Also with a brand new implementation
+   and different individual, current stack, full stack pricing information as well as
+   working in many more cases (mission table, AH, etc...)
 
    ]] --
 --
@@ -26,11 +28,13 @@ local L = BVP.L
 -- BVP.debug = 9 -- to debug before saved variables are loaded
 
 BVP.slashCmdName = "bvp"
-BVP.addonHash = "1b9de11"
+BVP.addonHash = "12c8a99"
 BVP.savedVarName = "betterVendorPriceSaved"
 
 -- default value
 BVP.showFullStack = true
+BVP.showAhdb = true
+BVP.showAhdbMinBid = true
 
 -- Events handling
 
@@ -69,12 +73,12 @@ function BVP.Slash(arg) -- can't be a : because used directly as slash command
   if cmd == "v" then
     -- version
     BVP:PrintDefault("BetterVendorPrice " .. BVP.manifestVersion ..
-                       " (1b9de11) by MooreaTv (moorea@ymail.com)")
+                       " (12c8a99) by MooreaTv (moorea@ymail.com)")
   elseif cmd == "b" then
     local subText = L["Please submit on discord or on https://|cFF99E5FFbit.ly/vendorbug|r  or email"]
     BVP:PrintDefault(L["Better Vendor Price bug report open: "] .. subText)
     -- base molib will add version and date/timne
-    BVP:BugReport(subText, "1b9de11\n\n" .. L["Bug report from slash command"])
+    BVP:BugReport(subText, "12c8a99\n\n" .. L["Bug report from slash command"])
   elseif cmd == "c" then
     -- Show config panel
     -- InterfaceOptionsList_DisplayPanel(BVP.optionsPanel)
@@ -116,17 +120,22 @@ function BVP:CreateOptionsPanel()
   BVP.optionsPanel = p
   p:addText(L["Better Vendor Price options"], "GameFontNormalLarge"):Place()
   p:addText(L["These options let you control the behavior of BetterVendorPrice"] .. " " .. BVP.manifestVersion ..
-              " 1b9de11"):Place()
+              " 12c8a99"):Place()
   p:addText(L["Get Auction House DataBase (|cFF99E5FFAHDB|r) v0.12 or newer to see auction information on the toolip!"])
     :Place(0, 16)
 
-  local showFullStack = p:addCheckBox("Show full stack vendor price info",
-                                      "Whether to show the up to 3 lines vendor pricing info or skip the full stack one")
+  local showFullStack = p:addCheckBox(L["Show full stack vendor price info"],
+                                      L["Whether to show the up to 3 lines vendor pricing info or skip the full stack one"])
                           :Place(4, 30)
 
-  p:addText(L["Development, troubleshooting and advanced options:"]):Place(40, 20)
+  local showAhdb = p:addCheckBox(L["Show AHDB info"], L["Whether to show the AHDB info or not"]):Place(4, 30)
 
-  p:addButton("Bug Report", L["Get Information to submit a bug."] .. "\n|cFF99E5FF/bvp bug|r", "bug"):Place(4, 20)
+  local showAhdbMinBid = p:addCheckBox(L["Show AHDB min bid"], L["Whether to show the AHDB min bid or not"]):Place(60,
+                                                                                                                   20)
+
+  p:addText(L["Development, troubleshooting and advanced options:"]):Place(40, 40)
+
+  p:addButton(L["Bug Report"], L["Get Information to submit a bug."] .. "\n|cFF99E5FF/bvp bug|r", "bug"):Place(4, 20)
 
   local debugLevel = p:addSlider(L["Debug level"], L["Sets the debug level"] .. "\n|cFF99E5FF/bvp debug X|r", 0, 9, 1,
                                  "Off"):Place(16, 30)
@@ -148,6 +157,8 @@ function BVP:CreateOptionsPanel()
     p:Init()
     debugLevel:SetValue(BVP.debug or 0)
     showFullStack:SetChecked(BVP.showFullStack)
+    showAhdb:SetChecked(BVP.showAhdb)
+    showAhdbMinBid:SetChecked(BVP.showAhdbMinBid)
   end
 
   function p:HandleOk()
@@ -165,6 +176,8 @@ function BVP:CreateOptionsPanel()
     end
     BVP:SetSaved("debug", sliderVal)
     BVP:SetSaved("showFullStack", showFullStack:GetChecked())
+    BVP:SetSaved("showAhdb", showAhdb:GetChecked())
+    BVP:SetSaved("showAhdbMinBid", showAhdbMinBid:GetChecked())
   end
 
   function p:cancel()
@@ -194,7 +207,7 @@ function BVP.ToolTipHook(t)
     return
   end
   local auctionData = {}
-  if AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
+  if BVP.showAhdb and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
     auctionData = AuctionDB:AHGetAuctionInfoByLink(link)
   end
   if auctionData.numAuctions then
@@ -209,7 +222,7 @@ function BVP.ToolTipHook(t)
     t:AddLine(BVP:format(L["AHDB last scan: % |4auction:auctions;"] .. sellers .. L["% |4item:total items;"],
                          auctionData.numAuctions, auctionData.quantity))
   end
-  if auctionData.minBid then
+  if BVP.showAhdbMinBid and auctionData.minBid then
     SetTooltipMoney(t, auctionData.minBid, "STATIC", L["AHDB minbid"], L[" (per item)"])
   end
   if auctionData.minBuyout then

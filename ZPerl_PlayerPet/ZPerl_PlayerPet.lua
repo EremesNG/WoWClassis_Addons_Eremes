@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local XPerl_Player_Pet_Events = {}
@@ -450,7 +450,7 @@ function XPerl_Player_Pet_Events:PET_BATTLE_CLOSE()
 		if not InCombatLockdown() then
 			RegisterUnitWatch(self)
 		end
-		XPerl_ProtectedCall(Show, self);
+		XPerl_ProtectedCall(Show, self)
 	end
 end]]
 
@@ -506,12 +506,11 @@ function XPerl_Player_Pet_Events:PET_ATTACK_START()
 end
 
 -- UNIT_COMBAT
-function XPerl_Player_Pet_Events:UNIT_COMBAT(...)
-	local unitID, action, descriptor, damage, damageType = ...
 
+function XPerl_Player_Pet_Events:UNIT_COMBAT(unitID, action, descriptor, damage, damageType)
 	if (unitID == self.partyid) then
 		if (pconf.hitIndicator and pconf.portrait) then
-			CombatFeedback_OnCombatEvent(self, ...)
+			CombatFeedback_OnCombatEvent(self, action, descriptor, damage, damageType)
 		end
 
 		if (action == "HEAL") then

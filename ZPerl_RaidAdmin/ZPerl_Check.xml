@@ -641,7 +641,7 @@
 	<Button name="XPerl_CheckListTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp", "RightButtonDown");
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp", "RightButtonDown")
 			</OnLoad>
 			<OnClick>
 				XPerl_Check_OnClickItem(arg1)
@@ -753,12 +753,12 @@
 	</Button>
 
 	<Frame name="XPerl_CheckAnchor" parent="UIParent" resizable="true" movable="true" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="500" y="240"/>
-		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<Size>
+			<AbsDimension x="500" y="240"/>
+		</Size>
 	</Frame>
 
 	<Frame name="XPerl_Check" parent="XPerl_CheckAnchor" hidden="true" clampedToScreen="true">
@@ -781,12 +781,12 @@
 				end
 			</OnDragStop>
 		</Scripts>
-		<Size>
-			<AbsDimension x="500" y="240"/>
-		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
+		<Size>
+			<AbsDimension x="500" y="240"/>
+		</Size>
 		<Backdrop bgFile="Interface\Addons\ZPerl_RaidHelper\Images\XPerl_FrameBack" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="9"/>

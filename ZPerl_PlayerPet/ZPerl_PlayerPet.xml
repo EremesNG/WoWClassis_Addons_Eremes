@@ -181,7 +181,7 @@
 						</Layers>
 						<Scripts>
 							<OnLoad>
-								self:RegisterForDrag("LeftButton");
+								self:RegisterForDrag("LeftButton")
 							</OnLoad>
 							<OnDragStart>
 								if (XPerlLocked == 0) then
@@ -193,15 +193,15 @@
 							</OnDragStop>
 							<OnEnter>
 								if (XPerlDB.tooltip.enable and self.tooltip) then
-									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetText(self.tooltip);
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+									GameTooltip:SetText(self.tooltip)
 									if ( self.tooltipDamage ) then
-										GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1);
+										GameTooltip:AddLine(self.tooltipDamage, "", 1, 1, 1)
 									end
 									if ( self.tooltipLoyalty ) then
-										GameTooltip:AddLine(self.tooltipLoyalty, "", 1, 1, 1);
+										GameTooltip:AddLine(self.tooltipLoyalty, "", 1, 1, 1)
 									end
-									GameTooltip:Show();
+									GameTooltip:Show()
 								end
 							</OnEnter>
 							<OnLeave>

@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local playerClass, playerName, playerGUID
@@ -169,7 +169,7 @@ function xpHigh:Add(guid, highlightType, duration, source)
 				self:Send(guid)
 			else
 				local newEndTime = GetTime() + duration
-				if (highlightType == "HEAL" and (UnitInRaid(source) or UnitInParty(source))) then
+				if (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and highlightType == "HEAL" and (UnitInRaid(source) or UnitInParty(source))) then
 					if (source and not UnitIsUnit("player", source)) then
 						-- We'll query their cast bar and get accurate highlight time info
 						local spellName, text, texture, startTime, endTime = UnitCastingInfo(source)
@@ -1382,7 +1382,7 @@ function xpHigh.clEvents:SPELL_PERIODIC_HEAL(timestamp, event, srcGUID, srcName,
 					-- was triggered
 
 					-- Find our HOT and get the duration left for it, then add a flashy!
-					local checkName = dstName;
+					local checkName = dstName
 					-- If the dstName is NOT in our party/raid but it IS target/focus we MUST use target/focus instead of their name
 					if (not UnitInParty(dstName) and not UnitPlayerOrPetInRaid(dstName) and not UnitPlayerOrPetInParty(dstName)) then
 						-- ok, now figure out which it is, target or focus?
@@ -1407,7 +1407,7 @@ function xpHigh.clEvents:SPELL_PERIODIC_HEAL(timestamp, event, srcGUID, srcName,
 
 					if (isMine) then
 						-- Figure out how many seconds are left in the HOT so we can ensure the flashy only stays up as long as the HOT is active
-						local secondsLeft = endTime - GetTime();
+						local secondsLeft = endTime - GetTime()
 						self:Add(dstGUID, "HOT", secondsLeft)
 						if (conf.highlight.extraSparkles) then
 							self:Add(dstGUID, "HOTSPARKS", 0.1)

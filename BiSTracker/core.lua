@@ -9,7 +9,7 @@ local ToastFrame;
 local ExpandFrame;
 local ConfirmDeleteFrame;
 
-local addonVersion = "1.4.1";
+local addonVersion = "1.4.3";
 local contributors = "Wizm-Mograine PvP";
 
 local loadMessageStart = "|cFF00FFB0" .. "BiSTracker" .. ": |r";
@@ -1176,7 +1176,7 @@ MainFrame:SetScript("OnEvent", function(self, event, ...)
 			BiS_Settings["CustomSpecsData"] = customSpecData;
 			BiS_Settings["CustomSpecs"] = customSpecs;
 		else
-			if BiS_Settings["CustomSpecsData"] ~= nil and BiS_Settings["customSpecs"] ~= nil then
+			if BiS_Settings["CustomSpecsData"] ~= nil and BiS_Settings["CustomSpecs"] ~= nil then
 				customSpecData = BiS_Settings["CustomSpecsData"];
 				customSpecs = BiS_Settings["CustomSpecs"];
 			else
@@ -2034,105 +2034,105 @@ MainFrame:SetScript("OnEvent", function(self, event, ...)
 
 				NewCustomSpecFrame.scrollFrame.content.Head.idEdit:SetNumber(customSpecData[spec][phase]["Head"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Head.zoneEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Head.typeEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Head.methodEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Head.dropEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Head.typeEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Head.methodEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Head.dropEdit:SetText(customSpecData[spec][phase]["Head"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Neck.idEdit:SetNumber(customSpecData[spec][phase]["Neck"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Neck.zoneEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Neck.typeEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Neck.methodEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Neck.dropEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Neck.typeEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Neck.methodEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Neck.dropEdit:SetText(customSpecData[spec][phase]["Neck"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Shoulder.idEdit:SetNumber(customSpecData[spec][phase]["Shoulder"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Shoulder.zoneEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Shoulder.typeEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Shoulder.methodEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Shoulder.dropEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Shoulder.typeEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Shoulder.methodEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Shoulder.dropEdit:SetText(customSpecData[spec][phase]["Shoulder"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Cloak.idEdit:SetNumber(customSpecData[spec][phase]["Cloak"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Cloak.zoneEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Cloak.typeEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Cloak.methodEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Cloak.dropEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Cloak.typeEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Cloak.methodEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Cloak.dropEdit:SetText(customSpecData[spec][phase]["Cloak"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Chest.idEdit:SetNumber(customSpecData[spec][phase]["Chest"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Chest.zoneEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Chest.typeEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Chest.methodEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Chest.dropEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Chest.typeEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Chest.methodEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Chest.dropEdit:SetText(customSpecData[spec][phase]["Chest"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Wrist.idEdit:SetNumber(customSpecData[spec][phase]["Wrist"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Wrist.zoneEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Wrist.typeEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Wrist.methodEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Wrist.dropEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Wrist.typeEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Wrist.methodEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Wrist.dropEdit:SetText(customSpecData[spec][phase]["Wrist"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Gloves.idEdit:SetNumber(customSpecData[spec][phase]["Gloves"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Gloves.zoneEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Gloves.typeEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Gloves.methodEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Gloves.dropEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Gloves.typeEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Gloves.methodEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Gloves.dropEdit:SetText(customSpecData[spec][phase]["Gloves"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Waist.idEdit:SetNumber(customSpecData[spec][phase]["Waist"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Waist.zoneEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Waist.typeEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Waist.methodEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Waist.dropEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Waist.typeEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Waist.methodEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Waist.dropEdit:SetText(customSpecData[spec][phase]["Waist"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Legs.idEdit:SetNumber(customSpecData[spec][phase]["Legs"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Legs.zoneEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Legs.typeEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Legs.methodEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Legs.dropEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Legs.typeEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Legs.methodEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Legs.dropEdit:SetText(customSpecData[spec][phase]["Legs"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Boots.idEdit:SetNumber(customSpecData[spec][phase]["Boots"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Boots.zoneEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Boots.typeEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Boots.methodEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Boots.dropEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Boots.typeEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Boots.methodEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Boots.dropEdit:SetText(customSpecData[spec][phase]["Boots"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Ring1.idEdit:SetNumber(customSpecData[spec][phase]["Ring1"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Ring1.zoneEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring1.typeEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring1.methodEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring1.dropEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring1.typeEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring1.methodEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring1.dropEdit:SetText(customSpecData[spec][phase]["Ring1"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Ring2.idEdit:SetNumber(customSpecData[spec][phase]["Ring2"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Ring2.zoneEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring2.typeEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring2.methodEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Ring2.dropEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring2.typeEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring2.methodEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ring2.dropEdit:SetText(customSpecData[spec][phase]["Ring2"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Trinket1.idEdit:SetNumber(customSpecData[spec][phase]["Trinket1"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Trinket1.zoneEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket1.typeEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket1.methodEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket1.dropEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket1.typeEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket1.methodEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket1.dropEdit:SetText(customSpecData[spec][phase]["Trinket1"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Trinket2.idEdit:SetNumber(customSpecData[spec][phase]["Trinket2"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Trinket2.zoneEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket2.typeEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket2.methodEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Trinket2.dropEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket2.typeEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket2.methodEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Trinket2.dropEdit:SetText(customSpecData[spec][phase]["Trinket2"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.MainHand.idEdit:SetNumber(customSpecData[spec][phase]["MainHand"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.MainHand.zoneEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.MainHand.typeEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.MainHand.methodEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.MainHand.dropEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.MainHand.typeEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.MainHand.methodEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.MainHand.dropEdit:SetText(customSpecData[spec][phase]["MainHand"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.OffHand.idEdit:SetNumber(customSpecData[spec][phase]["OffHand"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.OffHand.zoneEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.OffHand.typeEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.OffHand.methodEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.OffHand.dropEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.OffHand.typeEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.OffHand.methodEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.OffHand.dropEdit:SetText(customSpecData[spec][phase]["OffHand"]["Obtain"]["Drop"]);
 
 				NewCustomSpecFrame.scrollFrame.content.Ranged.idEdit:SetNumber(customSpecData[spec][phase]["Ranged"]["itemID"]);
 				NewCustomSpecFrame.scrollFrame.content.Ranged.zoneEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Zone"]);
-				NewCustomSpecFrame.scrollFrame.content.Ranged.typeEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Drop"]);
-				NewCustomSpecFrame.scrollFrame.content.Ranged.methodEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Type"]);
-				NewCustomSpecFrame.scrollFrame.content.Ranged.dropEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ranged.typeEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Type"]);
+				NewCustomSpecFrame.scrollFrame.content.Ranged.methodEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Method"]);
+				NewCustomSpecFrame.scrollFrame.content.Ranged.dropEdit:SetText(customSpecData[spec][phase]["Ranged"]["Obtain"]["Drop"]);
 
 				UIDropDownMenu_SetSelectedValue(NewCustomSpecFrame.scrollFrame.content.addBox.phaseDropdown, phase);
 

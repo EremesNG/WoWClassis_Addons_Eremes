@@ -1,8 +1,122 @@
+*Note: Each update will be tagged with  **Classic/Retail/Both** for context*
+
+**VERSION 8.2.5R1.76 DATE: October 1st, 2019**
+
+***MAJOR OPTIMIZATION UPDATE***
+
+*Optimized the code quite a bit on the back end. Restructured the database, sorted all my arrays properly. Implemented a binary search algorithm on all database queries. I probably should have done this originally, but the original scope of the addon in my mind when I started building it was a bit smaller. This is an ENORMOUS performance gain that cannot be understated compared to previous lookup methods. Of course, with the processing power and speed we do have these days it wasn't really noticeable for most, but for me, I think efficiency matters and this makes me feel a lot better! The structure using arrays(tables technically in Lua) like I have should now act correctly and be quite fast. We are talking some things that might take say 1,000,000 actions down to 10,000 actions. The gains cannot be understated. I should also mention a lot more went into this than just this optimization. I think it took me 15-20 hrs of work just on this one side project*
+
+**--------------**
+**QUALITY OF LIFE**
+**--------------**
+
+**BOTH**
+
+* LOG now has font size control slider for specifically the log only. You can find it in the "Log Tools" window by clicking the bottom bottom left of the log.
+
+* Global Controls can now be exported to the Guild Info notw with the click of a button in Options > Officer tab - the tooltip on the button will also state which are not yet exported
+
+    - In addition, all "Global Control" settings that can be set are now more obvious with a "(GC)" indicator in the options
+
+* Player level now is stated in the log when they leave or are removed from the guild
+
+* CHECK YOUR BAN LISTS!!! GRM will now indicate if the player is no longer on the server (or no longer exist from deleting toon, aka, no longer on server) - Clean up your ban lists! If they are no longer on your server this means their GUID is no longer valid, and as such GRM cannot detect if they return to the guild or not. Since they cannot return at this point, it is safe to remove them from your list
+
+* CTRL-Click and CTRL-SHFT-ClK options have been expanded to the Event windows (not relevant for Classic) and Ban windows for continuity, to bring up player window or search for the player.
+
+* If the player side details window is open on the Classic roster or the /groster in Retail, and you re-click on the name. If it hides the side window it will unfreeze the lock on the mouseover automatically. Otherwise you still need to hit the ESC key or click the X. Communities default interface setup by Blizz functions a little different so it doesn't apply to that window.
+
+* Added a tooltip to the sync all settings option to make it more clear it is for each guild, not account wide.
+
+* In regards to the macro tool, typing /grm tool to bring it up, you can also now type /grm macro to bring up the same window. Of note, /grm kick also works
+
+* New text info on the macro tool explaining that people same rank or higher will not be included in the queue due to the inability to modify player ranks the same or higher than your own.
+
+* Noticed some inconsistencies in full name-server showing often when unneeded so I normalized those messages a little.
+
+* Hard Reset slash command and Options > Help button now has a confirmation box.
+
+**CLASSIC**
+
+* Events Window now has a Classic specific message explaining why the feature is disabled (no calendar)
+
+* AddOnSkins file has been accepted and merged into the official TUKUI repository for those of you that use ElvUI AddOnSkins - the template is fully updated. They should have a release ready through their own system.
+
+
+**--------------**
+**BUGS AND BUGS!**
+**--------------**
+
+**BOTH**
+
+* Scaling issue with the GRM mouseover window has been resolved. It was squishing the frame due to a top and bottom "pin" when it should have just been the top corner.
+
+* Fixed an issue where if you were the same rank as the player, they were still showing up on the macro tool with a recommendation to kick. Now, it should only show them if they are below your rank.
+
+* Fixed an issue where if a player's birthday was set to unknown, even if you updated it correctly by right-click to edit, and even if it showed correctly on the Audit window, the mouseover would still say "Unknown" after mousing off and back on... no longer!
+
+* Some frames had their bottom edge being cut off at certain resolutions. This should be resolved now.
+
+* Export of the Log should now properly work and obey the filter rules that you currently have set. It only can do up to 1000 lines to avoid too big of a clipboard copy with CTRL-C
+
+**RETAIL**
+
+* Tooltip bug on the old Roster. You mouseover it and it grows and grows and grows until you mouse off and then come back and it restarts. This has finally been completely squashed and it is compatible with Raider.IO
+
+
+
+
+**VERSION 8.2R1.75 DATE: September 25th, 2019**
+
+*Compatibility Path for 8.2.5, among other things. It is not working with 8.2.5!*
+
+
+***NEW FEATURES***
+
+![Note Trigger](https://i.imgur.com/sG7iA4C.jpg)
+
+*The return of the !note feature! While this is mostly redundant in Retail, it plays a big role in Classic. It has been updated, onverted, and rebuilt for newer integration and for Classic! Of note, I have decided to keep the feature availabe in retail, for continuity between both versions, but I mostly find it useless in retail.*
+
+*In Retail this has mostly become useless as players now have the ability to edit their own notes and not others, unless they are officers. However, in Classic, the problem returns of players being able to modify **ANY** guildie's public note, not just their own, just by having access to editing public notes. This can be frustrating for leadership as the server stores no log of *who* made the changes. So, the !note feature allows a guild to disable the editing of public notes, eliminating this issue, but allowing guild members to easily update their own public note with the use of the "trigger," as long as an officer with GRM installed is currently online.*
+
+* It should be noted that this painstakingly takes advantage of the behind-the-scenes sync leadership role. It would be bad if there were 10 GRM users who were officers online at the same time and all 10 of them saw the !note designation and all 10 of them updated the public note and spammed to chat they did so. So, how do you determine which of all the current GRM users is the one that does it without there being too much of a delay behind the scenes? Well, good thing I already resolved this in regards to sync leadership for a decentralized database. This is not super well tested, but moderately and I'd be curious to hear from people if it is or is not functioning properly at all times.
+
+**How the !note feature works**
+
+* Any guildie, including a GRM user, just starts their /g Guild message with this *trigger*: "!note"
+
+* Anything after the !note trigger will be set as the public note (up to 31 characters). The previous note will be overwritten completely.
+
+* Examples: !note iLvl=115, Eng 250, Alch 300 
+ 
+
+
+**--------------**
+**QUALITY OF LIFE**
+**--------------**
+
+* BOTH: Last online Header text now has a proper width cap set before it wraps it so that in some languages it is quite wide and can overlap with player name (like in PortuguesBR )
+
+
+**--------------**
+**BUGS AND BUGS!**
+**--------------**
+
+* RETAIL: Raider.IO tooltip should be working again now.
+
+* CLASSIC: Noticed Portuguese BR localization file was not properly inserted into the .toc file in Classic. It was working in Retail, just not classic.
+
+* CLASSIC: Found an issue where if an addon called the CommunitiesFrame dependcy, the mouseover window would stop working in Classic. Cleaned up!  
+
+* BOTH: Fixed a bug where a Lua error would occur when a player logged off a the Member Alert message would not be shown (line 2091), and only if they had "Main Tag" designation disabled.
+
+* BOTH: Guild alerts should now properly show or not show main tag desigations based on the settgins
+
+
+
 **VERSION 8.2R1.74 DATE: September 19th, 2019**
 
 *Smoothing some more things out!!!*
-
-*Note: Each update will be tagged with **Classic/Retail/Both** for context*
 
 **--------------**
 **QUALITY OF LIFE**

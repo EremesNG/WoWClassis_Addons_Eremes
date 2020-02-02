@@ -27,6 +27,12 @@ local sliderList = {}
 local editBoxList = {}
 local dropdownList = {}
 
+if (L.hasTranslation == true) then
+  addon.vars.font = STANDARD_TEXT_FONT;
+else
+  addon.vars.font = 'Fonts\\FRIZQT__.ttf';
+end
+
 local farmerOptionsFrame = CreateFrame('Frame', 'farmerOptionsFrame', UIParent)
 farmerOptionsFrame.name = 'Farmer'
 InterfaceOptions_AddCategory(farmerOptionsFrame)
@@ -38,10 +44,10 @@ local function setDefaultPosition ()
 end
 
 local function storePosition (frame)
-  local icon = GetItemIcon(114978)
+  local icon = GetItemIcon(3334)
 
-  icon = ' |T' .. icon .. addon.vars.iconOffset .. '|t'
-  farmerOptions.anchor = {frame:GetPoint()}
+  icon = addon:getIcon(icon);
+  farmerOptions.anchor = {frame:GetPoint()};
   frame:EnableMouse(false);
   frame:SetMovable(false);
   frame:SetFading(true);
@@ -56,7 +62,7 @@ local function moveFrame ()
   local frame = addon.frame
   local icon = GetItemIcon(3334)
 
-  icon = ' |T' .. icon .. addon.vars.iconOffset .. '|t'
+  icon = addon:getIcon(icon);
   frame:RegisterForDrag('LeftButton');
   frame:SetFading(false);
   frame:Clear();
@@ -91,15 +97,15 @@ local function setFontSize (size, scale, outline)
   local iconOffset = -spacing * 1.5;
   local shadowOffset = size / 10;
 
-  -- FRIZQT__ cannot be used because it does not support cyrillic letters
-  -- addon.font:SetFont('Fonts\\ARIALN.ttf', size, 'thickoutline')
+  --[[ we have to use the standard font because on screen messages are always
+       localized --]]
   addon.font:SetFont(STANDARD_TEXT_FONT, size, outline);
-
   addon.font:SetSpacing(spacing);
   addon.font:SetShadowColor(0, 0, 0);
   addon.font:SetShadowOffset(shadowOffset, -shadowOffset);
 
-  addon.vars.iconOffset = ':'.. iconSize .. ':' .. iconSize .. ':' .. '0:' .. iconOffset;
+  -- addon.vars.iconOffset = ':'.. iconSize .. ':' .. iconSize .. ':' .. '0:' .. iconOffset;
+  addon.vars.iconOffset = addon:stringJoin({'', iconSize, iconSize, '0', iconOffset}, ':');
 end
 
 local function createCheckButton (name, anchorFrame, xOffset, yOffset, text, anchor, parentAnchor)
@@ -215,7 +221,7 @@ local function createEditBox (name, anchorFrame, xOffset, yOffset, width, height
   edit:EnableMouse(true)
   edit:SetMaxLetters(1000)
   -- edit:SetFontObject('ChatFontNormal')
-  edit:SetFont('Fonts\\ARIALN.ttf', 16, 'THINOUTLINE')
+  edit:SetFont(addon.vars.font, 16, 'THINOUTLINE')
   edit:SetWidth(width - 16)
   editBoxList[name] = edit
   -- edit:SetHeight(height)
@@ -239,7 +245,7 @@ local function createLabel (anchorFrame, xOffset, yOffset, text, anchor, parentA
   anchor = anchor or 'TOPLEFT'
   parentAnchor = parentAnchor or 'BOTTOMLEFT'
 
-  label:SetFont('Fonts\\ARIALN.TTF', 16, 'outline')
+  label:SetFont(addon.vars.font, 16, 'outline')
   label:SetPoint(anchor, anchorFrame, parentAnchor, xOffset, yOffset)
   label:SetText(text)
 

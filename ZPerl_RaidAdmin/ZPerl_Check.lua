@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 XPerl_SetModuleRevision("$Revision:  $")
@@ -27,7 +27,7 @@ local outputChannelColour
 
 local GetNumGroupMembers = GetNumGroupMembers
 
-local UnitIsGroupAssistant = UnitIsGroupAssistant;
+local UnitIsGroupAssistant = UnitIsGroupAssistant
 
 local ITEMLISTSIZE		= 12
 local PLAYERLISTSIZE		= 10
@@ -126,7 +126,7 @@ local function ProcessCTRAMessage(unitName, msg)
 		end
 
 	elseif (strfind(msg, "^RST ")) then
-		local plrName = strmatch(msg, "^RST %-1 ([^%s]+)$");
+		local plrName = strmatch(msg, "^RST %-1 ([^%s]+)$")
 		if (not plrName) then
 			local FR, NR, FRR, SR, AR, callPerson = strmatch(msg, "^RST (%d+) (%d+) (%d+) (%d+) (%d+) ([^%s]+)$")
 			if (FR) then
@@ -140,7 +140,7 @@ local function ProcessCTRAMessage(unitName, msg)
 		end
 
 	elseif (strfind(msg, "^REA ")) then
-		local numItems, callPerson = strmatch(msg, "^REA ([^%s]+) ([^%s]+)$");
+		local numItems, callPerson = strmatch(msg, "^REA ([^%s]+) ([^%s]+)$")
 		if (numItems) then
 			XPerl_RegResults[unitName] = {count = tonumber(numItems)}
 			if (callPerson == UnitName("player")) then
@@ -740,7 +740,7 @@ function XPerl_Check_UpdateItemList()
 
 				nameFrame:SetText(v.link)
 
-				local itemId = strmatch(v.link, "item:(%d+):");
+				local itemId = strmatch(v.link, "item:(%d+):")
    				if (itemId) then
 					local itemName, itemString, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemId)
 					iconFrame:SetTexture(itemTexture)
@@ -1307,7 +1307,7 @@ function XPerl_Check_OnEnter(self)
 		local link = f:GetText()
 		if (link and strsub(link, 1, 1) == "|") then
 			-- Have to strip excess information for the SetHyperlink call
-			local itemId = strmatch(link, "item:(%d+):");
+			local itemId = strmatch(link, "item:(%d+):")
    			if (itemId) then
 				local newLink = format("item:%d:0:0:0", itemId)
 

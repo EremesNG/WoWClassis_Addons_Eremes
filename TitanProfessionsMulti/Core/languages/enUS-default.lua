@@ -17,8 +17,6 @@ L["firstAid"] = "First Aid"
 L["fishing"] = "Fishing"
 L["herbalism"] = "Herbalism"
 L["herbalismskills"] = "Herbalism Skills"
-L["inscription"] = "Inscription"
-L["jewelcrafting"] = "Jewelcrafting"
 L["leatherworking"] = "Leatherworking"
 L["mining"] = "Mining"
 L["miningskills"] = "Mining Skills"
@@ -34,96 +32,6 @@ L["hideTutorial"] = "Hide Tutorial"
 L["masterHint"] = "|cFFB4EEB4Hint:|r |cFFFFFFFFLeft click opens the profession #1 window\rand middle click opens the profession #2 window.|r\r\r"
 L["primprof"] = "Show Primary Professions"
 L["bar"] = "Bar"
-
------- Reagents pack
---- Achaeology (default)
-L["ready"] = "|cFF69FF69Ready!  "
-L["archfragments"] = "Archaeology Fragments"
-L["fragments"] = "Fragments"
-L["fragtooltip"] = "|cFFB4EEB4Hint:|r |cFFFFFFFFRight-click in the plugin and\rselect which fragment will be\rdisplayed in the bar.|r\r"
-L["hidehint"] = "Hide Hint"
-L["displaynofrag"] = "Display Races Without Fragments"
-L["inprog"] = "\rIn progress:"
-L["nofragments"] = "No fragments"
-L["tooltip"] = "Tooltip"
-L["noarchaeology"] = "|cFFFF2e2eYou didn't learn archaeology yet\ror don't have fragments.|r\r\rGo to the closest trainer to learn it\ror visit an excavation field."
-
---- Enchanting (Legion)
-L["arkhana"] = "|cFFFFFFFFArkhana|r"
-L["leylight"] = "|cff0070ddLeylight Shard|r"
-L["chaosCrystal"] = "|cffa335eeChaos Crystal|r"
---- Enchanting (BfA)
-L["gdust"] = "|cFFFFFFFFGloom Dust|r"
-L["umbrashard"] = "|cff0070ddUmbra Shard|r"
-L["veiledcrystal"] = "|cffa335eeVeiled Crystal|r"
-
---- Fishing (Legion)
-L["mackerel"] = "|cFFFFFFFFSilver Mackerel|r"
-L["queenfish"] = "|cFFFFFFFFCursed Queenfish|r"
-L["salmon"] = "|cFFFFFFFFHighmountain Salmon|r"
-L["mossgill"] = "|cFFFFFFFFMossgill Perch|r"
-L["stormray"] = "|cFFFFFFFFStormray|r"
-L["koi"] = "|cFFFFFFFFRunescale Koi|r"
-L["barracuda"] = "|cFFFFFFFFBlack Barracuda|r"
---- Fishing (BfA)
-L["gscatfish"] = "|cFFFFFFFFGreat Sea Catfish|r"
-L["redtaill"] = "|cFFFFFFFFRedtail Loach|r"
-L["smackerel"] = "|cFFFFFFFFSlimy Mackerel|r"
-L["sshifter"] = "|cFFFFFFFFSand Shifter|r"
-L["tperch"] = "|cFFFFFFFFTiragarde Perch|r"
-L["lsnapper"] = "|cFFFFFFFFLane Snapper|r"
-L["ffangtooth"] = "|cFFFFFFFFFrenzied Fangtooth|r"
-L["msalmon"] = "|cff1eff00Midnight Salmon|r"
-
---- Herbalism (Legion)
-L["yseralline"] = "|cFFFFFFFFYseralline Seed|r"
-L["felwort"] = "|cff1eff00Felwort|r"
-L["starlight"] = "|cFFFFFFFFStarlight Rose|r"
-L["fjarn"] = "|cFFFFFFFFFjarnskaggl|r"
-L["foxflower"] = "|cFFFFFFFFFoxflower|r"
-L["dreamleaf"] = "|cFFFFFFFFDreamleaf|r"
-L["aethril"] = "|cFFFFFFFFAethril|r"
---- Herbalism (BfA)
-L["riverbud"] = "|cFFFFFFFFRiverbud|r"
-L["seastalk"] = "|cff1eff00Sea Stalk|r"
-L["starmoss"] = "|cFFFFFFFFStar Moss|r"
-L["akunda"] = "|cFFFFFFFFAkunda's Bite|r"
-L["wkiss"] = "|cFFFFFFFFWinter's Kiss|r"
-L["spollen"] = "|cFFFFFFFFSiren's Pollen|r"
-L["aweed"] = "|cFFFFFFFFAnchor Weed|r"
-
---- Mining (Legion)
-L["leystone"] = "|cFFFFFFFFLeystone Ore|r"
-L["felslate"] = "|cFFFFFFFFFelslate|r"
-L["brimstone"] = "|cff1eff00Infernal Brimstone|r"
-L["blood"] = "|cff0070ddBlood of Sargeras|r"
---- Mining (BfA)
-L["monelite"] = "|cFFFFFFFFMonelite Ore|r"
-L["stormSilver"] = "|cFFFFFFFFStorm Silver Ore|r"
-L["platinumOre"] = "|cff1eff00Platinum Ore|r"
-
---- Skinning (Legion)
-L["stormscale"] = "|cFFFFFFFFStormscale|r"
-L["stonehide"] = "|cFFFFFFFFStonehide Leather|r"
-L["felhide"] = "|cff1eff00Felhide|r"
-L["tooth"] = "|cFFFFFFFFUnbroken Tooth|r"
-L["claw"] = "|cFFFFFFFFUnbroken Claw|r"
---- Skinning (BfA)
-L["coarsel"] = "|cFFFFFFFFCoarse Leather|r"
-L["tempesth"] = "|cff1eff00Tempest Hide|r"
-L["shimmerscale"] = "|cFFFFFFFFShimmerscale|r"
-L["mistscale"] = "|cff1eff00Mistscale|r"
-L["bloodstained"] = "|cFFFFFFFFBlood-Stained Bone|r"
-L["cbone"] = "|cff1eff00Calcified Bone|r"
-
---- Tailoring (Legion)
-L["shaldorei"] = "|cFFFFFFFFShal'dorei Silk|r"
-L["silkweave"] = "|cFFFFFFFFImbued Silkweave|r"
---- Tailoring (BfA)
-L["tidespray"] = "|cFFFFFFFFTidespray Linen|r"
-L["nylonthread"] = "|cFFFFFFFFNylon Thread|r"
-L["deepseasatin"] = "|cff1eff00Deep Sea Satin|r"
-L["embroideredsatin"] = "|cff0070ddEmbroidered Deep Sea Satin|r"
 
 ------ Shared with one or more
 --- Shared (default)

@@ -602,6 +602,21 @@ GRM_Patch.SettingsCheck = function ( numericV , count , patch )
         end
     end
 
+    if numericV < 1.75 and baseValue < 1.75 then
+        GRM_Patch.ExpandOptionsType ( 2 , 1 , 76 );                 -- Add boolean for checkbox to enable or disable the !note feature
+        if loopCheck ( 1.75 ) then
+            return;
+        end
+    end
+
+    if numericV < 1.76 and baseValue < 1.76 then
+        GRM_Patch.ExpandOptionsType ( 1 , 1 , 77 );                 -- Log specific font size modifier - default 100% size = 0;
+        GRM_Patch.ModifyNewDefaultSetting ( 78 , 0 );
+        if loopCheck ( 1.76 ) then
+            return;
+        end
+    end
+
 
     
     GRM_Patch.FinalizeReportPatches( patchNeeded , numActions );
@@ -1964,7 +1979,7 @@ GRM_Patch.ConvertLeaderNoteControlFormatToGuildInfo = function()
 
         for i = 1 , GRM.GetNumGuildies() do
             -- For guild info
-            local _ , _ , rankInd , _ , _ , _ , note , officerNote = GetGuildRosterInfo ( i );
+            local rankInd , _ , _ , _ , note , officerNote = select ( 3 , GetGuildRosterInfo ( i ) );
             if rankInd == 0 then
                 -- Guild Leader identified!
                 -- first, let's look for grm1, if it's there, let's get rid of it.

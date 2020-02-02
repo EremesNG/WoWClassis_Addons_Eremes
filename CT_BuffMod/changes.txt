@@ -1,3 +1,13 @@
+CT_BuffMod (8.2.5.2) 2019-09-29
+- Show buffs for target, pet or focus
+- Further cleanup and localization of the options menu
+- Removed .tga files that were not even being used
+
+CT_BuffMod (8.2.5.1) 2019-09-23
+- Restored original Vanilla expiring-buff sound for Classic edition
+- Removed files that were unused (empty) for several years
+- Simplified the options menu, and started localizing it for enUS and frFR
+
 CT_BuffMod (8.2.0.5) 2019-08-14
 - Tooltip footer directs users to type /ctbuff for configuring the addon
 

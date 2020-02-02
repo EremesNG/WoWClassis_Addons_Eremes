@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local XPerl_Player_Events = { }
@@ -1696,7 +1696,7 @@ function XPerl_Player_SetWidth(self)
 	local h = 40 + ((((self.statsFrame.druidBar and self.statsFrame.druidBar:IsShown()) and 1 or 0) + (pconf.repBar and 1 or 0) + (pconf.xpBar and 1 or 0)) * 10)
 	self.statsFrame:SetHeight(h)
 
-	self:SetWidth((pconf.portrait and 1 or 0) * 62 + (pconf.percent and 1 or 0) * 32 + 126 + pconf.size.width)
+	self:SetWidth(128 + (pconf.portrait and 1 or 0) * 62 + (pconf.percent and 1 or 0) * 32 + pconf.size.width)
 	self:SetScale(pconf.scale)
 
 	XPerl_StatsFrameSetup(self, {self.statsFrame.druidBar, self.statsFrame.xpBar, self.statsFrame.repBar})

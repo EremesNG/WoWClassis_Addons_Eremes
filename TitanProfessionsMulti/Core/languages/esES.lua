@@ -19,8 +19,6 @@ L["firstAid"] = "Primeros auxilios"
 L["fishing"] = "Pesca"
 L["herbalism"] = "Herboristería"
 L["herbalismskills"] = "Habilidades en herboristería"
-L["inscription"] = "Inscripción"
-L["jewelcrafting"] = "Joyería"
 L["leatherworking"] = "Peletería"
 L["mining"] = "Minería"
 L["miningskills"] = "Habilidades mineras"
@@ -36,53 +34,6 @@ L["hideTutorial"] = "Ocultar Tutorial"
 L["masterHint"] = "|cFFB4EEB4Sugerencia:|r |cFFFFFFFFClic izquierdo abre la ventana\rde la profesión #1 y clic botón central abre\rla ventana de la profesión #2.|r\r\r"
 L["primprof"] = "Muestra profesiones primarias"
 L["bar"] = "Barra"
-
------- Reagents pack
---- Achaeology
-L["ready"] = "|cFF69FF69¡Preparado!  "
-L["archfragments"] = "Fragmentos de Arqueología"
-L["fragments"] = "Fragmentos"
-L["fragtooltip"] = "|cFFB4EEB4Sugerencia:|r |cFFFFFFFFClic derecho en el plugin y\rseleccione el fragmento que será\rmostrado en la barra.|r\r"
-L["hidehint"] = "Ocultar Sugerencia"
-L["displaynofrag"] = "Mostrar Razas Sin Fragmentos"
-L["inprog"] = "\rEn progreso:"
-L["nofragments"] = "Sin fragmentos"
-L["tooltip"] = "Descripción emergente"
-L["noarchaeology"] = "|cFFFF2e2eTodavía no aprendiste arqueología o no tiene fragmentos.|r\r\rVisite al instructor más cercano para aprenderlo o diríjase\ra una zona de excavación."
---- Enchanting
-L["arkhana"] = "|cFFFFFFFFArkhana|r"
-L["leylight"] = "|cff0070ddFragmento de luz Ley|r"
-L["chaosCrystal"] = "|cffa335eeCristal del Caos|r"
---- Fishing
-L["mackerel"] = "|cFFFFFFFFCaballa de Plata|r"
-L["queenfish"] = "|cFFFFFFFFPez Reina Maldito|r"
-L["salmon"] = "|cFFFFFFFFSalmón de Monte Alto|r"
-L["mossgill"] = "|cFFFFFFFFPerca Branquimusgo|r"
-L["stormray"] = "|cFFFFFFFFRaya Tormenta|r"
-L["koi"] = "|cFFFFFFFFKoi de escamas rúnicas|r"
-L["barracuda"] = "|cFFFFFFFFBarracuda negra|r"
---- Herbalism
-L["yseralline"] = "|cFFFFFFFFSemilla de Yseralline|r"
-L["felwort"] = "|cff1eff00Matojo vil|r"
-L["starlight"] = "|cFFFFFFFFRosa luz estelar|r"
-L["fjarn"] = "|cFFFFFFFFFjarnskaggl|r"
-L["foxflower"] = "|cFFFFFFFFFlor de raposa|r"
-L["dreamleaf"] = "|cFFFFFFFFFrondasueño|r"
-L["aethril"] = "|cFFFFFFFFAethril|r"
---- Mining
-L["leystone"] = "|cFFFFFFFFMena de piedra Ley|r"
-L["felslate"] = "|cFFFFFFFFPizarra Vil|r"
-L["brimstone"] = "|cff1eff00Azufre Infernal|r"
-L["blood"] = "|cff0070ddSangre de Sargeras|r"
---- Skinning
-L["stormscale"] = "|cFFFFFFFFEscama Tormentosa|r"
-L["stonehide"] = "|cFFFFFFFFCuero de Petrapiel|r"
-L["felhide"] = "|cff1eff00Pellejo Vil|r"
-L["tooth"] = "|cFFFFFFFFDiente sin romper|r"
-L["claw"] = "|cFFFFFFFFGarra sin romper|r"
---- Tailoring
-L["shaldorei"] = "|cFFFFFFFFSeda Shal'dorei |r"
-L["silkweave"] = "|cFFFFFFFFTejido de seda imbuido|r"
 
 ------ Shared with one or more
 --- Shared

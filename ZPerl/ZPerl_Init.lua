@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local init_done, gradient, conf, doneOptions
@@ -223,7 +223,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 
 	--local withList = XPerl_GetReusableTable()
 	local withList = { }
-	--[=[for unitid, unitName, unitClass, group, zone, online, dead in XPerl_NextMember do
+	for unitid, unitName, unitClass, group, zone, online, dead in XPerl_NextMember do
 		local use
 
 		if (not conf.buffHelper.visible) then
@@ -258,7 +258,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 						end
 					end]]
 				end
-				if (hasBuff) then
+				--[[if (hasBuff) then
 					if (without and checkExpiring) then
 						local found = checkExpiring[name]
 
@@ -269,7 +269,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 						end
 					end
 					break
-				end
+				end--]]
 			end
 
 			if ((with and hasBuff) or (not with and not hasBuff)) then
@@ -296,7 +296,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 				end
 			end
 		end
-	end]=]
+	end
 
 	if (conf.buffHelper.sort == "group") then
 		for i = 1, 8 do
@@ -364,7 +364,7 @@ end
 local function XPerl_ToolTip_AddBuffDuration(self, partyid, buffID, filter)
 	local name, _, count, _, dur, max, caster, isStealable = UnitAura(partyid, buffID, filter)
 
-	--[[if (IsInRaid() or UnitInParty("player")) then
+	if (IsInRaid() or UnitInParty("player")) then
 		if (conf.buffHelper.enable and partyid and (UnitInParty(partyid) or UnitInRaid(partyid))) then
 			if (name) then
 				local names, count = GetNamesWithoutBuff(name, IsAltKeyDown(), filter)
@@ -383,7 +383,7 @@ local function XPerl_ToolTip_AddBuffDuration(self, partyid, buffID, filter)
 				end
 			end
 		end
-	end--]]
+	end
 
 	if (caster and conf.buffs.names) then
 		local casterName = UnitFullName(caster)

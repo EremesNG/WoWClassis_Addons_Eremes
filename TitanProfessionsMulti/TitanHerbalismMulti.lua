@@ -86,7 +86,7 @@ end
 local function GetTooltipText(self, id)
 	local BonusTooltip = L["craftsmanship"].."|r|cFFFFFFFF"..HERM.." + |r|cFF69FF69"..HERMIncrease.."|r|cFFFFFFFF "..L["bonus"].." =|r|cFF69FF69 "..(HERM+HERMIncrease) -- Bônus da profissão
 
-	local Goodwith = L["goodwith"]..L["alchemy"]..", "..L["inscription"] -- Texto de combinação
+	local Goodwith = L["goodwith"]..L["alchemy"] -- Texto de combinação
 
 	local maxtext = L["maxtext"]..TitanUtils_GetHighlightText(HERMmax)
 

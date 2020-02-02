@@ -111,7 +111,7 @@ local function handleItem (itemId, itemLink, count)
     local text
 
     itemLevel = GetDetailedItemLevelInfo(itemLink)
-    text = itemSubType .. ' ' .. itemLevel
+    text = addon:stringJoin({itemLevel, itemSubType}, ' ');
     addon.Print.printEquip(texture, itemName, text, count, colors)
     return
   end
@@ -127,29 +127,34 @@ local function handleItem (itemId, itemLink, count)
     -- weapons
     if (itemClassID == LE_ITEM_CLASS_WEAPON) then
       local text
+
       itemLevel = GetDetailedItemLevelInfo(itemLink)
-      text = itemSubType .. ' ' .. itemLevel
+      text = addon:stringJoin({itemLevel, itemSubType}, ' ');
       addon.Print.printEquip(texture, itemName, text, count, colors)
       return
     end
 
     -- armor
     if (itemClassID == LE_ITEM_CLASS_ARMOR) then
-      local text = _G[itemEquipLoc]
+      local slot = _G[itemEquipLoc];
+      local textList;
+      local text;
 
-      itemLevel = GetDetailedItemLevelInfo(itemLink)
+      itemLevel = GetDetailedItemLevelInfo(itemLink);
 
       if (itemEquipLoc == 'INVTYPE_TABARD') then
-        -- text is already fine
+        textList = {slot};
       elseif (itemEquipLoc ==  'INVTYPE_CLOAK') then
-        text = text .. ' ' .. itemLevel
+        textList = {itemLevel, slot};
       elseif (itemSubClassID == LE_ITEM_ARMOR_GENERIC) then
-        text = text .. ' ' .. itemLevel -- fingers/trinkets
+        textList = {itemLevel, slot} -- fingers/trinkets
       elseif (itemSubClassID > LE_ITEM_ARMOR_SHIELD) then -- we all know shields are offhand
-        text = itemSubType .. ' ' .. itemLevel
+        textList = {itemLevel, slot};
       else
-        text = itemSubType .. ' ' .. text .. ' ' .. itemLevel
+        textList = {itemLevel, itemSubType, slot}
       end
+
+      text = addon:stringJoin(textList, ' ');
 
       addon.Print.printEquip(texture, itemName, text, count, colors)
       return
@@ -163,7 +168,7 @@ local function handleItem (itemId, itemLink, count)
   end
 
   -- all unspecified items
-  addon.Print.printItemCount(texture, itemName, '', count, colors, false)
+  addon.Print.printItem(texture, itemName, count, nil, colors, {forceName = true, minimumCount = 1})
 end
 
 --[[
@@ -367,10 +372,27 @@ addon:on('BAG_UPDATE_DELAYED', function ()
   end);
 end);
 
-addon:slash('test', function (id)
-  id = id or 152505
+addon:slash('test', function (id, count)
+  if (id ~= nil) then
+    local _, link = GetItemInfo(id);
+    count = tonumber(count or 1);
+    handleItem(link, id, count);
+    return;
+  end
 
-  local _, link = GetItemInfo(id);
+  local testItems = {
+    2447, -- Peacebloom
+    4496, -- Small Brown Pouch
+    6975, -- Whirlwind Axe
+    4322, -- Enchanter's Cowl
+    13521, -- Recipe: Flask of Supreme Power
+  };
 
-  handleItem(link, id, 1)
+  for i = 1, #testItems, 1 do
+    local id = testItems[i];
+    local _, link = GetItemInfo(id);
+
+    handleItem(link, id, 1);
+    handleItem(link, id, 4);
+  end
 end);

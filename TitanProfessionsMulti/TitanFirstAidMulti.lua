@@ -80,6 +80,8 @@ end
 local function GetTooltipText(self, id)
 	local BonusTooltip = L["craftsmanship"].."|r|cFFFFFFFF"..FIRM.." + |r|cFF69FF69"..FIRMIncrease.."|r|cFFFFFFFF "..L["bonus"].." =|r|cFF69FF69 "..(FIRM+FIRMIncrease) -- Bônus da profissão
 
+	local Goodwith = L["goodwith"]..L["tailoring"] -- Texto de combinação
+
 	local maxtext = L["maxtext"]..TitanUtils_GetHighlightText(FIRMmax)
 
 	local ColorValueAccount -- Conta de ganho de perícia
@@ -104,9 +106,9 @@ local function GetTooltipText(self, id)
 
 	local ValueText = "" -- Difere com e sem profissão
 	if FIRM == 0 then
-		ValueText = L["nosecskill"]
+		ValueText = L["nosecskill"]..Goodwith
 	else
-		ValueText = L["hint"]..L["info"]..BonusTooltip..maxtext..ColorValueAccount..warning
+		ValueText = L["hint"]..L["info"]..BonusTooltip..maxtext..ColorValueAccount..Goodwith..warning
 	end
 
 	return ValueText

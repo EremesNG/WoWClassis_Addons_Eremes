@@ -1,5 +1,5 @@
 ## Interface: 11302
-## Title: Titan Panel [|cff336699Professions|r] Multi! |cff00aa00v1.2 Classic|r
+## Title: Titan Panel [|cff336699Professions|r] Multi! |cff00aa00v1.3 Classic|r
 ## Notes: Track all professions! Right-click on Titan Panel, go to "Profession" tab and enjoy.
 ## Notes-ptBR: Rastreie todas profissões! Clique com o botão direito no Painel Titan, vá na aba "Profissão" e aproveite.
 ## Notes-koKR: 타이탄 패널의 전문기술을 표시합니다. 전문기술 탭에서 확인하세요.
@@ -7,7 +7,7 @@
 ## Notes-frFR: Suivez toutes les professions! Faites un clic droit sur le panneau de Titan, passez à l'onglet «Profession» et profitez-en.
 ## Notes-esES: ¡Seguir todas las profesiones! Haga clic derecho en Titan Panel, vaya a la pestaña "Profesión" y disfrute.
 ## Author: Canettieri
-## Version: 1.2
+## Version: 1.3
 ## Dependencies: TitanClassic
 Core\languages\enUS-default.lua
 Core\languages\deDE.lua

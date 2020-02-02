@@ -55,6 +55,7 @@ GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalQueText = GRM_UI.GRM_ToolCoreFram
 GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalQueText2 = GRM_UI.GRM_ToolCoreFrame:CreateFontString ( "GRM_ToolCoreFrameTotalQueText2" , "OVERLAY" , "GameFontNormalTiny" );
 GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalIgnoredText = GRM_UI.GRM_ToolCoreFrame:CreateFontString ( "GRM_ToolCoreFrameTotalIgnoredText" , "OVERLAY" , "GameFontNormalTiny" )
 GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalIgnoredText2 = GRM_UI.GRM_ToolCoreFrame:CreateFontString ( "GRM_ToolCoreFrameTotalIgnoredText2" , "OVERLAY" , "GameFontNormalTiny" );
+GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText = GRM_UI.GRM_ToolCoreFrame:CreateFontString ( "GRM_ToolCoreFrameRankRestrictionText" , "OVERLAY" , "GameFontNormalTiny" );
 
 -- Safe Details
 GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.GRM_ToolCoreIgnoreFrameText1 = GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame:CreateFontString ( "GRM_ToolCoreIgnoreFrameText1" , "OVERLAY" , "GameFontNormalTiny" );
@@ -289,6 +290,10 @@ GRM_UI.LoadToolFrames = function ( isManual )
         GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalIgnoredText:SetJustifyH ( "LEFT" );
         GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalIgnoredText2:SetPoint ( "TOPRIGHT" , GRM_UI.GRM_ToolCoreFrame.GRM_ToolResetSelectedMacroNamesButton , "BOTTOMRIGHT" , 10 , -49 );
         GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTotalIgnoredText2:SetJustifyH ( "LEFT" );
+
+        GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText:SetPoint ( "BOTTOM" , GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameText8 , "TOP" , 0 , 12 );
+        GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText:SetJustifyH ( "CENTER" );
+        GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText:SetTextColor ( 0.0 , 0.8 , 1.0 , 1.0 );
 
         GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTextPermissions:SetPoint ( "LEFT" , GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameText5 , "RIGHT" , 115 , 0 );
         GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTextPermissions:SetJustifyH ( "CENTER" );
@@ -1115,6 +1120,8 @@ GRM_UI.LoadToolFrames = function ( isManual )
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameText8:SetText( GRM.L ( "Queued Actions" ) );
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameText9:SetFont ( GRM_G.FontChoice , GRM_G.FontModifier + 18 );
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameText9:SetText( GRM.L ( "Current Actions" ) );
+    GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText:SetFont ( GRM_G.FontChoice , GRM_G.FontModifier + 12 );
+    GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameRankRestrictionText:SetText( GRM.L ( "Players the same rank or higher will not be shown" ) );
 
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTextPermissions:SetText ( GRM.L ( "Permissions" ) );
     GRM_UI.GRM_ToolCoreFrame.GRM_ToolCoreFrameTextPermissions:SetFont ( GRM_G.FontChoice , GRM_G.FontModifier + 14 );
@@ -2130,6 +2137,7 @@ GRM.GetIgnoredEntries = function ()
         result = GRM.GetOnlySafePlayersWithIgnoredAction();
     else
         result = select ( 2 , GRM.GetSafePlayers ( true ) );
+        
         -- Now, see if we need to add a reason.
         for i = 1 , #GRM_UI.GRM_ToolCoreFrame.Safe do
             for j = 1 , #result do
@@ -2157,17 +2165,14 @@ GRM.RemoveHighlightedPlayersFromIgnoredList = function ()
         if GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][3] then
 
             -- Now scan through the roster and update.
-            for j = 2 , #guildData do
-                if GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][1] == guildData[j][1] then
-                    guildData[j][45] = false;
-                    table.remove ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries , i );
+            local j = GRM.PlayerQuery ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][1] );
+            if j ~= nil then
+                guildData[j][45] = false;
+                table.remove ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries , i );
 
-                    -- Rebuild the mouseover frame in case it is open
-                    if GRM_G.currentName == guildData[j][1] and GRM_UI.GRM_MemberDetailMetaData:IsVisible() then
-                        GRM.PopulateMemberDetails ( GRM_G.currentName );
-                    end
-
-                    break;
+                -- Rebuild the mouseover frame in case it is open
+                if GRM_G.currentName == guildData[j][1] and GRM_UI.GRM_MemberDetailMetaData:IsVisible() then
+                    GRM.PopulateMemberDetails ( GRM_G.currentName );
                 end
             end
         end
@@ -2398,39 +2403,50 @@ GRM.UpdateIgnoredToolTip = function ( ind )
     local reason = GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.GRM_ToolIgnoredScrollChildFrame.AllButtons[ind][3]:GetText();
     local lastOnline = "";
     local atLeastOne = false;
+    local rankRestrictText = "";
+    local index;
 
     GRM_UI.SetTooltipScale();
     GameTooltip:SetOwner ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.GRM_ToolIgnoredScrollChildFrame.AllButtons[ind][1] , "ANCHOR_CURSOR" );
     GameTooltip:AddLine ( playerName , GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.GRM_ToolIgnoredScrollChildFrame.AllButtons[ind][2]:GetTextColor() );
 
-        if string.find ( reason , GRM.L ( "Kick" ) , 1 , true ) then
-            atLeastOne = true;
-            
-            for i = 1 , #GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries do
-                if GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][1] == playerName then
-                    lastOnline = GRM.HoursReport ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][5] );
-                    break;
-                end
+    for i = 1 , #GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries do
+        if GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][1] == playerName then
+            index = i;
+            if GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][6] ~= nil and GRM_G.playerRankID >= GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][6] then
+                rankRestrictText = GRM.GetReasonIgnoredMsg ( GRM_G.playerRankID , GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[i][6] );
             end
-            
+            break;
+        end
+    end
+
+    if string.find ( reason , GRM.L ( "Kick" ) , 1 , true ) then
+        atLeastOne = true;
+        
+        if index ~= nil then
+            lastOnline = GRM.HoursReport ( GRM_UI.GRM_ToolCoreFrame.GRM_ToolIgnoreListFrame.AllIgnoredEntries[index][5] );
             GameTooltip:AddLine ( GRM.L ( "Last Online" ) );
             GameTooltip:AddLine ( lastOnline , 1 , 1 , 1 );
         end
+    end
 
-        if string.find ( reason , GRM.L ( "Promote" ) , 1 , true ) then
-            atLeastOne = true;
-        end
+    if string.find ( reason , GRM.L ( "Promote" ) , 1 , true ) then
+        atLeastOne = true;
+    end
 
-        if string.find ( reason , GRM.L ( "Demote" ) , 1 , true ) then
-            atLeastOne = true;
-        end
+    if string.find ( reason , GRM.L ( "Demote" ) , 1 , true ) then
+        atLeastOne = true;
+    end
 
-        if not atLeastOne then
-            GameTooltip:AddLine ( GRM.L ( "Action" ) );
-            GameTooltip:AddLine ( GRM.L ( "None" ) , 0 , 0.77 , 0.063 );
-        end
+    if not atLeastOne then
+        GameTooltip:AddLine ( GRM.L ( "Action" ) );
+        GameTooltip:AddLine ( GRM.L ( "None" ) , 0 , 0.77 , 0.063 );
+    end
 
-
+    if rankRestrictText ~= "" then
+        GameTooltip:AddLine ( rankRestrictText , 1 , 0 , 0 );
+    end
+    
     GameTooltip:AddLine ( " " );    -- adds a small space between the lines
     GameTooltip:AddLine ( GRM.L ( "|CFFE6CC7FCtrl-Click|r to open Player Window" ) );
     GameTooltip:AddLine( GRM.L ( "|CFFE6CC7FCtrl-Shift-Click|r to Search the Log for Player" ) );
@@ -2646,7 +2662,7 @@ GRM.GetSafePlayers = function( getCountAndPlayers )
                 count = count + 1;
                 -- Default just gets the count - otherwise it returns the list of players as well.
                 if getCountAndPlayers then
-                    table.insert ( names , { GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][1] , GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][9] , false , "" , GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][24] } ); -- name,class,isHighlighted,Reason
+                    table.insert ( names , { GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][1] , GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][9] , false , "" , GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][24] , GRM_GuildMemberHistory_Save[ GRM_G.FID ][ GRM_G.saveGID ][i][5] } ); -- name,class,isHighlighted,Reason
                 end
             end
         end
@@ -2775,6 +2791,24 @@ GRM.GetNamesByFilterRules = function()
     return result;
 end
 
+-- Method:          GRM.GetReasonIgnoredMsg ( int , int , int )
+-- What it Does:    Returns the string reason an action cannot occur on the ignore list
+-- Purpose:         To help the player understand why another player cannot be removed.
+GRM.GetReasonIgnoredMsg = function ( myRank , targetRank )
+    local result = "";
+
+    if myRank >= targetRank then
+
+        if myRank == targetRank then
+            result = GRM.L ( "Same Rank" );
+        elseif myRank > targetRank then
+            result = GRM.L ( "Higher Rank" );
+        end
+    end
+
+    return result;
+end
+
 -- Method:          GRM.GetNamesFromKickRules ( int , bool , bool , bool , array )
 -- What it Does:    Gets the names that adhere to the given rules
 -- Purpose:         UX
@@ -2826,18 +2860,20 @@ GRM.GetNamesFromKickRules = function( j , player , needsToSave , saveControlChec
                 end
 
                 if player[24] >= GRM_G.NumberOfHoursTilRecommend then
-                    if not player[45] or GRM_G.playerRankID >= player[5] then      -- Ignore for scanning... but I still want a count of the ignored.
-                        needsToSave = true;
-                        saveControlCheck = true;
-                        tempDetails = { player[1] , GRM.GetClassColorRGB ( player[9] ) , "/gremove " .. name , GRM.L ( "Kick" ) , player[24] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][1] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][2] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][3] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][4] , false };
-                        -- { name , kickRule , ByTimeOffline , MonthCheck , MonthNumber }
-                    else
-                        isFound , ind = isPlayerAlreadyInList ( player[1] );
-
-                        if not isFound then
-                            table.insert ( GRM_UI.GRM_ToolCoreFrame.Safe , { player[1] , player[5] , player[9] , GRM.L ( "Kick" ) } ); -- Player { name , rankIndex , class , action }
+                    if GRM_G.playerRankID < player[5] then
+                        if not player[45] then      -- Ignore for scanning... but I still want a count of the ignored.
+                            needsToSave = true;
+                            saveControlCheck = true;
+                            tempDetails = { player[1] , GRM.GetClassColorRGB ( player[9] ) , "/gremove " .. name , GRM.L ( "Kick" ) , player[24] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][1] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][2] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][3] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][4] , false };
+                            -- { name , kickRule , ByTimeOffline , MonthCheck , MonthNumber }
                         else
-                            GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] = GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] .. ", " .. GRM.L ( "Kick" );
+                            isFound , ind = isPlayerAlreadyInList ( player[1] );
+
+                            if not isFound then
+                                table.insert ( GRM_UI.GRM_ToolCoreFrame.Safe , { player[1] , player[5] , player[9] , GRM.L ( "Kick" ) } ); -- Player { name , rankIndex , class , action }
+                            else
+                                GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] = GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] .. ", " .. GRM.L ( "Kick" );
+                            end
                         end
                     end
                 end
@@ -2845,18 +2881,20 @@ GRM.GetNamesFromKickRules = function( j , player , needsToSave , saveControlChec
                 -- if by Day
             elseif GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][3] == 2 then
                 if player[24] >= GRM_G.NumberOfHoursTilRecommend then
-                    if not player[45] or GRM_G.playerRankID >= player[5] then
-                        needsToSave = true;
-                        saveControlCheck = true;
-                        tempDetails = { player[1] , GRM.GetClassColorRGB ( player[9] ) , "/gremove " .. name , GRM.L ( "Kick" ) , player[24] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][1] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][2] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][3] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][4] , false };
-                        -- { name , kickRule , ByTimeOffline , DayCheck , DayNumber }
-                    else
-                        isFound , ind = isPlayerAlreadyInList ( player[1] );
-
-                        if not isFound then
-                            table.insert ( GRM_UI.GRM_ToolCoreFrame.Safe , { player[1] , player[5] , player[9] , GRM.L ( "Kick" ) } ); -- Player { name , rankIndex , class , action }
+                    if GRM_G.playerRankID < player[5] then
+                        if not player[45] then
+                            needsToSave = true;
+                            saveControlCheck = true;
+                            tempDetails = { player[1] , GRM.GetClassColorRGB ( player[9] ) , "/gremove " .. name , GRM.L ( "Kick" ) , player[24] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][1] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][2] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][3] , GRM_AddonSettings_Save[GRM_G.FID][GRM_G.setPID][2][75][j][4] , false };
+                            -- { name , kickRule , ByTimeOffline , DayCheck , DayNumber }
                         else
-                            GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] = GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] .. ", " .. GRM.L ( "Kick" );
+                            isFound , ind = isPlayerAlreadyInList ( player[1] );
+
+                            if not isFound then
+                                table.insert ( GRM_UI.GRM_ToolCoreFrame.Safe , { player[1] , player[5] , player[9] , GRM.L ( "Kick" ) } ); -- Player { name , rankIndex , class , action }
+                            else
+                                GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] = GRM_UI.GRM_ToolCoreFrame.Safe[ind][4] .. ", " .. GRM.L ( "Kick" );
+                            end
                         end
                     end
                 end

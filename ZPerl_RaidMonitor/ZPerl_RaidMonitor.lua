@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local cast
@@ -7,6 +7,20 @@ local MonUnits = {}			-- Fixed list of all monitor units
 local TableUnits = {}			-- Dynamic list of units indexed by raid id, changed on attr change
 ZPerlRaidMonConfig = {}
 local config = ZPerlRaidMonConfig
+
+local UnitCastingInfo, UnitChannelInfo = UnitCastingInfo, UnitChannelInfo
+
+if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	UnitCastingInfo = function(unit)
+		if unit ~= "player" then return end
+		return CastingInfo()
+	end
+
+	UnitChannelInfo = function(unit)
+		if unit ~= "player" then return end
+		return ChannelInfo()
+	end
+end
 
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers

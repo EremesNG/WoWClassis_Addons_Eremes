@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local XPerl_Target_Events = { }
@@ -1673,7 +1673,7 @@ end
 function XPerl_Target_SetWidth(self)
 
 	self.conf.size.width = max(0, self.conf.size.width or 0)
-	local w = 128 + ((self.conf.portrait and 1 or 0) * 60) + ((self.conf.percent and 1 or 0) * 32) + self.conf.size.width
+	local w = 128 + ((self.conf.portrait and 1 or 0) * 62) + ((self.conf.percent and 1 or 0) * 32) + self.conf.size.width
 
 	if (not InCombatLockdown()) then
 		self:SetWidth(w)
@@ -1711,10 +1711,10 @@ function XPerl_Target_Set_Bits(self)
 
 	if (self.conf.portrait) then
 		self.portraitFrame:Show()
-		self.portraitFrame:SetWidth(60)
+		self.portraitFrame:SetWidth(62)
 	else
 		self.portraitFrame:Hide()
-		self.portraitFrame:SetWidth(2)
+		self.portraitFrame:SetWidth(3)
 	end
 
 	if (self.conf.values) then

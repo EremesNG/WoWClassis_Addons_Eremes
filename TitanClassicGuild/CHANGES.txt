@@ -1,0 +1,46 @@
+lightweight tag 5781ef1f3fce902bd29c06ae61f87c2ea9a3f483 1.0.0.1-beta
+Author:	Yunohu <kernighan@gmail.com>
+Date:	Thu Sep 12 23:55:57 2019 +0000
+
+commit 5781ef1f3fce902bd29c06ae61f87c2ea9a3f483
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 23:55:57 2019 +0000
+
+    Bump version to 1.0.0.1
+
+commit 7c89022949cceeeb651b04d470e7938800aed5d1
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 23:26:52 2019 +0000
+
+    re #1 - Drop class dropdown at correct level
+
+commit 05d8b3f0c5c5e39ac8e9b4001bac7f09eb21cf1c
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 23:21:10 2019 +0000
+
+    re #1 - Fix UI Dropdown variables
+
+commit 653312ec3e6f603810a1d9483af841b2656d051b
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 23:15:44 2019 +0000
+
+    re #1 - Update alliance and horde class lists
+
+commit a26b89cfc7500828f31eff5914465a9429a5bed7
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 22:44:05 2019 +0000
+
+    Fix adding friends via menu
+
+commit 5497f4358e71a6bd31a80d8238eed21794e39de4
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 22:40:06 2019 +0000
+
+    re #1 - Fix Who command
+
+commit 305feaba58bfd3be29165e54ae14e00f0fba6fdf
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 12 22:33:24 2019 +0000
+
+    re #1 - Fix right click menu not working
+

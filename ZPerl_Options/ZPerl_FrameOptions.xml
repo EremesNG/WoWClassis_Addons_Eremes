@@ -17074,7 +17074,7 @@
 			</Anchor>
 		</Anchors>
 		<Size>
-			<AbsDimension x="425" y="195"/>
+			<AbsDimension x="470" y="195"/>
 		</Size>
 		<Frames>
 			<Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
@@ -17225,7 +17225,7 @@
 						XPerl_Options_Custom_ScanForIcons(XPerl_Custom_Config)
 						XPerl_Custom_ConfigEdit:Hide()
 						XPerl_SwitchAnchor(XPerl_Custom_Config, "TOPLEFT")
-						XPerl_Custom_Config:SetHeight(340)
+						XPerl_Custom_Config:SetHeight(430)
 					</OnShow>
 					<OnHide>
 						XPerl_Custom_ConfigEdit:Show()

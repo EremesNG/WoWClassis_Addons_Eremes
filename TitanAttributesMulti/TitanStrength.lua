@@ -65,7 +65,7 @@ L.Elib({
 	id = ID,
 	name = "Titan|cFFf9251a "..L["strength"].."|r".." Multi",
 	tooltip = L["strength"],
-	icon = "Interface\\Icons\\ability_warrior_secondwind",
+	icon = "Interface\\Icons\\ability_rogue_kidneyshot",
 	category = "Information",
 	version = version,
 	onUpdate = OnUpdate,

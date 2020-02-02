@@ -8,6 +8,13 @@
 -- the CTMod Team. Thank you.                 --
 ------------------------------------------------
 
+
+-- IMPORTANT NOTE:  Consolidation appears no longer to be part of the game,
+--                  but the code has been left in the game just in case it returns.
+--                  
+--                  The options are commented-out and can be restored quickly in module:frame
+
+
 ---------------------------------------------
 -- Initialization
 
@@ -173,9 +180,6 @@ local frame_Hide;
 -- EndBugfix
 
 do
--- BeginMod
-CT_BuffMod_xoptUnsecure = true;
--- EndMod
 
 local function getFrameHandle(frame)
 	return frame;
@@ -790,130 +794,119 @@ local function justifyH(fs, justify, default)
 	return false;
 end
 
--- Time format 1 (unabbreviated days, hours, minutes or seconds): 4 days / 1 hour / 35 minutes
--- Time format 2 (abbreviated minutes/seconds): 4 days / 1 hour / 35 min
--- Time format 3 (single letter for day, hour, minute or second): 4d / 1h / 35m
--- Time format 4 (single letter and shows 2 values): 4d 16h / 1h 35m / 35m 30s
--- Time format 5 (shows two values with a colon): 112:15h / 1:35h / 1:35 / 0:35
+-- Time format 1 (unabbreviated):	 4 days / 1 hour / 35 minutes / 59 seconds		-- default; plural and singular localizations
+-- Time format 2 (shortenned):		 4 day  / 1 hour / 35 min     / 59 sec			-- no attempt to pluralize
+-- Time format 3 (abbreviated): 	 4d     / 1h     / 35m        / 59s			-- only one or two characters
+-- Time format 4 (abbrevated two vals):  4d 16h / 1h 35m / 35m 30s    / 59s			-- may be grouped into days
+-- Time format 5 (two vals, separator): 112:15h / 1:35h  / 1:35       / 0:35			-- days can be shown with a comma
 
 local function timeFormat1(timeValue, showDays)
-	-- Time format 1 (unabbreviated minutes/seconds): 1 hour / 35 minutes
+	-- Time format 1 (unabbreviated):	 4 days / 1 hour / 35 minutes / 59 seconds		-- default; plural and singular localizations
 	timeValue = ceil(timeValue);
 	if ( timeValue > 86340 and showDays) then
 		-- Days
 		local days = ceil(timeValue / 86400);
 		if ( days ~= 1 ) then
-			return format("%d days", days);
+			return format(module.text["CT_BuffMod/TimeFormat/Days Plural"], days);
 		else
-			return "1 day";
+			return module.text["CT_BuffMod/TimeFormat/Day Singular"];
 		end
 	elseif ( timeValue > 3540 ) then
 		-- Hours
 		local hours = ceil(timeValue / 3600);
 		if ( hours ~= 1 ) then
-			return format("%d hours", hours);
+			return format(module.text["CT_BuffMod/TimeFormat/Hours Plural"], hours);
 		else
-			return "1 hour";
+			return module.text["CT_BuffMod/TimeFormat/Hour Singular"];
 		end
 	elseif ( timeValue > 60 ) then
 		-- Minutes
 		local minutes = ceil(timeValue / 60);
 		if ( minutes ~= 1 ) then
-			return format("%d minutes", minutes);
+			return format(module.text["CT_BuffMod/TimeFormat/Minutes Plural"], minutes);
 		else
-			return "1 minute";
+			return module.text["CT_BuffMod/TimeFormat/Minute Singular"];
 		end
 	else
 		-- Seconds
 		if ( timeValue ~= 1 ) then
-			return format("%d seconds", timeValue);
+			return format(module.text["CT_BuffMod/TimeFormat/Seconds Plural"], timeValue);
 		else
-			return "1 second";
+			return module.text["CT_BuffMod/TimeFormat/Second Singular"];
 		end
 	end
 end
 
 local function timeFormat2(timeValue, showDays)
-	-- Time format 2 (abbreviated minutes/seconds): 1 hour / 35 min
+	-- Time format 2 (shortenned):		 4 day  / 1 hour / 35 min     / 59 sec			-- no attempt to pluralize
 	timeValue = ceil(timeValue);
 	if ( timeValue > 86340 and showDays) then
 		-- Days
-		local days = ceil(timeValue / 86400);
-		if ( days ~= 1 ) then
-			return format("%d days", days);
-		else
-			return "1 day";
-		end
+		return format(module.text["CT_BuffMod/TimeFormat/Days Smaller"], ceil(timeValue / 86400));
 	elseif ( timeValue > 3540 ) then
 		-- Hours
-		local hours = ceil(timeValue / 3600);
-		if ( hours ~= 1 ) then
-			return format("%d hours", hours);
-		else
-			return "1 hour";
-		end
+		return format(module.text["CT_BuffMod/TimeFormat/Hours Smaller"], ceil(timeValue / 3600));
 	elseif ( timeValue > 60 ) then
 		-- Minutes
-		return format("%d min", ceil(timeValue / 60));
+		return format(module.text["CT_BuffMod/TimeFormat/Minutes Smaller"], ceil(timeValue / 60));
 	else
 		-- Seconds
-		return format("%d sec", timeValue);
+		return format(module.text["CT_BuffMod/TimeFormat/Seconds Smaller"], timeValue);
 	end
 end
 
 local function timeFormat3(timeValue, showDays)
-	-- Time format 3 (single letter for hour/minute/second): 1h / 35m
+	-- Time format 3 (abbreviated): 	 4d     / 1h     / 35m        / 59s			-- only one or two characters
 	timeValue = ceil(timeValue);
 	if ( timeValue > 86340 and showDays) then
 		-- Days
-		local days = ceil(timeValue / 86400);
-		return format("%dd", days);
+		return format(module.text["CT_BuffMod/TimeFormat/Days Abbreviated"], ceil(timeValue / 86400));
 	elseif ( timeValue > 3540 ) then
 		-- Hours
-		return format("%dh", ceil(timeValue / 3600));
+		return format(module.text["CT_BuffMod/TimeFormat/Hours Abbreviated"], ceil(timeValue / 3600));
 	elseif ( timeValue > 60 ) then
 		-- Minutes
-		return format("%dm", ceil(timeValue / 60));
+		return format(module.text["CT_BuffMod/TimeFormat/Minutes Abbreviated"], ceil(timeValue / 60));
 	else
 		-- Seconds
-		return format("%ds", timeValue);
+		return format(module.text["CT_BuffMod/TimeFormat/Seconds Abbreviated"], timeValue);
 	end
 end
 
 local function timeFormat4(timeValue, showDays)
-	-- Time format 4 (single letter for hour/minute/second, and shows 2 values): 1h 35m / 35m 30s
+	-- Time format 4 (abbrevated two vals):  4d 16h / 1h 35m / 35m 30s    / 59s			-- may be grouped into days
 	timeValue = ceil(timeValue);
 	if ( timeValue > 86400 and showDays) then
 		-- Days & Hours
 		local days = floor(timeValue / 86400);
-		return format("%dd %dh", days, floor((timeValue - days * 86400) / 3600 ));
+		return format(module.text["CT_BuffMod/TimeFormat/Days Abbreviated"] .. " " ..  module.text["CT_BuffMod/TimeFormat/Hours Abbreviated"], days, floor((timeValue - days * 86400) / 3600 ));
 	elseif ( timeValue >= 3600 ) then
 		-- Hours & Minutes
 		local hours = floor(timeValue / 3600);
-		return format("%dh %dm", hours, floor((timeValue - hours * 3600) / 60));
+		return format(module.text["CT_BuffMod/TimeFormat/Hours Abbreviated"] .. " " ..  module.text["CT_BuffMod/TimeFormat/Minutes Two Digits"], hours, floor((timeValue - hours * 3600) / 60));
 	elseif ( timeValue > 60 ) then
 		-- Minutes & Seconds
-		return format("%dm %.2ds", floor(timeValue / 60), timeValue % 60);
+		return format(module.text["CT_BuffMod/TimeFormat/Minutes Abbreviated"] .. " " ..  module.text["CT_BuffMod/TimeFormat/Seconds Two Digits"], floor(timeValue / 60), timeValue % 60);
 	else
 		-- Seconds
-		return format("%ds", timeValue);
+		return format(module.text["CT_BuffMod/TimeFormat/Seconds Abbreviated"], timeValue);
 	end
 end
 
 local function timeFormat5(timeValue, showDays)
-	-- Time format 5 (2 values with a colon): 1:35h / 1:35 / 0:35
+	-- Time format 5 (two vals, separator): 112:15h / 1:35h  / 1:35       / 0:35			-- days can be shown with a comma
 	timeValue = ceil(timeValue);
 	if ( timeValue > 86400 and showDays) then
 		-- Days & Hours
 		local days = floor(timeValue / 86400);
-		return format("%dd, %d:%.2dh", days, floor((timeValue % 86400) / 3600 ), floor((timeValue % 3600) / 60 ));
+		return format(module.text["CT_BuffMod/TimeFormat/Days Digital"], days, floor((timeValue % 86400) / 3600 ), floor((timeValue % 3600) / 60 ));
 	elseif ( timeValue >= 3600 ) then
 		-- Hours & Minutes
 		local hours = floor(timeValue / 3600);
-		return format("%d:%.2dh", hours, floor((timeValue - hours * 3600) / 60));
+		return format(module.text["CT_BuffMod/TimeFormat/Hours Digital"], hours, floor((timeValue - hours * 3600) / 60));
 	else
 		-- Minutes & Seconds
-		return format("%.2d:%.2d", floor(timeValue / 60), timeValue % 60);
+		return format(module.text["CT_BuffMod/TimeFormat/Minutes Digital"], floor(timeValue / 60), timeValue % 60);
 	end
 end
 
@@ -1264,16 +1257,20 @@ function auraClass:checkExpiration()
 
 				-- Display the expiration message
 				if (canRecastKeyBind) then
-					module:printformat(module:getText("PRE_EXPIRATION_WARNING_KEYBINDING"),
+					module:printformat(module.text["CT_BuffMod/PRE_EXPIRATION_WARNING_KEYBINDING"],
 						name, timeFormat1(timeRemaining), canRecastKeyBind);
 				else
-					module:printformat(module:getText("PRE_EXPIRATION_WARNING"),
+					module:printformat(module.text["CT_BuffMod/PRE_EXPIRATION_WARNING"],
 						name, timeFormat1(timeRemaining));
 				end
 
 				-- Play a sound
 				if (globalObject.expirationSound) then
-					PlaySoundFile(569634); -- "Sound\\Spells\\misdirection_impact_head.wav"
+					if (module:getGameVersion() == CT_GAME_VERSION_RETAIL) then
+						PlaySoundFile(569634); -- "Sound\\Spells\\misdirection_impact_head.wav"
+					elseif (module:getGameVersion() == CT_GAME_VERSION_CLASSIC) then
+						PlaySound(3081); -- "TellMessage"
+					end
 				end
 			end
 
@@ -2084,7 +2081,7 @@ local function auraButton_updateFlashing(button)
 
 	local timeRemaining = auraObject.expirationTime - GetTime();
 
-	if (timeRemaining <= globalObject.flashTime and auraObject.duration > 0 and globalObject.flashIcons) then
+	if (timeRemaining <= globalObject.flashTime and auraObject.duration > 0) then
 		auraObject.isFlashing = true;
 
 		-- If you target someone and then run a distance away, you will still know they have buffs,
@@ -2900,7 +2897,22 @@ function CT_BuffMod_AuraButton_OnShow(self)
 	end
 end
 
-local tooltipFooter;
+-- bottom-left corner of the icon tooltip, showing the user how to configure CT_BuffMod
+local tooltipFooterRight = GameTooltip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall");
+tooltipFooterRight:SetScale(0.9);
+tooltipFooterRight:SetTextColor(0.5, 0.5, 0.5);
+tooltipFooterRight:SetText("/ctbuff to configure");
+tooltipFooterRight:SetPoint("BOTTOMRIGHT", -6, 6);
+tooltipFooterRight:Hide();
+
+-- bottom-left corner of the icon tooltip, showing the spellID
+local tooltipFooterLeft = GameTooltip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall");
+tooltipFooterLeft:SetScale(0.9);
+tooltipFooterLeft:SetTextColor(0.5, 0.5, 0.5);
+tooltipFooterLeft:SetText("");
+tooltipFooterLeft:SetPoint("BOTTOMLEFT", 12, 6);
+tooltipFooterLeft:Hide();
+
 function CT_BuffMod_AuraButton_OnEnter(self)
 	-- Show tooltip for the aura/enchant.
 	local frameObject = self.frameObject;
@@ -2915,17 +2927,14 @@ function CT_BuffMod_AuraButton_OnEnter(self)
 	if ( auraObject.auraType == constants.AURATYPE_CONSOLIDATED ) then
 		return;
 	end
-
-	if (not globalObject.showTooltips) then
-		-- Show the window number tooltip if the option is enabled and
-		-- the options frame or control panel window is open.
-		if (globalObject.showWindowTooltips) then
-			if (isOptionsFrameShown() or isControlPanelShown()) then
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-				GameTooltip:SetText("Window " .. frameObject:getWindowId());
-				GameTooltip:AddLine("Alt click to select.");
-				GameTooltip:Show();
-			end
+	
+	if (frameObject.disableTooltips) then
+		if ( (isOptionsFrameShown() or isControlPanelShown()) and frameObject:getWindowId() ) then
+			-- See also the auraFrame OnEnter script.
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+			GameTooltip:SetText(format(module.text["CT_BuffMod/WindowTitle"],frameObject:getWindowId()));
+			GameTooltip:AddLine(module.text["CT_BuffMod/Options/WindowControls/AltClickHint"]);
+			GameTooltip:Show();
 		end
 		return;
 	end
@@ -2939,51 +2948,37 @@ function CT_BuffMod_AuraButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	end
 	if ( auraObject.auraType == constants.AURATYPE_ENCHANT ) then
-		if (globalObject.showItemDetails) then
-			-- GameTooltip:SetInventoryItem(frameObject:getUnitId(), filter);
-			GameTooltip:SetInventoryItem("player", filter);
-		else
-			local timeRemaining = auraObject.expirationTime - GetTime();
-			if (timeRemaining < 0) then
-				timeRemaining = 0;
-			end
-			GameTooltip:SetText(auraObject.name);
-			GameTooltip:AddLine(SecondsToTime(timeRemaining, nil, true));
-		end
+		GameTooltip:SetInventoryItem("player", filter);
 	else
 		GameTooltip:SetUnitAura(frameObject:getUnitId(), index, filter);
-		if (globalObject.showSpellNumber and auraObject.spellId) then
-			GameTooltip:AddLine("Spell Number " .. auraObject.spellId, 1, 1, 1);
-		end
-		if (globalObject.showCasterName and auraObject.casterUnit and auraObject.casterName) then
+		do
 			if (auraObject.casterName == UNKNOWN) then
 				auraObject:setCasterUnit(auraObject.casterUnit);
 			end
 			if (auraObject.casterName) then
-				GameTooltip:AddLine(auraObject.casterName);
+				GameTooltip:AddLine(auraObject.casterName)
 			end
 		end
 	end
-	if (globalObject.showWindowTooltips) then
-		if (isOptionsFrameShown() or isControlPanelShown()) then
-			GameTooltip:AddLine("Window " .. frameObject:getWindowId() .. " (Alt click to select)");
+	if (isOptionsFrameShown() or isControlPanelShown()) then
+		GameTooltip:AddLine(format(module.text["CT_BuffMod/WindowTitle"],frameObject:getWindowId()) .. " (" .. module.text["CT_BuffMod/Options/WindowControls/AltClickHint"] .. ")");
+		GameTooltip:Show();
+	else
+		GameTooltip:Show();
+		tooltipFooterRight:Show();
+		if (auraObject.spellId and auraObject.auraType ~= constants.AURATYPE_ENCHANT) then
+			tooltipFooterLeft:Show();
+			tooltipFooterLeft:SetText("Spell ID: " .. auraObject.spellId);
 		end
+		GameTooltip:SetHeight(GameTooltip:GetHeight()+5);
 	end
-	GameTooltip:Show();
-	if (not tooltipFooter) then
-		tooltipFooter = GameTooltip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall");
-		tooltipFooter:SetScale(0.85);
-		tooltipFooter:SetTextColor(0.35, 0.35, 0.35);
-		tooltipFooter:SetText("/ctbuff to configure");
-		tooltipFooter:SetPoint("BOTTOMRIGHT", -6, 6);
-	end
-	tooltipFooter:Show();
 end
 
 function CT_BuffMod_AuraButton_OnLeave(self)
 	-- Hide aura/enchant tooltip.
 	GameTooltip:Hide();
-	tooltipFooter:Hide();
+	tooltipFooterRight:Hide();
+	tooltipFooterLeft:Hide();
 end
 
 function CT_BuffMod_AuraButton_OnMouseDown(self, button)
@@ -4345,7 +4340,7 @@ function frameClass:createAltFrame()
 
 	-- Return if the alt frame has already been created.
 	if (auraFrame.altFrame) then
-		auraFrame.altFrame.fsWindowTitle:SetText("Window " .. self:getWindowId());
+		auraFrame.altFrame.fsWindowTitle:SetText(format(module.text["CT_BuffMod/WindowTitle"],self:getWindowId()));
 		return;
 	end
 
@@ -4377,7 +4372,7 @@ function frameClass:createAltFrame()
 	-- Create window title
 	altFrame.fsWindowTitle = altFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal");
 	altFrame.fsWindowTitle:SetWordWrap(false)
-	altFrame.fsWindowTitle:SetText("Window " .. self:getWindowId());
+	altFrame.fsWindowTitle:SetText(format(module.text["CT_BuffMod/WindowTitle"],self:getWindowId()));
 	altFrame.fsWindowTitle:SetPoint("BOTTOM", altFrame, "TOP");
 	altFrame.fsWindowTitle:Hide();
 end
@@ -5075,6 +5070,7 @@ end
 -- P	.consolidateThresholdMinutes -- Time remaining threshold minutes (default is 0)
 -- P	.consolidateThresholdSeconds -- Time remaining threshold seconds (default is 10)
 -- P	.disableWindow -- Disable the aura frame without deleting the frame object (1==Yes, false==no, default is no)
+-- P	.disableTooltips -- Prevent tooltips from appearing (1==Yes, false==no, default is no)
 -- P	.playerUnsecure -- Use unsecure frame and buttons for player and vehicle units (1==yes, false==no, default == no)
 -- P	.separateOwn -- Sort auras cast by player from others (1==Sort before others, 2==Sort after others, 3==Sort with others, default==Sort before others) (see constants.SEPARATE_OWN_*)
 -- P	.separateZero -- Sort non-expiring buffs before, with, or after other buffs (1=before, 2=after, 3=with)
@@ -5416,11 +5412,6 @@ function primaryClass:applyProtectedOptions(initFlag)
 		useUnsecure = true;
 	end
 
-	if (not CT_BuffMod_xoptUnsecure) then
-		playerUnsecure = false;
-		useUnsecure = false;
-	end
-
 	local deleteFrame;
 	local createFrame;
 
@@ -5519,6 +5510,9 @@ function primaryClass:applyProtectedOptions(initFlag)
 
 	-- The disable window flag
 	self.disableWindow = disableWindow;
+	
+	-- The disable tooltips flag
+	self.disableTooltips = not not frameOptions.disableTooltips;
 
 	-- The security modes
 	self.useUnsecure = useUnsecure;
@@ -6582,15 +6576,13 @@ local function primaryAltFrame_OnEnter(altFrame)
 		return;
 	end
 
-	if (globalObject.showWindowTooltips) then
-		local windowId = frameObject:getWindowId();
-		if ( (isOptionsFrameShown() or isControlPanelShown()) and windowId ) then
-			-- See also the auraFrame OnEnter script.
-			GameTooltip:SetOwner(altFrame, "ANCHOR_CURSOR");
-			GameTooltip:SetText("Window " .. windowId);
-			GameTooltip:AddLine("Alt click to select.");
-			GameTooltip:Show();
-		end
+	local windowId = frameObject:getWindowId();
+	if ( (isOptionsFrameShown() or isControlPanelShown()) and windowId ) then
+		-- See also the auraFrame OnEnter script.
+		GameTooltip:SetOwner(altFrame, "ANCHOR_CURSOR");
+		GameTooltip:SetText(format(module.text["CT_BuffMod/WindowTitle"],windowId));
+		GameTooltip:AddLine(module.text["CT_BuffMod/Options/WindowControls/AltClickHint"]);
+		GameTooltip:Show();
 	end
 end
 
@@ -6968,18 +6960,15 @@ function primaryClass:registerAuraFrameEvents()
 
 	auraFrame:RegisterEvent("PLAYER_REGEN_DISABLED");
 	auraFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+	auraFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
+	auraFrame:RegisterEvent("UNIT_PET");
+	auraFrame:RegisterEvent("UNIT_AURA");				-- Reminder: The secure aura routines also register UNIT_AURA
 	if (module:getGameVersion() == CT_GAME_VERSION_RETAIL) then
-		-- WoW 3.0 and later, but not WoW Classic
-		auraFrame:RegisterEvent("UNIT_ENTERED_VEHICLE");
-		auraFrame:RegisterEvent("UNIT_EXITED_VEHICLE");
+		auraFrame:RegisterEvent("UNIT_ENTERED_VEHICLE");	-- WotLK and later
+		auraFrame:RegisterEvent("UNIT_EXITED_VEHICLE");		-- WotLK and later
+		auraFrame:RegisterEvent("PLAYER_FOCUS_CHANGED");	-- BC and later
 	end
-	if (CT_BuffMod_xoptUnits) then
-		auraFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
-		auraFrame:RegisterEvent("PLAYER_FOCUS_CHANGED");
-		auraFrame:RegisterEvent("UNIT_PET");
-	end
-	-- Reminder: The secure aura routines also register UNIT_AURA
-	auraFrame:RegisterEvent("UNIT_AURA");
+
 end
 
 function primaryClass:unregisterAuraFrameEvents()
@@ -6991,17 +6980,14 @@ function primaryClass:unregisterAuraFrameEvents()
 
 	auraFrame:UnregisterEvent("PLAYER_REGEN_DISABLED");
 	auraFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
-	if (module:getGameVersion() == CT_GAME_VERSION_RETAIL) then
-		-- WoW 3.0 and later, but not WoW Classic
-		auraFrame:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-		auraFrame:UnregisterEvent("UNIT_EXITED_VEHICLE");
-	end
-	if (CT_BuffMod_xoptUnits) then
-		auraFrame:UnregisterEvent("PLAYER_TARGET_CHANGED");
-		auraFrame:UnregisterEvent("PLAYER_FOCUS_CHANGED");
-		auraFrame:UnregisterEvent("UNIT_PET");
-	end
+	auraFrame:UnregisterEvent("PLAYER_TARGET_CHANGED");
+	auraFrame:UnregisterEvent("UNIT_PET");
 	auraFrame:UnregisterEvent("UNIT_AURA");
+	if (module:getGameVersion() == CT_GAME_VERSION_RETAIL) then
+		auraFrame:UnregisterEvent("UNIT_ENTERED_VEHICLE");	-- WotLK and later
+		auraFrame:UnregisterEvent("UNIT_EXITED_VEHICLE");	-- WotLK and later
+		auraFrame:UnregisterEvent("PLAYER_FOCUS_CHANGED");	-- BC and later
+	end
 end
 
 function primaryClass:registerStateDrivers()
@@ -7601,7 +7587,7 @@ function windowClass:setCurrentWindow(isCurrent, showTitle)
 		else
 			fsWindowTitle:SetTextColor(1, 0.82, 0);
 		end
-		if (showTitle and globalObject.showWindowTitles) then
+		if (showTitle) then
 			fsWindowTitle:Show();
 		else
 			fsWindowTitle:Hide();
@@ -7986,17 +7972,9 @@ end
 --	.expirationWarningTime1 -- Expiration warning time for buffs with a 2:00 to 10:00 minute duration (number, default == 15)
 --	.expirationWarningTime2 -- Expiration warning time for buffs with a 10:01 to 30:00 minute duration (number, default == 60)
 --	.expirationWarningTime3 -- Expiration warning time for buffs with a 30:01 or greater minute duration (number, default == 180)
---	.flashIcons -- Flash icons (1 == flash icon when aura about to fade, false == no flashing, default == flash)
---	.flashTime -- Time to flash icons before expiring (number, default == constants.DEFAULT_FLASH_TIME seconds)
+--	.flashTime -- Time to flash icons before expiring (number, default == constants.DEFAULT_FLASH_TIME seconds, zero means no flashing at all)
 --	.hideBlizzardBuffs -- Hide Blizzard's buff frame (1==yes, false==no, default == yes)
---	.hideBlizzardConsolidated -- Hide Blizzard's consolidated buff button (1==yes, false==no, default == yes)
 --	.hideBlizzardEnchants -- Hide Blizzards temporary weapon enchants window (1==yes, false==no, default == yes)
---	.showCasterName -- Show who cast the aura in the icon tooltip (1 == yes, false == no, default == yes)
---	.showItemDetails -- Show item enchant details in the icon tooltip (1 == yes, false == no, default == yes)
---	.showSpellNumber -- Show spell number in the icon tooltip (1 == yes, false == no, default == no)
---	.showTooltips -- Show icon tooltip (1 == yes, false == no, default == yes)
---	.showWindowTitles -- Show window titles when the options window is open (1=yes, false=no, default=yes)
---	.showWindowTooltips -- Show window number tooltips when the options window is open (1=yes, false=no, default=yes)
 --
 -- Methods and functions:
 --
@@ -8038,12 +8016,6 @@ function globalClass:applyGlobalOptions(initFlag)
 	globalObject:hideBlizzardEnchantsFrame(self.hideBlizzardEnchants);
 	globalObject:hideBlizzardBuffsFrame(self.hideBlizzardBuffs);
 	--globalObject:hideBlizzardConsolidatedFrame(self.hideBlizzardConsolidated);
-
-	-- Aura tooltip
-	self.showCasterName = module:getOption("showCasterName") ~= false;
-	self.showItemDetails = module:getOption("showItemDetails") ~= false;
-	self.showSpellNumber = not not module:getOption("showSpellNumber");
-	self.showTooltips = module:getOption("showTooltips") ~= false;
 
 	-- Background color for primary window
 	local color = module:getOption("backgroundColor");
@@ -8117,14 +8089,11 @@ function globalClass:applyGlobalOptions(initFlag)
 	self.expirationWarningTime3 = module:getOption("expirationTime3") or 180;
 
 	-- Flash icons when about to fade
-	self.flashIcons = module:getOption("flashIcons") ~= false;
+	if (module:getOption("flashIcons") == false) then		-- this option is depreciated in 8.2.5.2; now the duration flashTime is just set to zero
+		module:setOption("flashIcons", nil, true);
+		module:setOption("flashTime", 0, true);
+	end
 	self.flashTime = module:getOption("flashTime") or constants.DEFAULT_FLASH_TIME;
-
-	-- Show window titles
-	self.showWindowTitles = module:getOption("showWindowTitles") ~= false;
-
-	-- Show window tooltips
-	self.showWindowTooltips = module:getOption("showWindowTooltips") ~= false;
 end
 
 -- Blizzard shows the TemporaryEnchants frame once and then never shows/hides it again.
@@ -8247,7 +8216,7 @@ ConsolidatedBuffs:HookScript("OnShow",
 	= hideBlizzardConsolidated:true				G
 	= hideBlizzardEnchants:true				G
 	t unlockWindow:true					F lockWindow
-	o showWindowTooltips:true				-
+	o showWindowTooltips:true				-			-- since removed
 	o resizeMode:1 (Vert resiz direct, 1=Down,2=Up,3=Out)	-
 	o expandBuffs:true (true==Auto expand window height)	-
 	n clampWindow:true					F clampWindow
@@ -8256,10 +8225,6 @@ ConsolidatedBuffs:HookScript("OnShow",
 	= backgroundColor:0,0,0,0.25				G
 	t expandUpwards	(display buffs upwards)			F layoutType
 	o lockBuffOnEnter:true					-
-	= showTooltips:true					G
-	= showItemDetails:true					G
-	= showCasterName:true					G
-	= showSpellNumber					G
 	t showAuras:true					F (see sortSeq1,2,3,4)
 	t showBuffs:true					F (see sortSeq1,2,3,4)
 	t showDebuffs:true					F (see sortSeq1,2,3,4)
@@ -8288,7 +8253,6 @@ ConsolidatedBuffs:HookScript("OnShow",
 	t durationCenter					F timeJustifyNoName1:1 (1==Default, 2==Left, 3==Right, 4==Center)
 	n showBuffTimer:true					F showBuffTimer1
 	n showTimerBackground:true				F showTimerBackground1
-	= flashIcons:true					G
 	= enableExpiration:true					G
 	= expirationCastOnly					G
 	= expirationSound:true					G
@@ -8733,7 +8697,7 @@ local function options_updateWindowWidgets(windowId)
 				local windowListObject = globalObject.windowListObject;
 				local count = windowListObject:getWindowCount();
 				for windowNum = 1, count do
-					dropdownEntry.text = "Window " .. windowListObject:windowNumToId(i) or "";
+					dropdownEntry.text = format(module.text["CT_BuffMod/WindowTitle"],windowListObject:windowNumToId(i));
 					dropdownEntry.value = i;
 					dropdownEntry.checked = nil;
 					dropdownEntry.func = dropdown.ctDropdownClick;
@@ -8753,6 +8717,9 @@ local function options_updateWindowWidgets(windowId)
 	----------
 	-- Disable window
 	frame.disableWindow:SetChecked( not not frameOptions.disableWindow );
+	
+	-- Disable tooltips
+	frame.disableTooltips:SetChecked( not not frameOptions.disableTooltips );
 
 	-- Unlock window
 	frame.lockWindow:SetChecked( not not frameOptions.lockWindow );
@@ -8770,14 +8737,12 @@ local function options_updateWindowWidgets(windowId)
 	L_UIDropDownMenu_Initialize( dropdown, dropdown.initialize );
 	L_UIDropDownMenu_SetSelectedValue( dropdown, unitType );
 
-	if (CT_BuffMod_xoptUnsecure) then
-		-- Use unsecure buttons
-		frame.playerUnsecure:SetChecked( playerUnsecure );
-		if (unitType == constants.UNIT_TYPE_PLAYER or unitType == constants.UNIT_TYPE_VEHICLE) then
-			frame.playerUnsecure:Show();
-		else
-			frame.playerUnsecure:Hide();
-		end
+	-- Use unsecure buttons
+	frame.playerUnsecure:SetChecked( playerUnsecure );
+	if (unitType == constants.UNIT_TYPE_PLAYER or unitType == constants.UNIT_TYPE_VEHICLE) then
+		frame.playerUnsecure:Show();
+	else
+		frame.playerUnsecure:Hide();
 	end
 
 	-- Show vehicle buffs when in a vehicle
@@ -8817,17 +8782,15 @@ local function options_updateWindowWidgets(windowId)
 	L_UIDropDownMenu_Initialize( dropdown, dropdown.initialize );
 	L_UIDropDownMenu_SetSelectedValue( dropdown, sortMethod );
 
-	if (CT_BuffMod_xoptUnsecure) then
-		dropdown = CT_BuffModDropdown_separateZero;
-		L_UIDropDownMenu_Initialize( dropdown, dropdown.initialize );
-		L_UIDropDownMenu_SetSelectedValue( dropdown, frameOptions.separateZero or constants.SEPARATE_ZERO_WITH );
-		if (playerUnsecure) then
-			frame.separateZeroText:Show();
-			frame.separateZero:Show();
-		else
-			frame.separateZeroText:Hide();
-			frame.separateZero:Hide();
-		end
+	dropdown = CT_BuffModDropdown_separateZero;
+	L_UIDropDownMenu_Initialize( dropdown, dropdown.initialize );
+	L_UIDropDownMenu_SetSelectedValue( dropdown, frameOptions.separateZero or constants.SEPARATE_ZERO_WITH );
+	if (playerUnsecure) then
+		frame.separateZeroText:Show();
+		frame.separateZero:Show();
+	else
+		frame.separateZeroText:Hide();
+		frame.separateZero:Hide();
 	end
 
 	frame.sortDirection:SetChecked( not not frameOptions.sortDirection );
@@ -8865,7 +8828,7 @@ local function options_updateWindowWidgets(windowId)
 	----------
 	-- Consolidation
 	----------
-
+--[[ CONSOLIDATION REMOVED FROM GAME
 	-- Minimum total duration
 	frame.consolidateDurationMinutes:SetValue( frameOptions.consolidateDurationMinutes or 0 );
 	frame.consolidateDurationSeconds:SetValue( frameOptions.consolidateDurationSeconds or 30 );
@@ -8876,7 +8839,7 @@ local function options_updateWindowWidgets(windowId)
 
 	-- Total duration percentage
 	frame.consolidateFractionPercent:SetValue( frameOptions.consolidateFractionPercent or 10 );
-
+--]]
 	----------
 	-- Background
 	----------
@@ -9194,9 +9157,6 @@ local function options_updateGlobal(optName, value)
 	elseif (optName == "consolidatedHideTimer") then
 		globalObject.windowListObject:setSpecialAttributes();
 
-	elseif (optName == "showWindowTitles") then
-		globalObject.windowListObject:setCurrentWindow( currentWindowId, value );
-
 	end
 end
 
@@ -9216,7 +9176,7 @@ function module:options_editWindow(windowId)
 		module:showModuleOptions(module.name);
 	end
 
-	ctprint("Window " .. windowId .. " selected.");
+	ctprint(format(module.text["CT_BuffMod/Options/WindowControls/WindowSelectedMessage"],windowId));
 
 	local windowListObject = globalObject.windowListObject;
 	local windowNum = windowListObject:windowIdToNum(windowId);
@@ -9276,7 +9236,7 @@ local function options_addWindow()
 	windowObject:resetPosition();
 
 	local windowId = windowObject:getWindowId();
-	ctprint("Window " .. windowId .. " added.");
+	ctprint(format(module.text["CT_BuffMod/Options/WindowControls/WindowAddedMessage"], windowId));
 
 	-- Switch to the window.
 	options_setCurrentWindow( windowId, true );
@@ -9297,7 +9257,7 @@ local function options_deleteWindow()
 
 	-- Delete the current window from the list.
 	windowListObject:deleteWindow(currentWindowId);
-	ctprint("Window " .. currentWindowId .. " deleted.");
+	ctprint(format(module.text["CT_BuffMod/Options/WindowControls/WindowDeletedMessage"], windowNum));
 
 	-- If there are no windows left then create a new one so we have at least 1 window.
 	if (windowListObject:getWindowCount() == 0) then
@@ -9351,7 +9311,7 @@ local function options_cloneWindow()
 	-- location as the original. The :resetPosition() does nothing since the
 	-- disabled window does not have an auraFrame that can be repositioned.
 
-	ctprint("Window " .. windowObject2:getWindowId() .. " added using the settings from window " .. windowObject1:getWindowId() .. ".");
+	ctprint(format(module.text["CT_BuffMod/Options/WindowControls/WindowClonedMessage"], windowObject2:getWindowId(), windowObject1:getWindowId()));
 
 	-- Switch to the window.
 	options_setCurrentWindow( windowObject2:getWindowId(), true );
@@ -9435,6 +9395,7 @@ module.optionUpdate = function(self, optName, value)
 	-- Protected options specific to the primary object (ie. don't apply to secondary objects)
 	elseif (
 		optName == "disableWindow" or
+		optName == "disableTooltips" or
 		optName == "playerUnsecure" or
 		optName == "unitType" or
 		optName == "vehicleBuffs"
@@ -9520,17 +9481,10 @@ module.optionUpdate = function(self, optName, value)
 		optName == "expirationTime1" or
 		optName == "expirationTime2" or
 		optName == "expirationTime3" or
-		optName == "flashIcons" or
 		optName == "flashTime" or
 		optName == "hideBlizzardBuffs" or
 		optName == "hideBlizzardConsolidated" or
-		optName == "hideBlizzardEnchants" or
-		optName == "showCasterName" or
-		optName == "showItemDetails" or
-		optName == "showSpellNumber" or
-		optName == "showTooltips" or
-		optName == "showWindowTitles" or
-		optName == "showWindowTooltips"
+		optName == "hideBlizzardEnchants"
 	) then
 		options_updateGlobal(optName, value);
 	end
@@ -9570,27 +9524,12 @@ local function optionsEndFrame()
 	module:framesEndFrame(optionsFrameList);
 end
 
-local function enablePlayerUnsecureTooltip(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 275, 0);
-	GameTooltip:SetText("Secure and Unsecure Buttons");
-	GameTooltip:AddLine("\nWhen using secure buff buttons:", 1, 0.82, 0, true);
-	GameTooltip:AddLine("\nSpell buffs can be cancelled when in or out of combat.", 1, 1, 1, true);
-	GameTooltip:AddLine("\nWeapon buffs can be cancelled when in or out of combat.", 1, 1, 1, true);
-	GameTooltip:AddLine("\n", 1, 1, 1, true);
-	GameTooltip:AddLine("When using unsecure buff buttons:", 1, 0.82, 0, true);
-	GameTooltip:AddLine("\nSpell buffs can only be cancelled when not in combat.", 1, 1, 1, true);
-	GameTooltip:AddLine("\nWeapon buffs cannot be cancelled.", 1, 1, 1, true);
-	GameTooltip:AddLine("\nAn additional sorting option ('Non-expiring buffs') is available which lets you choose whether buffs that don't expire get sorted before, after, or with the other buffs in the same sorting group.", 1, 1, 1, true);
-	GameTooltip:AddLine("\nWhen sorting by time it will also sort by name if the times are the same.", 1, 1, 1, true);
-	GameTooltip:Show();
-end
-
 module.frame = function()
 	local updateFunc = function(self, value)
-		value = (value or self:GetValue());
+		value = floor((value or self:GetValue())/self:GetValueStep())*self:GetValueStep();
 		local timeLeft = floor( value * 10 + 0.5 ) / 10;
 		if ( timeLeft == 0 ) then
-			self.title:SetText("Off");
+			self.title:SetText(module.text["CT_BuffMod/TimeFormat/Off"]);
 		else
 			self.title:SetText(humanizeTime(timeLeft));
 		end
@@ -9610,72 +9549,60 @@ module.frame = function()
 
 	-- Tips
 	optionsBeginFrame(-5, 0, "frame#tl:0:%y#r");
-		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#Tips");
-		optionsAddObject( -5, 2*14, "font#t:0:%y#s:0:%s#l:13:0#r#You can use /ctbuff or /ctbuffmod to open this options window directly.#" .. textColor2 .. ":l");
-		optionsAddObject( -5, 3*14, "font#t:0:%y#s:0:%s#l:13:0#r#You can use Alt Left-click on a CT_BuffMod window to select it and open this options window.#" .. textColor2 .. ":l");
-		optionsAddObject( -5, 4*14, "font#t:0:%y#s:0:%s#l:13:0#r#NOTE: Due to the use of secure buff buttons, there are a number of options which if changed will not have any effect until you are out of combat.#" .. textColor1 .. ":l");
+		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#" .. module.text["CT_BuffMod/Options/Tips/Heading"]);
+		optionsAddObject( -5, 2*14, "font#t:0:%y#s:0:%s#l:13:0#r#" .. module.text["CT_BuffMod/Options/Tips/Line 1"] .. "#" .. textColor2 .. ":l");  -- You can use /ctbuff or /ctbuffmod to open this options window directly.
+		optionsAddObject( -5, 3*14, "font#t:0:%y#s:0:%s#l:13:0#r#" .. module.text["CT_BuffMod/Options/Tips/Line 2"] .. "#" .. textColor2 .. ":l");  -- You can use Alt Left-click on a CT_BuffMod window to select it and open this options window.
+		optionsAddObject( -5, 2*14, "font#t:0:%y#s:0:%s#l:13:0#r#" .. module.text["CT_BuffMod/Options/Tips/Line 3"] .. "#" .. textColor2 .. ":l");  -- NOTE: Most options have no effect until you are out of combat.
 	optionsEndFrame();
 
 	-- Blizzard's frames
 	optionsBeginFrame(-20, 0, "frame#tl:0:%y#r#i:blizzardFrames");
-		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#Blizzard's Frames");
+		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#" .. module.text["CT_BuffMod/Options/Blizzard Frames/Heading"]);
 
 		-- Hide the buffs frame
 		-- Hide the consolidated buffs frame
 		-- Hide the weapon buffs frame
-		optionsAddObject( -5,   26, "checkbutton#tl:10:%y#o:hideBlizzardBuffs:true#Hide the buffs frame");
-		optionsAddObject(  6,   26, "checkbutton#tl:10:%y#o:hideBlizzardConsolidated:true#Hide the consolidated buffs frame");
-		optionsAddObject(  6,   26, "checkbutton#tl:10:%y#o:hideBlizzardEnchants:true#Hide the weapon buffs frame");
+		optionsAddObject( -5,   26, "checkbutton#tl:10:%y#o:hideBlizzardBuffs:true#" .. module.text["CT_BuffMod/Options/Blizzard Frames/Hide Buffs"]);
+		optionsAddObject(  6,   26, "checkbutton#tl:10:%y#o:hideBlizzardEnchants:true#" .. module.text["CT_BuffMod/Options/Blizzard Frames/Hide Enchants"]);
+--[[ CONSOLIDATION REMOVED FROM GAME
+		optionsAddObject(  6,   26, "checkbutton#tl:10:%y#o:hideBlizzardConsolidated:true#" .. module.text["CT_BuffMod/Options/Blizzard Frames/Hide Consolidated"]);
+CONSOLIDATION REMOVED FROM GAME --]]
 	optionsEndFrame();
 
 	-- General Options
 	optionsBeginFrame(-20, 0, "frame#tl:0:%y#br:tr:0:%b");
-		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#General");
+		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#" .. module.text["CT_BuffMod/Options/General/Heading"]);
 
-		optionsAddObject(-10,   26, "checkbutton#tl:10:%y#o:showWindowTitles:true#Show window titles when options are shown");
-
-		optionsAddObject(-20, 1*13, "font#tl:15:%y#Colors");
+		optionsAddObject(-15, 1*13, "font#tl:15:%y#" .. module.text["CT_BuffMod/Options/General/Colors/Heading"]);
 
 		-- Window background color
 		optionsAddObject(-10,   16, "colorswatch#tl:35:%y#s:16:16#o:backgroundColor:" .. defaultWindowColor[1] .. "," .. defaultWindowColor[2] .. "," .. defaultWindowColor[3] .. "," .. defaultWindowColor[4] .. "#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Buff window background color");
-
-		optionsAddObject( -2,   16, "colorswatch#tl:35:%y#s:16:16#o:consolidatedColor:" .. defaultConsolidatedColor[1] .. "," .. defaultConsolidatedColor[2] .. "," .. defaultConsolidatedColor[3] .. "," .. defaultConsolidatedColor[4] .. "#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Consolidated window background color");
+		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Colors/Background"]);
 
 		-- Aura color
 		-- Buff color
 		-- Debuff color
 		-- Weapon buff color
 		optionsAddObject(-15,   16, "colorswatch#tl:35:%y#s:16:16#i:bgColorAURA#o:bgColorAURA:0.35,0.8,0.15,0.5#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Aura bar color");
+		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Colors/Aura"]);
 
-		optionsAddObject( -2,   16, "colorswatch#tl:35:%y#s:16:16#i:bgColorBUFF#o:bgColorBUFF:0.1,0.4,0.85,0.5#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Buff bar color");
+		optionsAddObject( 15,   16, "colorswatch#tl:175:%y#s:16:16#i:bgColorBUFF#o:bgColorBUFF:0.1,0.4,0.85,0.5#true");
+		optionsAddObject( 14,   15, "font#tl:200:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Colors/Buff"]);
 
 		optionsAddObject( -2,   16, "colorswatch#tl:35:%y#s:16:16#i:bgColorDEBUFF#o:bgColorDEBUFF:1,0,0,0.85#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Debuff bar color");
+		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Colors/Debuff"]);
 
-		optionsAddObject( -2,   16, "colorswatch#tl:35:%y#s:16:16#i:bgColorITEM#o:bgColorITEM:0.75,0.25,1,0.75#true");
-		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Weapon bar color");
+		optionsAddObject( 15,   16, "colorswatch#tl:175:%y#s:16:16#i:bgColorITEM#o:bgColorITEM:0.75,0.25,1,0.75#true");
+		optionsAddObject( 14,   15, "font#tl:200:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Colors/Weapon"]);
 
+--[[ CONSOLIDATION REMOVED FROM GAME
+		optionsAddObject( -15,   16, "colorswatch#tl:35:%y#s:16:16#o:consolidatedColor:" .. defaultConsolidatedColor[1] .. "," .. defaultConsolidatedColor[2] .. "," .. defaultConsolidatedColor[3] .. "," .. defaultConsolidatedColor[4] .. "#true");
+		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Consolidated window background color");
 		optionsAddObject( -2,   16, "colorswatch#tl:35:%y#s:16:16#i:bgColorCONSOLIDATED#o:bgColorCONSOLIDATED:0.97,0.97,0.95,0.66#true");
 		optionsAddObject( 14,   15, "font#tl:60:%y#v:ChatFontNormal#Consolidated bar color");
 
-		optionsAddObject(-20, 1*13, "font#tl:15:%y#Tooltips");
-		-- Show spell tooltips
-		--	Show weapon details for weapon buffs
-		--	Show caster's name
-		--	Show spell number
-		optionsAddObject(-10,   26, "checkbutton#tl:30:%y#o:showTooltips:true#Show spell tooltips");
-		optionsAddObject(  6,   26, "checkbutton#tl:60:%y#o:showItemDetails:true#Show weapon details for weapon buffs");
-		optionsAddObject(  6,   26, "checkbutton#tl:60:%y#o:showCasterName:true#Show caster's name");
-		optionsAddObject(  6,   26, "checkbutton#tl:60:%y#o:showSpellNumber#Show spell number");
-
-		optionsAddObject(-10,   26, "checkbutton#tl:30:%y#o:showWindowTooltips:true#Show window tooltips when options shown");
-
 		-- Consolidated window
-		optionsAddObject(-20, 1*13, "font#tl:15:%y#Consolidated window");
+		optionsAddObject(-15, 1*13, "font#tl:15:%y#Consolidated window");
 
 		optionsBeginFrame(  17,   20, "button#tl:250:%y#s:40:%s#i:consWindowHelp#v:UIPanelButtonTemplate#?");
 			optionsAddScript("onenter",
@@ -9697,83 +9624,128 @@ module.frame = function()
 
 		optionsAddObject(-20,   14, "font#tl:30:%y#v:ChatFontNormal#Auto hide timer:");
 		optionsAddObject( 15,   17, "slider#tl:150:%y#s:140:%s#i:consolidatedHideTimer#o:consolidatedHideTimer:" .. constants.DEFAULT_CONSOLIDATE_HIDE_TIMER .. "#<value> seconds#0.05:2:0.05");
+CONSOLIDATION REMOVED FROM GAME --]]
 
 	optionsEndFrame();
 
 	-- Expiration options
-	optionsBeginFrame(-20, 0, "frame#tl:0:%y#br:tr:0:%b");
-		optionsAddObject(-10,   17, "font#tl:5:%y#v:GameFontNormalLarge#Expiration");
-		optionsAddObject( -5,   26, "checkbutton#tl:10:%y#o:flashIcons:true#Flash icon before expiring");
+	optionsBeginFrame(-15, 0, "frame#tl:0:%y#br:tr:0:%b");
+		optionsAddObject( -0,   13, "font#tl:15:%y#v:GameFontNormal#" .. module.text["CT_BuffMod/Options/General/Expiration/Heading"]);
 
-		optionsAddObject(-15,   14, "font#tl:49:%y#v:ChatFontNormal#Flash time:");
-		optionsAddObject( 15,   17, "slider#tl:150:%y#i:flashTime#o:flashTime:" .. constants.DEFAULT_FLASH_TIME .. "#<value> seconds#1:60:1");
-
-		optionsAddObject(-10,   26, "checkbutton#tl:10:%y#o:enableExpiration:true#Enable expiration warning message");
-		optionsAddObject(  6,   26, "checkbutton#tl:46:%y#o:expirationCastOnly#Ignore buffs you cannot cast");
-		optionsAddObject(  6,   26, "checkbutton#tl:46:%y#o:expirationSound:true#Play sound when warning is shown");
-
-		optionsAddObject( -5,   15, "font#tl:49:%y#v:ChatFontNormal#Duration");
-		optionsAddObject( 15,   15, "font#tl:150:%y#v:ChatFontNormal#Expiration Warning Time");
-
-		optionsAddObject(-23,   15, "font#tl:49:%y#2:00  -  10:00");
-		optionsBeginFrame(  18,   17, "slider#tl:150:%y#o:expirationTime1:15#:Off:1 min.#0:60:5");
+		optionsAddObject(-15,   14, "font#tl:30:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/General/Expiration/FlashSliderLabel"]);
+		optionsBeginFrame(15,   17, "slider#tl:175:%y#tr:-5:%y#i:flashTime#o:flashTime:" .. constants.DEFAULT_FLASH_TIME .. "#<value> seconds:" .. module.text["CT_BuffMod/TimeFormat/Off"] .. ":" .. format(module.text["CT_BuffMod/TimeFormat/Minutes Smaller"],1) .. "#0:60:1");
 			optionsAddScript("onvaluechanged", updateFunc);
 			optionsAddScript("onload", updateFunc);
 		optionsEndFrame();
 
-		optionsAddObject(-27,   15, "font#tl:49:%y#10:01  -  30:00");
-		optionsBeginFrame(  18,   17, "slider#tl:150:%y#o:expirationTime2:60#:Off:3 min.#0:180:5");
+		local delayAttempted;
+		local function enableExpirationChildren()
+			if (
+				enableExpiration
+				and expirationCastOnly 
+				and expirationSound 
+				and expirationDurationHeading 
+				and expirationWarningTimeHeading 
+				and expirationTime1Label 
+				and CT_BuffMod_ExpirationTime1Slider
+				and expirationTime2Label 
+				and CT_BuffMod_ExpirationTime2Slider
+				and expirationTime3Label 
+				and CT_BuffMod_ExpirationTime3Slider
+			) then
+				expirationCastOnly:SetEnabled(enableExpiration:GetChecked());
+				expirationCastOnly:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationSound:SetEnabled(enableExpiration:GetChecked());
+				expirationSound:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationDurationHeading:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationWarningTimeHeading:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationTime1Label:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				CT_BuffMod_ExpirationTime1Slider:SetEnabled(enableExpiration:GetChecked());
+				CT_BuffMod_ExpirationTime1Slider:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationTime2Label:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				CT_BuffMod_ExpirationTime2Slider:SetEnabled(enableExpiration:GetChecked());
+				CT_BuffMod_ExpirationTime2Slider:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				expirationTime3Label:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+				CT_BuffMod_ExpirationTime3Slider:SetEnabled(enableExpiration:GetChecked());
+				CT_BuffMod_ExpirationTime3Slider:SetAlpha((enableExpiration:GetChecked() and 1) or 0.5)
+			elseif (not delayAttempted) then
+				-- one of the frames wasn't created yet?  Try again in five seconds (but attempt this delay once only)
+				-- [this is a very ugly hack to resolve a possible race condition when the frames are being built]
+				delayAttempted = true;
+				C_Timer.After(5, enableExpirationChildren)
+			end
+		end
+
+		optionsBeginFrame(-18,   26, "checkbutton#tl:30:%y#o:enableExpiration:true#" .. module.text["CT_BuffMod/Options/General/Expiration/ChatMessageCheckbox"]);
+			optionsAddScript("onload", function() enableExpiration:HookScript("OnClick", enableExpirationChildren) end);
+		optionsEndFrame();
+		optionsAddObject(  5,   26, "checkbutton#tl:48:%y#o:expirationCastOnly#" .. module.text["CT_BuffMod/Options/General/Expiration/PlayerBuffsOnlyCheckbox"]);
+		optionsAddObject(  5,   26, "checkbutton#tl:48:%y#o:expirationSound:true#" .. module.text["CT_BuffMod/Options/General/Expiration/PlaySoundCheckbox"]);
+
+		optionsAddObject(-10,   15, "font#tl:55:%y#n:expirationDurationHeading#" .. module.text["CT_BuffMod/Options/General/Expiration/DurationHeading"]);
+		optionsAddObject( 15,   15, "font#tl:175:%y#n:expirationWarningTimeHeading#" .. module.text["CT_BuffMod/Options/General/Expiration/WarningTimeHeading"]);
+
+		optionsAddObject(-23,   15, "font#tl:55:%y#n:expirationTime1Label#v:ChatFontNormal#  2:00  -  10:00");
+		optionsBeginFrame(  18,   17, "slider#tl:175:%y#tr:-5:%y#n:CT_BuffMod_ExpirationTime1Slider#o:expirationTime1:15#:" .. module.text["CT_BuffMod/TimeFormat/Off"] .. ":" .. format(module.text["CT_BuffMod/TimeFormat/Minutes Smaller"],1) .. "#0:60:5");
 			optionsAddScript("onvaluechanged", updateFunc);
 			optionsAddScript("onload", updateFunc);
 		optionsEndFrame();
 
-		optionsAddObject(-27,   15, "font#tl:49:%y#30:01  +");
-		optionsBeginFrame(  18,   17, "slider#tl:150:%y#o:expirationTime3:180#:Off:5 min.#0:300:5");
+		optionsAddObject(-27,   15, "font#tl:55:%y#n:expirationTime2Label#v:ChatFontNormal#10:01  -  30:00");
+		optionsBeginFrame(  18,   17, "slider#tl:175:%y#tr:-5:%y#n:CT_BuffMod_ExpirationTime2Slider#o:expirationTime2:60#:" .. module.text["CT_BuffMod/TimeFormat/Off"] .. ":" .. format(module.text["CT_BuffMod/TimeFormat/Minutes Smaller"],3) .. "#0:180:5");
 			optionsAddScript("onvaluechanged", updateFunc);
 			optionsAddScript("onload", updateFunc);
+		optionsEndFrame();
+
+		optionsAddObject(-27,   15, "font#tl:55:%y#n:expirationTime3Label#v:ChatFontNormal#30:01  +");
+		optionsBeginFrame(  18,   17, "slider#tl:175:%y#tr:-5:%y#n:CT_BuffMod_ExpirationTime3Slider#o:expirationTime3:180#:" .. module.text["CT_BuffMod/TimeFormat/Off"] .. ":" .. format(module.text["CT_BuffMod/TimeFormat/Minutes Smaller"],5) .. "#0:300:5");
+			optionsAddScript("onvaluechanged", updateFunc);
+			optionsAddScript("onload", updateFunc);
+			optionsAddScript("onshow", enableExpirationChildren);
 		optionsEndFrame();
 	optionsEndFrame();
 
+	-- Adding and Removing Windows
 	optionsBeginFrame(-20, 0, "frame#tl:0:%y#br:tr:0:%b#i:frameOptions");
-		optionsAddObject(-20,   17, "font#tl:5:%y#v:GameFontNormalLarge#Windows");
+		optionsAddObject(-10,   17, "font#tl:5:%y#v:GameFontNormalLarge#Windows");
 
-		optionsBeginFrame( -10,   30, "button#tl:15:%y#s:80:%s#v:UIPanelButtonTemplate#Add");
+		optionsBeginFrame( -10,   30, "button#tl:15:%y#s:80:%s#v:UIPanelButtonTemplate#" .. module.text["CT_BuffMod/Options/WindowControls/AddButton"]);
 			optionsAddScript("onclick", function(self)
 				options_addWindow();
 			end);
 			optionsAddScript("onenter", function(self)
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-				GameTooltip:SetText("Add a new window with default settings.", 1, 0.82, 0, 1, true);
+				GameTooltip:SetText(module.text["CT_BuffMod/Options/WindowControls/AddTooltip"], 1, 0.82, 0, 1, true);
 				GameTooltip:Show();
 			end);
 			optionsAddScript("onleave", function(self)
 				GameTooltip:Hide();
 			end);
 		optionsEndFrame();
-		optionsBeginFrame(  30,   30, "button#tl:110:%y#s:80:%s#v:UIPanelButtonTemplate#Clone");
+		optionsBeginFrame(  30,   30, "button#tl:110:%y#s:80:%s#v:UIPanelButtonTemplate#" .. module.text["CT_BuffMod/Options/WindowControls/CloneButton"]);
 			optionsAddScript("onclick", function(self)
 				options_cloneWindow();
 			end);
 			optionsAddScript("onenter", function(self)
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-				GameTooltip:SetText("Add a new window with settings that duplicate those of the currently selected window.", 1, 0.82, 0, 1, true);
+				GameTooltip:SetText(module.text["CT_BuffMod/Options/WindowControls/CloneTooltip"], 1, 0.82, 0, 1, true);
 				GameTooltip:Show();
 			end);
 			optionsAddScript("onleave", function(self)
 				GameTooltip:Hide();
 			end);
 		optionsEndFrame();
-		optionsBeginFrame(  30,   30, "button#tl:205:%y#s:80:%s#v:UIPanelButtonTemplate#Delete");
+		optionsBeginFrame(  30,   30, "button#tl:205:%y#s:80:%s#v:UIPanelButtonTemplate#" .. module.text["CT_BuffMod/Options/WindowControls/DeleteButton"]);
 			optionsAddScript("onclick", function(self)
 				if (IsShiftKeyDown()) then
 					options_deleteWindow();
 				else
-					ctprint("Shift-click the 'Delete' button to delete the selected window.");
+					ctprint(module.text["CT_BuffMod/Options/WindowControls/DeleteTooltip"]);
 				end
 			end);
 			optionsAddScript("onenter", function(self)
 				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-				GameTooltip:SetText("Shift-click this button to delete the currently selected window.", 1, 0.82, 0, 1, true);
+				GameTooltip:SetText(module.text["CT_BuffMod/Options/WindowControls/DeleteTooltip"], 1, 0.82, 0, 1, true);
 				GameTooltip:Show();
 			end);
 			optionsAddScript("onleave", function(self)
@@ -9781,7 +9753,7 @@ module.frame = function()
 			end);
 		optionsEndFrame();
 
-		optionsAddObject(-20,   14, "font#tl:15:%y#v:ChatFontNormal#Select window:");
+		optionsAddObject(-20,   14, "font#tl:15:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/WindowControls/SelectionLabel"]);
 
 		optionsBeginFrame( 19,   24, "button#tl:105:%y#s:24:%s");
 			optionsAddScript("onclick",
@@ -9817,18 +9789,18 @@ module.frame = function()
 
 		optionsAddObject( 20,   20, "dropdown#tl:140:%y#n:CT_BuffModDropdown_editWindow#o:editWindow#Window 1");
 
-		optionsAddObject( -5, 2*14, "font#tl:15:%y#s:0:%s#l:13:0#r#You can also select a window by using Alt Left-click on the window.#" .. textColor2 .. ":l");
-		optionsAddObject( -5, 2*14, "font#tl:15:%y#s:0:%s#l:13:0#r#All options below this point will only affect the currently selected window.#" .. textColor2 .. ":l");
+		optionsAddObject( -5, 2*14, "font#tl:15:%y#s:0:%s#l:13:0#r#" .. module.text["CT_BuffMod/Options/WindowControls/Tip"] .. "#" .. textColor2 .. ":l");
 
 		----------
 		-- Window
 		----------
 
-		optionsAddObject(-15, 1*13, "font#tl:15:%y#Window");
+		optionsAddObject(-15, 1*13, "font#tl:15:%y#Window Placement");
 
 		-- Unlock window
 		-- Window cannot be moved off screen
 		optionsAddObject( -5,   26, "checkbutton#tl:30:%y#i:disableWindow#o:disableWindow#Disable window");
+		optionsAddObject(  6,   26, "checkbutton#tl:30:%y#i:disableTooltips#o:disableTooltips#Disable icon tooltips");
 		optionsAddObject(  6,   26, "checkbutton#tl:30:%y#i:lockWindow#o:lockWindow#Lock window so that it cannot be moved");
 		optionsAddObject(  6,   26, "checkbutton#tl:30:%y#i:clampWindow#o:clampWindow:true#Window cannot be moved off screen");
 
@@ -9854,21 +9826,29 @@ module.frame = function()
 		-- Unit
 		----------
 
-		optionsAddObject(-20, 1*13, "font#tl:15:%y#Unit");
+		optionsAddObject(-20, 1*13, "font#tl:15:%y#" .. module.text["CT_BuffMod/Options/Window/Unit/Heading"]);
 		do
-			local unitMenu = "#Player#Vehicle";
-			if (CT_BuffMod_xoptUnits) then
-				unitMenu = unitMenu .. "#Pet#Target#Focus";
-			end
-			-- Show buffs for
-			-- Show vehicle buffs when in a vehicle
+			-- Show buffs for Player|Vehicle|Pet|Target|Focus
 			-- Use unsecure buttons (refer to tooltip)
-			optionsAddObject(-10,   14, "font#tl:34:%y#v:ChatFontNormal#Show buffs for:");
-			optionsAddObject( 15,   20, "dropdown#tl:120:%y#s:120:%s#n:CT_BuffModDropdown_unitType#i:unitType#o:unitType:" .. constants.UNIT_TYPE_PLAYER .. unitMenu);
-			if (CT_BuffMod_xoptUnsecure) then
-				optionsAddObject(  0,   26, "checkbutton#tl:30:%y#i:playerUnsecure#o:playerUnsecure#Use unsecure buff buttons");
-			end
-			optionsAddObject(  0,   26, "checkbutton#tl:30:%y#i:vehicleBuffs#o:vehicleBuffs:true#Show vehicle buffs when in a vehicle");
+			-- Show vehicle buffs when in a vehicle
+			optionsAddObject(-10,   14, "font#tl:34:%y#v:ChatFontNormal#" .. module.text["CT_BuffMod/Options/Window/Unit/UnitDropdownLabel"]);
+			optionsAddObject( 15,   20, "dropdown#tl:140:%y#s:100:%s#n:CT_BuffModDropdown_unitType#i:unitType#o:unitType:" .. constants.UNIT_TYPE_PLAYER .. module.text["CT_BuffMod/Options/Window/Unit/UnitDropdownOptions"]);
+			optionsBeginFrame(  0,   26, "checkbutton#tl:30:%y#i:playerUnsecure#o:playerUnsecure#" .. module.text["CT_BuffMod/Options/Window/Unit/NonSecureCheckbox"]);
+				optionsAddScript("onenter",
+					function(button)
+						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 275, 0);
+						GameTooltip:SetText(module.text["CT_BuffMod/Options/Window/Unit/SecureTooltip/Heading"]);
+						GameTooltip:AddLine(module.text["CT_BuffMod/Options/Window/Unit/SecureTooltip/Content"]);
+						GameTooltip:Show();
+					end
+				);
+				optionsAddScript("onleave",
+					function()
+						GameTooltip:Hide();
+					end
+				);
+			optionsEndFrame();
+			optionsAddObject(  0,   26, "checkbutton#tl:30:%y#i:vehicleBuffs#o:vehicleBuffs:true#" .. module.text["CT_BuffMod/Options/Window/Unit/VehicleCheckbox"]);
 		end
 
 		----------
@@ -9881,12 +9861,37 @@ module.frame = function()
 
 		-- Basic conditions
 		optionsAddObject( -2,   20, "checkbutton#tl:25:%y#s:%s:%s#i:visBasic#o:visBasic#Use basic conditions");
-
-		optionsAddObject( -2,   26, "checkbutton#tl:44:%y#i:visHideInVehicle#o:visHideInVehicle#Hide when in a vehicle");
-		optionsAddObject(  6,   26, "checkbutton#tl:44:%y#i:visHideNotVehicle#o:visHideNotVehicle#Hide when not in a vehicle");
-		optionsAddObject(  6,   26, "checkbutton#tl:44:%y#i:visHideInCombat#o:visHideInCombat#Hide when in combat");
-		optionsAddObject(  6,   26, "checkbutton#tl:44:%y#i:visHideNotCombat#o:visHideNotCombat#Hide when not in combat");
-
+		
+		local function toggleBasicConditions(checkbutton)
+			checkbutton:HookScript("OnClick",
+				function()
+					if (
+						visHideInVehicle:GetChecked() 
+						or visHideNotVehicle:GetChecked()
+						or visHideInCombat:GetChecked() 
+						or visHideNotCombat:GetChecked()
+					) then
+						visBasic:Click();
+					else
+						visShow:Click();
+					end
+				end
+			);
+		end
+		
+		optionsBeginFrame( -2,   26, "checkbutton#tl:44:%y#i:visHideInVehicle#o:visHideInVehicle#Hide when in a vehicle");
+			optionsAddScript("onload", toggleBasicConditions);
+		optionsEndFrame();
+		optionsBeginFrame(  6,   26, "checkbutton#tl:44:%y#i:visHideNotVehicle#o:visHideNotVehicle#Hide when not in a vehicle");
+			optionsAddScript("onload", toggleBasicConditions);
+		optionsEndFrame();
+		optionsBeginFrame(  6,   26, "checkbutton#tl:44:%y#i:visHideInCombat#o:visHideInCombat#Hide when in combat");
+			optionsAddScript("onload", toggleBasicConditions);
+		optionsEndFrame();
+		optionsBeginFrame(  6,   26, "checkbutton#tl:44:%y#i:visHideNotCombat#o:visHideNotCombat#Hide when not in combat");
+			optionsAddScript("onload", toggleBasicConditions);
+		optionsEndFrame();
+		
 		-- Advanced conditions
 		optionsAddObject( -2,   20, "checkbutton#tl:25:%y#s:%s:%s#i:visAdvanced#o:visAdvanced#Use advanced conditions");
 
@@ -10017,8 +10022,14 @@ module.frame = function()
 					if (target) then
 						print("Target used: ", target);
 					end
-					if (action) then
-						print("Result: ", action);
+					if (action == "show") then
+						print("Valid Result: |cFF66FF66show");
+					elseif (action == "hide") then
+						print("Valid Result: |cFFFFFF00hide");
+					elseif (action == "" or not action) then
+						print("Invalid Result: |cFFFF3333[nil!]");
+					else
+						print("Invalid Result: |cFFFF3333" .. action);
 					end
 				end
 			);
@@ -10055,6 +10066,11 @@ module.frame = function()
 					windowOptionsFrame.visUndo:Disable();
 					if (IsShiftKeyDown()) then
 						print(buildCondition(cond));
+					end
+					if editBox:GetText() ~= "" then
+						visAdvanced:Click();
+					else
+						visShow:Click();
 					end
 				end
 			);
@@ -10110,7 +10126,7 @@ module.frame = function()
 		-- Sorting
 		----------
 
-		optionsAddObject(-20, 1*13, "font#tl:15:%y#Sorting");
+		optionsAddObject(-20, 1*13, "font#tl:15:%y#Buff Sorting");
 
 		-- Sort method
 		optionsAddObject(-10,   14, "font#tl:35:%y#v:ChatFontNormal#Sort method:");
@@ -10128,15 +10144,13 @@ module.frame = function()
 		--
 		optionsAddObject( 15,   20, "dropdown#tl:140:%y#s:130:%s#n:CT_BuffModDropdown_separateOwn#i:separateOwn#o:separateOwn:" .. constants.SEPARATE_OWN_WITH .. "#Before other players#After other players#With other players");
 
-		if (CT_BuffMod_xoptUnsecure) then
-			-- Sort zero duration buffs
-			optionsAddObject(-10,   14, "font#tl:35:%y#v:ChatFontNormal#i:separateZeroText#Non-expiring buffs:");
-			optionsAddObject( 15,   20, "dropdown#tl:140:%y#s:130:%s#n:CT_BuffModDropdown_separateZero#i:separateZero#o:separateZero:" .. constants.SEPARATE_ZERO_WITH .. "#Before other buffs#After other buffs#With other buffs");
-		end
+		-- Sort zero duration buffs
+		optionsAddObject(-10,   14, "font#tl:35:%y#v:ChatFontNormal#i:separateZeroText#Non-expiring buffs:");
+		optionsAddObject( 15,   20, "dropdown#tl:140:%y#s:130:%s#n:CT_BuffModDropdown_separateZero#i:separateZero#o:separateZero:" .. constants.SEPARATE_ZERO_WITH .. "#Before other buffs#After other buffs#With other buffs");
 
 		-- Group by
 		do
-			local menu = "#None#Debuffs#Cancelable buffs#Uncancelable buffs#All buffs#Weapons#Consolidated";
+			local menu = "#None#Debuffs#Cancelable buffs#Uncancelable buffs#All buffs#Weapons#Consolidated (no longer used)"; -- #Consolidated doesn't do anything any more
 
 			optionsAddObject(-10,   14, "font#tl:35:%y#v:ChatFontNormal#Group the buffs as follows:");
 
@@ -10159,6 +10173,7 @@ module.frame = function()
 		----------
 		-- Consolidation
 		----------
+--[[ CONSOLIDATION REMOVED FROM GAME
 		optionsAddObject(-20, 1*13, "font#tl:15:%y#Consolidation");
 
 		optionsBeginFrame(  15,   20, "button#tl:250:%y#s:40:%s#i:consHelp#v:UIPanelButtonTemplate#?");
@@ -10191,11 +10206,12 @@ module.frame = function()
 
 		optionsAddObject(-25,   14, "font#tl:30:%y#v:ChatFontNormal#Total duration percentage (default 10):");
 		optionsAddObject(-20,   17, "slider#tl:50:%y#s:240:%s#i:consolidateFractionPercent#o:consolidateFractionPercent:10#<value> %#0:100:0.1");
+CONSOLIDATION REMOVED FROM GAME--]]
 
 		----------
 		-- Background
 		----------
-		optionsAddObject(-25, 1*13, "font#tl:15:%y#Background");
+		optionsAddObject(-25, 1*13, "font#tl:15:%y#Window Background");
 
 		-- Backdrop
 		optionsAddObject(-10,   26, "checkbutton#tl:30:%y#i:showBackground#o:showBackground:true#Show background");
@@ -10385,7 +10401,7 @@ module.frame = function()
 
 
 		-- Style 1
-		optionsAddObject(-25, 1*13, "font#tl:22:%y#n:CT_BuffMod_Style1Label#Style 1 (icon and bar)");
+		optionsAddObject(-20, 1*13, "font#tl:22:%y#n:CT_BuffMod_Style1Label#Style 1 (icon and bar)");
 
 		
 		-- Size of the icon
@@ -10427,7 +10443,7 @@ module.frame = function()
 		optionsAddObject( -5,   26, "checkbutton#tl:30:%y#i:showTimers1#o:showTimers1:true#Show time remaining text");
 
 		optionsAddObject( -3,   15, "font#tl:70:%y#v:ChatFontNormal#n:CT_BuffMod_Style1FormatLabel#Format:");
-		optionsAddObject( 15,   20, "dropdown#tl:115:%y#s:145:%s#n:CT_BuffModDropdown_durationFormat1#i:durationFormat1#o:durationFormat1:1#1 hour  /  30 minutes#1 hour  /  30 min#1h  /  30m#1h 22m  /  30m 45s#1:22h  /  30:45");
+		optionsAddObject( 15,   20, "dropdown#tl:115:%y#s:145:%s#n:CT_BuffModDropdown_durationFormat1#i:durationFormat1#o:durationFormat1:1#" .. module.text["CT_BuffMod/Options/Window/Time Remaining/Duration Format Dropdown"]);
 		
 		optionsAddObject(  6,   26, "checkbutton#tl:66:%y#i:CTBuffMod_showDaysFormat1#o:showDays1:true#Show days if >24 hours");
 		
@@ -10452,7 +10468,7 @@ module.frame = function()
 
 
 		-- Style 2
-		optionsAddObject(552, 1*13, "font#tl:22:%y#n:CT_BuffMod_Style2Label#Style 2 (icon and time)");
+		optionsAddObject(517, 1*13, "font#tl:22:%y#n:CT_BuffMod_Style2Label#Style 2 (icon and time)");
 
 		-- Icon size
 		optionsAddObject(-20,   14, "font#tl:35:%y#n:CT_BuffMod_Style2SizeLabel#v:ChatFontNormal#Size of the icon:");
@@ -10467,7 +10483,7 @@ module.frame = function()
 		optionsAddObject( -6,   26, "checkbutton#tl:30:%y#i:showTimers2#o:showTimers2:true#Show time remaining text");
 
 		optionsAddObject( -2,   15, "font#tl:70:%y#n:CT_BuffMod_Style2FormatLabel#v:ChatFontNormal#Format:");
-		optionsAddObject( 12,   20, "dropdown#tl:115:%y#s:145:%s#n:CT_BuffModDropdown_durationFormat2#i:durationFormat2#o:durationFormat2:1#1 hour  /  30 minutes#1 hour  /  30 min#1h  /  30m#1h 22m  /  30m 45s#1:22h  /  30:45");
+		optionsAddObject( 12,   20, "dropdown#tl:115:%y#s:145:%s#n:CT_BuffModDropdown_durationFormat2#i:durationFormat2#o:durationFormat2:1#" .. module.text["CT_BuffMod/Options/Window/Time Remaining/Duration Format Dropdown"]);
 		
 		optionsAddObject(  6,   26, "checkbutton#tl:66:%y#i:CTBuffMod_showDaysFormat2#o:showDays2:true#Show days if >24 hours");
 		
@@ -10494,7 +10510,7 @@ module.frame = function()
 			);
 		optionsEndFrame();
 		
-		optionsAddObject( -85, 2*14, "font#t:0:%y#s:0:%s#l:13:0#n:CT_BuffMod_Style2ContinueLabel#r#Continue scrolling for further options#" .. textColor2 .. ":l");
+		optionsAddObject( -80, 2*14, "font#t:0:%y#s:0:%s#l:13:0#n:CT_BuffMod_Style2ContinueLabel#r#Continue scrolling for further options#" .. textColor2 .. ":l");
 
 
 		----------
@@ -10517,15 +10533,11 @@ module.frame = function()
 					windowId = globalObject.windowListObject:windowNumToId(1);
 				end
 				options_setCurrentWindow( windowId, true );
-
-				if (CT_BuffMod_xoptUnsecure) then
-					self.playerUnsecure:SetScript("OnEnter", enablePlayerUnsecureTooltip);
-				end
 			end
 		);
 	optionsEndFrame();
 
-	optionsBeginFrame(-244	, 0, "frame#tl:0:%y#br:tr:0:%b");
+	optionsBeginFrame(-200	, 0, "frame#tl:0:%y#br:tr:0:%b");
 		optionsAddObject(  0,   17, "font#tl:5:%y#v:GameFontNormalLarge#Reset Options");
 		optionsAddObject( -5,   26, "checkbutton#tl:20:%y#o:resetAll#Reset options for all of your characters");
 		optionsBeginFrame(  -5,   30, "button#t:0:%y#s:120:%s#v:UIPanelButtonTemplate#Reset options");
@@ -10656,8 +10668,8 @@ local function globalFrame_Init(self)
 
 	-- Register events
 	self:RegisterEvent("UNIT_AURA");
-	if (CT_BuffMod_xoptUnits) then
-		self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	if (module:getGameVersion() == CT_GAME_VERSION_RETAIL) then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED");
 	end
 
@@ -10741,4 +10753,6 @@ local function slashCommand(msg)
 	module:showModuleOptions(module.name);
 end
 
-module:setSlashCmd(slashCommand, "/ctbuff", "/ctbuffmod");
+module:setSlashCmd(slashCommand, "/ctbuff", "/ctbuffmod", "/ctaura");
+-- enUS: /ctbuff, /ctbuffmod
+-- frFR: /ctaura

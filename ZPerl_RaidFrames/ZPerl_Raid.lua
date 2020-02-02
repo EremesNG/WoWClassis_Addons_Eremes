@@ -1,5 +1,5 @@
 -- X-Perl UnitFrames
--- Author: Zek <Boodhoof-EU>
+-- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local XPerl_Raid_Events = { }
@@ -38,16 +38,19 @@ end
 
 local format = format
 local strsub = strsub
+
 local GetNumGroupMembers = GetNumGroupMembers
+local UnitCastingInfo = UnitCastingInfo
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsGhost = UnitIsGhost
+local UnitName = UnitName
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
-local UnitName = UnitName
+
 local XPerl_UnitBuff = XPerl_UnitBuff
 local XPerl_UnitDebuff = XPerl_UnitDebuff
 local XPerl_CheckDebuffs = XPerl_CheckDebuffs
@@ -121,10 +124,6 @@ function XPerl_Raid_OnLoad(self)
 		"UNIT_NAME_UPDATE",
 		"PLAYER_FLAGS_CHANGED",
 		"UNIT_COMBAT",
-		"UNIT_SPELLCAST_START",
-		"UNIT_SPELLCAST_STOP",
-		"UNIT_SPELLCAST_FAILED",
-		"UNIT_SPELLCAST_INTERRUPTED",
 		"READY_CHECK",
 		"READY_CHECK_CONFIRM",
 		"READY_CHECK_FINISHED",
@@ -136,6 +135,13 @@ function XPerl_Raid_OnLoad(self)
 		"UNIT_CONNECTION",
 		--"PLAYER_REGEN_ENABLED",
 	}
+
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		tinsert(events, "UNIT_SPELLCAST_START")
+		tinsert(events, "UNIT_SPELLCAST_STOP")
+		tinsert(events, "UNIT_SPELLCAST_FAILED")
+		tinsert(events, "UNIT_SPELLCAST_INTERRUPTED")
+	end
 
 	for i, event in pairs(events) do
 		if pcall(self.RegisterEvent, self, event) then

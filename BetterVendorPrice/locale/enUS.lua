@@ -19,6 +19,7 @@ L["AHDB minbid"] = true
 L["Better Vendor Price"] = true
 L["Better Vendor Price bug report open: "] = true
 L["Better Vendor Price options"] = true
+L["Bug Report"] = true
 L["Bug report from slash command"] = true
 L["Debug level"] = true
 L["Development, troubleshooting and advanced options:"] = true
@@ -26,6 +27,12 @@ L["Get Auction House DataBase (|cFF99E5FFAHDB|r) v0.12 or newer to see auction i
 L["Get Information to submit a bug."] = true
 L["Please submit on discord or on https://|cFF99E5FFbit.ly/vendorbug|r  or email"] = true
 L["Sets the debug level"] = true
+L["Show AHDB info"] = true
+L["Show AHDB min bid"] = true
+L["Show full stack vendor price info"] = true
 L["These options let you control the behavior of BetterVendorPrice"] = true
 L["Vendors for:"] = true
+L["Whether to show the AHDB info or not"] = true
+L["Whether to show the AHDB min bid or not"] = true
+L["Whether to show the up to 3 lines vendor pricing info or skip the full stack one"] = true
 

@@ -8,8 +8,8 @@ local perc1F = "%.1f"..PERCENT_SYMBOL
 
 XPerl_RequestConfig(function(New)
 	conf = New
-end, "$Revision: 1158 $")
-XPerl_SetModuleRevision("$Revision: 1158 $")
+end, "$Revision: 1172 $")
+XPerl_SetModuleRevision("$Revision: 1172 $")
 
 local LCD = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and LibStub and LibStub("LibClassicDurations")
 if LCD then
@@ -31,6 +31,7 @@ local max = max
 local min = min
 local next = next
 local pairs = pairs
+local pcall = pcall
 local print = print
 local select = select
 local setmetatable = setmetatable
@@ -53,6 +54,7 @@ local GetCursorPosition = GetCursorPosition
 local GetDifficultyColor = GetDifficultyColor or GetQuestDifficultyColor
 local GetItemCount = GetItemCount
 local GetItemInfo = GetItemInfo
+local GetLocale = GetLocale
 local GetNumAddOns = GetNumAddOns
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
@@ -91,6 +93,7 @@ local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
 local UnitGetIncomingHeals = UnitGetIncomingHeals
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+local UnitGUID = UnitGUID
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitInParty = UnitInParty
@@ -99,17 +102,20 @@ local UnitInRange = UnitInRange
 local UnitInVehicle = UnitInVehicle
 local UnitIsAFK = UnitIsAFK
 local UnitIsConnected = UnitIsConnected
+local UnitIsDead = UnitIsDead
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsEnemy = UnitIsEnemy
+local UnitIsFriend = UnitIsFriend
+local UnitIsGhost = UnitIsGhost
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
+local UnitIsTapDenied = UnitIsTapDenied
 local UnitIsUnit = UnitIsUnit
 local UnitIsVisible = UnitIsVisible
 local UnitLevel = UnitLevel
 local UnitName = UnitName
 local UnitPlayerControlled = UnitPlayerControlled
 local UnitPopup_ShowMenu = UnitPopup_ShowMenu
-local UnitPopupFrames = UnitPopupFrames
 local UnitPopupMenus = UnitPopupMenus
 local UnitPopupShown = UnitPopupShown
 local UnitPowerMax = UnitPowerMax
@@ -637,13 +643,9 @@ function XPerl_StartupSpellRange()
 	local rf = conf.rangeFinder
 
 	local function Setup1(self)
-		local bCanUse
-		if (self.spell) then
-			bCanUse = GetSpellInfo(self.spell)
-		end
-		if ((type(self.spell) ~= "string") or not bCanUse) then
+		if type(self.spell) ~= "string" then
 			self.spell = XPerl_DefaultRangeSpells[playerClass] and XPerl_DefaultRangeSpells[playerClass].spell
-			if (type(self.item) ~= "string") then
+			if type(self.item) ~= "string" then
 				self.item = (XPerl_DefaultRangeSpells.ANY and XPerl_DefaultRangeSpells.ANY.item) or ""
 			end
 		end
@@ -1842,7 +1844,7 @@ local MagicCureTalents = {
 
 local function CanClassCureMagic(class)
 	if (MagicCureTalents[class]) then
-		return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and GetSpecialization() == MagicCureTalents[class] or IsSpellKnown(MagicCureTalentsClassic[class])
+		return WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and GetSpecialization() == MagicCureTalents[class] or (MagicCureTalentsClassic[class] and IsSpellKnown(MagicCureTalentsClassic[class]))
 	end
 end
 
@@ -1905,7 +1907,7 @@ function ZPerl_DebufHighlightInit()
 		getShow = function(Curses)
 			local show
 			if (not conf.highlightDebuffs.class) then
-				show = Curses.Magic or Curses.Curse or Curses.Poison or Curses.Disease
+				show = (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and Curses.Magic) or Curses.Curse or Curses.Poison or Curses.Disease
 			end
 			local magic
 			if (CanClassCureMagic(playerClass)) then
@@ -1918,7 +1920,7 @@ function ZPerl_DebufHighlightInit()
 		getShow = function(Curses)
 			local show
 			if (not conf.highlightDebuffs.class) then
-				show = Curses.Magic or Curses.Curse or Curses.Poison or Curses.Disease
+				show = (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and Curses.Magic) or (WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and Curses.Curse) or Curses.Poison or Curses.Disease
 			end
 			local magic
 			if (CanClassCureMagic(playerClass)) then
@@ -3147,7 +3149,7 @@ function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curabl
 				end
 				-- Two passes here now since 3.0.1, cos they did away with the GetPlayerBuff function
 				-- in favor of all in UnitBuff instead. We still want our big buffs first in the list,
-				-- so we have to scan thru twice. I know what you're thinking; "Why do 2 passes when
+				-- so we have to scan thru twice. I know what you're thinking: "Why do 2 passes when
 				-- player's buffs are first anyway". Well, usually they are, but in the case of hunters
 				-- and warlocks, the pet triggered buffs can be anywhere, but we still want those alongside
 				-- our own buffs.

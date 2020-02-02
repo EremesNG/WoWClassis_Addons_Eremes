@@ -10,7 +10,7 @@ local _, L = ...;
 if GetLocale() == "deDE" then
 ------ Professions pack
 --- Profissions
-L["alchemy"] = "Alchemie"
+L["alchemy"] = "Alchimie"
 L["archaeology"] = "Archäologie"
 L["blacksmithing"] = "Schmiedekunst"
 L["cooking"] = "Kochkunst"
@@ -20,8 +20,6 @@ L["firstAid"] = "Erste Hilfe"
 L["fishing"] = "Angeln"
 L["herbalism"] = "Kräuterkunde"
 L["herbalismskills"] = "Kräuterkundefähigkeiten"
-L["inscription"] = "Inschriftenkunde"
-L["jewelcrafting"] = "Juwelierskunst"
 L["leatherworking"] = "Lederverarbeitung"
 L["mining"] = "Bergbau"
 L["miningskills"] = "Bergbaufertigkeiten"
@@ -37,53 +35,6 @@ L["hideTutorial"] = "Anleitung ausblenden"
 L["masterHint"] = "|cFFB4EEB4Hinweis:|r |cFFFFFFFFLinksklick öffnet das Fenster des ersten Berufs\rund ein Mittelklick das Fenster des zweiten Berufs.|r\r\r"
 L["primprof"] = "Zeige Primäre Berufe an"
 L["bar"] = "Panel"
-
------- Reagents pack
---- Achaeology
-L["ready"] = "|cFF69FF69Fertig!  "
-L["archfragments"] = "Archäologie Fragmente"
-L["fragments"] = "Fragmente"
-L["fragtooltip"] = "|cFFB4EEB4Hinweis:|r |cFFFFFFFFRechtsklicke in das Plugin und\rwähle aus, welches Fragment in\rder Leiste angezeigt wird.|r\r"
-L["hidehint"] = "Hinweis verstecken"
-L["displaynofrag"] = "Völker ohne Fragmente anzeigen"
-L["inprog"] = "\rWird bearbeitet:"
-L["nofragments"] = "\nKeine Fragmente:\r"
-L["tooltip"] = "Tooltip"
-L["noarchaeology"] = "|cFFFF2e2eDu hast Archäologie noch nicht erlernt\roder du besitzt keine Fragmente.|r\r\rGehe zu dem nächstgelegensten Lehrer\roder Ausgrabungsstätte."
---- Enchanting
-L["arkhana"] = "|cFFFFFFFFArkhana|r"
-L["leylight"] = "|cff0070ddLeylichsplitter|r"
-L["chaosCrystal"] = "|cffa335eeChaoskristall|r"
---- Fishing
-L["mackerel"] = "|cFFFFFFFFSilbermakrele|r"
-L["queenfish"] = "|cFFFFFFFFVerfluchter Königinnenfisch|r"
-L["salmon"] = "|cFFFFFFFFHochberglachs|r"
-L["mossgill"] = "|cFFFFFFFFMooskiemenbarsch|r"
-L["stormray"] = "|cFFFFFFFFSturmrochen|r"
-L["koi"] = "|cFFFFFFFFRunenschuppenkoi|r"
-L["barracuda"] = "|cFFFFFFFFSchwarzer Barrakuda|r"
---- Herbalism
-L["yseralline"] = "|cFFFFFFFFYseralinensamen|r"
-L["felwort"] = "|cff1eff00Teufelswurz|r"
-L["starlight"] = "|cFFFFFFFFSternenlichrose|r"
-L["fjarn"] = "|cFFFFFFFFFjarnskaggl|r"
-L["foxflower"] = "|cFFFFFFFFFuchsblume|r"
-L["dreamleaf"] = "|cFFFFFFFFTraumlaub|r"
-L["aethril"] = "|cFFFFFFFFAethril|r"
---- Mining
-L["leystone"] = "|cFFFFFFFFLeysteinerz|r"
-L["felslate"] = "|cFFFFFFFFTeufelsschiefer|r"
-L["brimstone"] = "|cff1eff00Infernoschwefel|r"
-L["blood"] = "|cff0070ddBlut von Sargeras|r"
---- Skinning
-L["stormscale"] = "|cFFFFFFFFSturmschuppe|r"
-L["stonehide"] = "|cFFFFFFFFSteinbalgleder|r"
-L["felhide"] = "|cff1eff00Teufelsbalg|r"
-L["tooth"] = "|cFFFFFFFFIntakter Zahn|r"
-L["claw"] = "|cFFFFFFFFIntakte Kralle|r"
---- Tailoring
-L["shaldorei"] = "|cFFFFFFFFShal'doreiseide|r"
-L["silkweave"] = "|cFFFFFFFFMachtgetränktes Seidengewebe|r"
 
 ------ Shared with one or more
 --- Shared
